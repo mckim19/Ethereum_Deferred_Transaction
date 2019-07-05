@@ -20,7 +20,7 @@ $ sudo apt-get install golang-go
 source 명령어는 재부팅을 하지 않는 이상 각 쉘마다 다시 실행해야 한다.
 ```
 $ cd $home
-$ echo "PATH=\$PATH:/home/`logname`/go-ethereum/build/bin" >> ~/.bashrc
+$ echo "PATH=\$PATH:/home/`logname`/ethereum_parallel_execution/go-ethereum/build/bin" >> ~/.bashrc
 $ source .bashrc
 ```
 ### 2.	Ethereum Network Stats 설치
