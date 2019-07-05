@@ -1,0 +1,45 @@
+
+> eth-netstats@0.0.9 start /home/yoom/eth-netstats
+> node ./bin/www
+
+
+> eth-netstats@0.0.9 start /home/yoom/eth-netstats
+> node ./bin/www
+
+2019-06-11 12:30:31.656 [API] [CON] Connected yoom
+2019-06-11 12:30:31.663 [API] [BLK] Block error: Block undefined
+2019-06-11 12:30:31.665 [API] [STA] Stats from: yoom
+2019-06-11 12:30:31.666 [API] [HIS] Got history from: yoom
+2019-06-11 12:30:46.662 [API] [BLK] Block error: Block undefined
+2019-06-11 12:30:46.662 [API] [STA] Stats from: yoom
+2019-06-11 12:30:46.663 [API] [HIS] Got history from: yoom
+2019-06-11 12:31:01.661 [API] [BLK] Block error: Block undefined
+2019-06-11 12:31:01.662 [API] [STA] Stats from: yoom
+2019-06-11 12:31:01.662 [API] [HIS] Got history from: yoom
+2019-06-11 12:31:16.665 [API] [BLK] Block error: Block undefined
+2019-06-11 12:31:16.665 [API] [STA] Stats from: yoom
+2019-06-11 12:31:16.666 [API] [HIS] Got history from: yoom
+2019-06-11 12:31:31.661 [API] [BLK] Block error: Block undefined
+2019-06-11 12:31:31.661 [API] [STA] Stats from: yoom
+2019-06-11 12:31:31.662 [API] [HIS] Got history from: yoom
+2019-06-11 12:31:46.665 [API] [BLK] Block error: Block undefined
+2019-06-11 12:31:46.666 [API] [STA] Stats from: yoom
+2019-06-11 12:31:46.666 [API] [HIS] Got history from: yoom
+2019-06-11 12:32:01.689 [API] [BLK] Block error: Block undefined
+2019-06-11 12:32:01.690 [API] [STA] Stats from: yoom
+2019-06-11 12:32:01.690 [API] [HIS] Got history from: yoom
+2019-06-11 12:32:04.890 [API] [CON] Connection with: Mj6XBZP ended: undefined
+2019-06-11 12:32:15.281 [API] [CON] Connected yoom
+2019-06-11 12:32:15.283 [API] [BLK] Block error: Block undefined
+2019-06-11 12:32:15.284 [API] [STA] Stats from: yoom
+2019-06-11 12:32:15.284 [API] [HIS] Got history from: yoom
+2019-06-11 12:32:30.286 [API] [BLK] Block error: Block undefined
+2019-06-11 12:32:30.287 [API] [STA] Stats from: yoom
+2019-06-11 12:32:30.287 [API] [HIS] Got history from: yoom
+2019-06-11 12:32:45.289 [API] [BLK] Block error: Block undefined
+2019-06-11 12:32:45.290 [API] [STA] Stats from: yoom
+2019-06-11 12:32:45.290 [API] [HIS] Got history from: yoom
+2019-06-11 12:33:00.287 [API] [BLK] Block error: Block undefined
+2019-06-11 12:33:00.288 [API] [STA] Stats from: yoom
+2019-06-11 12:33:00.288 [API] [HIS] Got history from: yoom
+2019-06-11 12:33:03.385 [API] [CON] Connection with: Mj6Xasl ended: undefined
