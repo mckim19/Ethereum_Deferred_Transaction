@@ -181,9 +181,11 @@ library mutex {
 ```
 ### 2. voting_v1.sol
 ```
-참조 사이트 - https://solidity-kr.readthedocs.io/ko/latest/contracts.html?highlight=library#libraries
-
-
+참조 사이트1 - 라이브러리 사용법: https://solidity-kr.readthedocs.io/ko/latest/contracts.html?highlight=library#libraries
+참조 사이트2 - 라이브러리 링크 방법: https://medium.com/coinmonks/all-you-should-know-about-libraries-in-solidity-dd8bc953eae7
+참조 사이트3 - geth console에서 contract 생성방법: https://medium.com/mercuryprotocol/dev-highlights-of-this-week-cb33e58c745f
+--> npm install -g solc가 필요함
+참조 사이트4 - remix 라이브러리 생성법: https://ethereum.stackexchange.com/questions/12299/how-does-solidity-online-compiler-link-libraries
 ```
 ```
 pragma solidity ^0.5.4;
@@ -225,4 +227,3 @@ contract C {
     }
 }
 ```
-### 3. voting_v2.sol
