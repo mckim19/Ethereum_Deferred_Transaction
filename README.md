@@ -193,3 +193,51 @@ library mutex {
     }
 }
 ```
+### 2. voting_v1.sol
+```
+참조 사이트1 - 라이브러리 사용법: https://solidity-kr.readthedocs.io/ko/latest/contracts.html?highlight=library#libraries
+참조 사이트2 - 라이브러리 링크 방법: https://medium.com/coinmonks/all-you-should-know-about-libraries-in-solidity-dd8bc953eae7
+참조 사이트3 - geth console에서 contract 생성방법: https://medium.com/mercuryprotocol/dev-highlights-of-this-week-cb33e58c745f
+--> npm install -g solc가 필요함
+참조 사이트4 - remix 라이브러리 생성법: https://ethereum.stackexchange.com/questions/12299/how-does-solidity-online-compiler-link-libraries
+```
+```
+pragma solidity ^0.5.4;
+//We believe voters are innocent.
+import {mutex} from "./mutex.sol";
+contract C {
+    using mutex for *;
+    uint constant POPULATION_NUM=5;
+    uint[3] candidate;
+    uint v;
+    bool final_flag;
+    mutex.mutex_v x;
+    mutex.mutex_v y;
+    mutex.mutex_v z;
+    
+    function vote(uint candidate_num) public returns (bool)
+    {
+        /* x,y,z does not have to store sequence! */
+        /* only v have to store sequence! */
+        mutex.lock(x);
+        if (v >= POPULATION_NUM)
+        {
+            mutex.unlock(x);
+            return false;
+        }
+        v++;
+        mutex.unlock(x);
+        
+        mutex.lock(y);
+        if(v == POPULATION_NUM)
+            final_flag = true;
+        mutex.unlock(y);
+        
+        mutex.lock(z);
+        candidate[candidate_num]+=1;
+        mutex.unlock(z);
+        //local_op(candidate[candidate],plus,1);       
+        return true;
+    }
+}
+```
