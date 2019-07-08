@@ -80,8 +80,9 @@ $ --ethstats yoom:Hello@localhost:3000	\
 ### 1.	Geth 실행 옵션
 ```
 $ geth --datadir paralleltestwork/ init genesis.json
-$ geth --datadir paralleltestwork/ --networkid 940625 --nodiscover \
---port 30303 --unlock 0,1 --password password console
+$ geth --datadir paralleltestwork/ --networkid 940625 --rpc --rpcaddr "0.0.0.0" 
+--rpcport 8600 --rpccorsdomain "*" --rpcapi "admin,db,eth,debug,miner,net,shh,txpool,personal,web3" 
+--allow-insecure-unlock --nodiscover --port 30303 --unlock 0,1 --password password console
 ```
 ### 2.	어카운트 관련
 ```
@@ -159,4 +160,22 @@ $ git push
 ### 4.	git 최신버전 가져오기
 ```
 $ git pull
+```
+## 스마트 컨트랙트
+### 1. mutex 라이브러리
+```
+pragma solidity ^0.5.4;
+library mutex {
+    struct mutex_v
+    {
+        uint L;
+    }
+    function lock(mutex_v storage a) public {
+        while(a.L == 0){}
+        a.L=1;
+    }
+    function unlock(mutex_v storage a) public {
+        a.L=0;
+    }
+}
 ```
