@@ -42,6 +42,9 @@ $ make geth
 ```
 ## 이더리움 테스트 환경 구축
 단순히 병렬 처리가 가능한지를 보기 위한 것이므로 no-discover 옵션으로 public network를 구축해서 사용한다. Network Id는 940625로 사용한다.
+```
+참고 사이트 1 - geth 컨트랙트 호출: https://stackoverflow.com/questions/48184969/calling-smart-contracts-methods-using-web3-ethereum?rq=1
+```
 ### 1.	이더리움 개인 네트워크 구축 준비
 #### A.	데이터 폴더(workspace) 생성 및 계좌 생성
 Account를 생성하라 그러면 Passphrase를 요구한다. 적당한 비밀번호로 설정하고 기억한다. Public address of the key 값이 출력이 되면 기억한다.
@@ -99,7 +102,7 @@ $ miner.stop()
 $ eth.mining
 $ eth.blockNumber
 ```
-### 4.	트랜잭션 전송
+### 4.	트랜잭션 전송(contract을 거치지 않은 경우)
 ```
 $ personal.unlockAccount(eth.accounts[0])
 $ eth.sendTransaction({from:eth.accounts[0], to:eth.accounts[2], value:10000})
@@ -108,11 +111,16 @@ $ eth.sendTransaction({from:eth.accounts[0], to:eth.accounts[2], value:10000})
 ```
 $ eth.pendingTransactions
 $ eth.getBlock(22)
+$ eth.getTransaction("트랜잭션 주소")
+$ eth.getTransactionReceipt("트랜잭션 주소") //배포한 contract의 주소를 보기 위해 주로 사용
+$ eth.getCode("컨트랙트 주소") //배포한 contract의 바이트코드를 확인하기 위해 주로 사용
 ```
 ### 6. geth를 통한 Contract 생성방법
 ```
-remix를 사용하여 contract를 deploy하면 deploy 할 때마다 라이브러리 contract도 계속 새로 생성되는 단점이 존재한다. mutex 코드가 난무하는 것을 방지하기 위해 geth에서 contract을 deploy하는 것을 선택하였다.
-준비사항은 원하는 위치에 .sol 소스파일을 위치하는 것이다. 편의를 위해 paralleltestwork(작업폴더)안에 solidity_file이란 폴더를 생성하여 컴파일을 원하는 소스코드와 라이브러리 소스코드를 같이 위치시킨다.
+remix를 사용하여 contract를 deploy하면 deploy 할 때마다 라이브러리 contract도 계속 새로 생성되는 단점이 존재한다. 
+mutex 컨트랙트가 난무하는 것을 방지하기 위해 geth에서 contract을 deploy하는 것을 선택하였다.
+준비사항은 원하는 위치에 .sol 소스파일을 위치하는 것이다. 편의를 위해 paralleltestwork(작업폴더)안에 solidity_file이란 
+폴더를 생성하여 컴파일을 원하는 소스코드와 라이브러리 소스코드를 같이 위치시킨다.
 ```
 ```
 $ cd ~/paralleltestwork/solidity_file
@@ -122,6 +130,27 @@ $ var contract = eth.contract([{"constant":false,"inputs":[{"name":"candidate_nu
 $ var bytecode = '0x608060405234801561001057600080fd5b5061048f806100206000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c80630121b93f1461004657806395fc395d1461008c578063fbfbfd97146100ce575b600080fd5b6100726004803603602081101561005c57600080fd5b81019080803590602001909291905050506100ec565b604051808215151515815260200191505060405180910390f35b6100b8600480360360208110156100a257600080fd5b8101908080359060200190929190505050610439565b6040518082815260200191505060405180910390f35b6100d6610450565b6040518082815260200191505060405180910390f35b600073efe38f307df41975ba058dfe2824ed53dd36be00637308809e60056040518263ffffffff1660e01b81526004018082815260200191505060006040518083038186803b15801561013e57600080fd5b505af4158015610152573d6000803e3d6000fd5b505050506005600354106101d15773efe38f307df41975ba058dfe2824ed53dd36be0063b5fba83d60056040518263ffffffff1660e01b81526004018082815260200191505060006040518083038186803b1580156101b057600080fd5b505af41580156101c4573d6000803e3d6000fd5b5050505060009050610434565b60036000815480929190600101919050555073efe38f307df41975ba058dfe2824ed53dd36be0063b5fba83d60056040518263ffffffff1660e01b81526004018082815260200191505060006040518083038186803b15801561023357600080fd5b505af4158015610247573d6000803e3d6000fd5b5050505073efe38f307df41975ba058dfe2824ed53dd36be00637308809e60066040518263ffffffff1660e01b81526004018082815260200191505060006040518083038186803b15801561029b57600080fd5b505af41580156102af573d6000803e3d6000fd5b50505050600560035414156102da576001600460006101000a81548160ff0219169083151502179055505b73efe38f307df41975ba058dfe2824ed53dd36be0063b5fba83d60066040518263ffffffff1660e01b81526004018082815260200191505060006040518083038186803b15801561032a57600080fd5b505af415801561033e573d6000803e3d6000fd5b5050505073efe38f307df41975ba058dfe2824ed53dd36be00637308809e60076040518263ffffffff1660e01b81526004018082815260200191505060006040518083038186803b15801561039257600080fd5b505af41580156103a6573d6000803e3d6000fd5b505050506001600083600381106103b957fe5b016000828254019250508190555073efe38f307df41975ba058dfe2824ed53dd36be0063b5fba83d60076040518263ffffffff1660e01b81526004018082815260200191505060006040518083038186803b15801561041757600080fd5b505af415801561042b573d6000803e3d6000fd5b50505050600190505b919050565b600080826003811061044757fe5b01549050919050565b600060035490509056fea265627a7a7230582042e82287105bbb594545c04327f3a4d14702d2c56f6fe113e6c480cc6bddfa8d64736f6c63430005090032'
 $ var deploy = {from:eth.coinbase, data:bytecode, gas: 2000000}
 $ var contract_instance = contract.new("DISQUALIFIED!", deploy)
+```
+### 7. contract 함수 호출
+#### A. contract 객체 생성
+contract 함수를 호출하기 위해서는 contract의 abi와 컨트랙트 주소가 필요하다.
+여기서는 vote 컨트랙트를 사용하였다. abi와 address는 6번을 통해 알아내야 한다.
+```
+$ abi = [{"constant":false,"inputs":[{"name":"candidate_num","type":"uint256"}],"name":"vote","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"candidate_num","type":"uint256"}],"name":"get_candidate","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"get_v","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]
+$ c_address = "0xcef3434d109bb33b9dca073c4970ed174318eb0a"
+$ c_instance = eth.contract(abi).at(c_address)
+```
+#### B. call
+읽기만 하는 함수의 경우 geth의 call을 사용하여 호출한다. 트랜잭션을 발생시키지 않는다.
+위에서 생성한 컨트랙트 객체를 가져다가 사용하였다.
+```
+$ c_instance.get_v.call()
+$ c_instance.get_candidate.call()
+```
+#### C. sendTransaction
+state를 변경시키는 경우 sendTransaction을 호출하여 트랜잭션을 생성해준다. 마이닝이 된 후 결과가 반영된다.
+```
+$ c_instance.vote.sendTransaction(0,{from: eth.accounts[0]})
 ```
 ## GIT 사용법
 ### 1.	GIT 제공방법 – gitlab을 사용할 것임
