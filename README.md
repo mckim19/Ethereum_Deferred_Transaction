@@ -83,8 +83,8 @@ $ --ethstats yoom:Hello@localhost:3000	\
 ### 1.	Geth 실행 옵션
 ```
 $ geth --datadir paralleltestwork/ init genesis.json
-$ geth --datadir paralleltestwork/ --networkid 940625 --rpc --rpcaddr "0.0.0.0" 
---rpcport 8600 --rpccorsdomain "*" --rpcapi "admin,db,eth,debug,miner,net,shh,txpool,personal,web3" 
+$ geth --datadir paralleltestwork/ --networkid 940625 --rpc --rpcaddr "0.0.0.0" \
+--rpcport 8600 --rpccorsdomain "*" --rpcapi "admin,db,eth,debug,miner,net,shh,txpool,personal,web3" \
 --allow-insecure-unlock --nodiscover --port 30303 --unlock 0,1 --password password console
 ```
 ### 2.	어카운트 관련
