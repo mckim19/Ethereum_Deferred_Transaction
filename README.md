@@ -271,7 +271,7 @@ contract C {
 }
 ```
 
-##Block explorer
+## Block explorer
    block explorer는 블록정보, 블록 안에 담겨 있는 트랜잭션 정보, account 정보를 ui로 예쁘게 볼 수 있는 툴을 말한다. 
    아직 이더리움에서 private chain을 위해 공식적으로 지원하는 툴은 없지만, 오픈소스가 굉장히 많다. 
    우리는 그중에서도 Carsenk의 오픈소스 explorer를 사용할 것이다.
