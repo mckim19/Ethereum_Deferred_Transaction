@@ -279,3 +279,10 @@ contract C {
    ```
    참고 github: https://github.com/carsenk/explorer
    ```
+## 기타 유용한 링크
+추후 remote 프로젝트로 넘어갔을 때 활용하면 좋을 링크 모음
+### 분산락 관련 링크
+```
+1. CRDT: Conflict-free Replicated Data Types(modification에 대해 락을 사용하지 않고 프로토콜만을 사용하여 동기화가 가능하게 하는 기법 중의 하나)
+https://medium.com/@amberovsky/crdt-conflict-free-replicated-data-types-b4bfc8459d26
+```
