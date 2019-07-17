@@ -862,7 +862,6 @@ func (w *worker) commitTransactions_goloop(txs *types.TransactionsByPriceAndNonc
 		}
 		// Retrieve the next transaction and abort if all done
 		tx := txs.Peek()
-		log.Info("Peeked tx: ",tx)
 		if tx == nil {
 			break
 		}
@@ -875,7 +874,6 @@ func (w *worker) commitTransactions_goloop(txs *types.TransactionsByPriceAndNonc
 		// phase, start ignoring the sender until we do.
 		if tx.Protected() && !w.chainConfig.IsEIP155(w.current.header.Number) {
 			log.Trace("Ignoring reply protected transaction", "hash", tx.Hash(), "eip155", w.chainConfig.EIP155Block)
-
 			txs.Pop()
 			continue
 		}
