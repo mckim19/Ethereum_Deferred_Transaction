@@ -31,7 +31,7 @@ endif()
 
 if (EXISTS ${ETH_SOURCE_DIR}/commit_hash.txt)
 	file(READ ${ETH_SOURCE_DIR}/commit_hash.txt SOL_COMMIT_HASH)
-	string(STRIP ${SOL_COMMIT_HASH} SOL_COMMIT_HASH)
+	string(STRIP "${SOL_COMMIT_HASH}" SOL_COMMIT_HASH)
 else()
 	execute_process(
 		COMMAND git --git-dir=${ETH_SOURCE_DIR}/.git --work-tree=${ETH_SOURCE_DIR} rev-parse --short=8 HEAD
@@ -44,8 +44,8 @@ else()
 endif()
 
 if (SOL_COMMIT_HASH)
-	string(STRIP ${SOL_COMMIT_HASH} SOL_COMMIT_HASH)
-	string(SUBSTRING ${SOL_COMMIT_HASH} 0 8 SOL_COMMIT_HASH)
+	string(STRIP "${SOL_COMMIT_HASH}" SOL_COMMIT_HASH)
+	string(SUBSTRING "${SOL_COMMIT_HASH}" 0 8 SOL_COMMIT_HASH)
 endif()
 
 if (NOT SOL_COMMIT_HASH)

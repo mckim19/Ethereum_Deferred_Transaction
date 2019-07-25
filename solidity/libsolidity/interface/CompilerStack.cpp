@@ -203,6 +203,7 @@ void CompilerStack::setSources(StringMap _sources)
 
 bool CompilerStack::parse()
 {
+	cout << "-------------[CompilerStack::parse]parse()------------\n";
 	if (m_stackState != SourcesSet)
 		BOOST_THROW_EXCEPTION(CompilerError() << errinfo_comment("Must call parse only after the SourcesSet state."));
 	m_errorReporter.clear();
@@ -251,6 +252,7 @@ bool CompilerStack::parse()
 
 bool CompilerStack::analyze()
 {
+	cout << "------------[CompilerStack::analyze()]-------------\n";
 	if (m_stackState != ParsingSuccessful || m_stackState >= AnalysisSuccessful)
 		BOOST_THROW_EXCEPTION(CompilerError() << errinfo_comment("Must call analyze only after parsing was successful."));
 	resolveImports();
@@ -262,12 +264,10 @@ bool CompilerStack::analyze()
 		for (Source const* source: m_sourceOrder)
 			if (!syntaxChecker.checkSyntax(*source->ast))
 				noErrors = false;
-
 		DocStringAnalyser docStringAnalyser(m_errorReporter);
 		for (Source const* source: m_sourceOrder)
 			if (!docStringAnalyser.analyseDocStrings(*source->ast))
 				noErrors = false;
-
 		m_globalContext = make_shared<GlobalContext>();
 		NameAndTypeResolver resolver(*m_globalContext, m_scopes, m_errorReporter);
 		for (Source const* source: m_sourceOrder)
@@ -280,15 +280,15 @@ bool CompilerStack::analyze()
 		for (Source const* source: m_sourceOrder)
 			if (!resolver.performImports(*source->ast, sourceUnitsByName))
 				return false;
-
 		// This is the main name and type resolution loop. Needs to be run for every contract, because
 		// the special variables "this" and "super" must be set appropriately.
 		for (Source const* source: m_sourceOrder)
 			for (ASTPointer<ASTNode> const& node: source->ast->nodes())
 				if (ContractDefinition* contract = dynamic_cast<ContractDefinition*>(node.get()))
 				{
-
+					//cout << "In the loop!\n";
 					if (!resolver.resolveNamesAndTypes(*contract)) return false;
+					//cout << "If there is an error, this would not be executed\n";
 					// Note that we now reference contracts by their fully qualified names, and
 					// thus contracts can only conflict if declared in the same source file.  This
 					// already causes a double-declaration error elsewhere, so we do not report
@@ -296,7 +296,6 @@ bool CompilerStack::analyze()
 					if (m_contracts.find(contract->fullyQualifiedName()) == m_contracts.end())
 						m_contracts[contract->fullyQualifiedName()].contract = contract;
 				}
-
 		// Next, we check inheritance, overrides, function collisions and other things at
 		// contract or function level.
 		// This also calculates whether a contract is abstract, which is needed by the
@@ -307,7 +306,6 @@ bool CompilerStack::analyze()
 				if (ContractDefinition* contract = dynamic_cast<ContractDefinition*>(node.get()))
 					if (!contractLevelChecker.check(*contract))
 						noErrors = false;
-
 		// New we run full type checks that go down to the expression level. This
 		// cannot be done earlier, because we need cross-contract types and information
 		// about whether a contract is abstract for the `new` expression.
@@ -321,7 +319,6 @@ bool CompilerStack::analyze()
 				if (ContractDefinition* contract = dynamic_cast<ContractDefinition*>(node.get()))
 					if (!typeChecker.checkTypeRequirements(*contract))
 						noErrors = false;
-
 		if (noErrors)
 		{
 			// Checks that can only be done when all types of all AST nodes are known.
@@ -425,10 +422,12 @@ bool CompilerStack::isRequestedContract(ContractDefinition const& _contract) con
 
 bool CompilerStack::compile()
 {
+	cout << "[CompilerStack::compile]compile()\n";
 	if (m_stackState < AnalysisSuccessful)
 		if (!parseAndAnalyze())
 			return false;
 
+	cout << "\tparseAndAnalyze succeed\n";
 	// Only compile contracts individually which have been requested.
 	map<ContractDefinition const*, shared_ptr<Compiler const>> otherCompilers;
 	for (Source const* source: m_sourceOrder)

@@ -242,6 +242,9 @@ Token Scanner::next()
 	m_currentToken = m_nextToken;
 	m_skippedComment = m_nextSkippedComment;
 	scanToken();
+	cout << "\t[Scanner::next]scanToken Result\n";
+	cout << "\tm_currentToken:\t"<< m_currentToken.token << ", m_currentLiteral: "<<m_currentToken.literal<<"\n";
+	cout << "\tm_nextToken:\t" << m_nextToken.token << ", m_nextLiteral: "<<m_nextToken.literal<<"\n";
 
 	return m_currentToken.token;
 }
@@ -259,7 +262,9 @@ bool Scanner::skipWhitespace()
 {
 	int const startPosition = sourcePos();
 	while (isWhiteSpace(m_char))
+	{
 		advance();
+	}
 	// Return whether or not we skipped any characters.
 	return sourcePos() != startPosition;
 }
@@ -627,7 +632,6 @@ void Scanner::scanToken()
 			if (isIdentifierStart(m_char))
 			{
 				tie(token, m, n) = scanIdentifierOrKeyword();
-
 				// Special case for hexadecimal literals
 				if (token == Token::Hex)
 				{
@@ -643,19 +647,26 @@ void Scanner::scanToken()
 				}
 			}
 			else if (isDecimalDigit(m_char))
+			{
 				token = scanNumber();
+			}
 			else if (skipWhitespace())
+			{
 				token = Token::Whitespace;
+			}
 			else if (isSourcePastEndOfInput())
+			{
 				token = Token::EOS;
+			}
 			else
+			{
 				token = selectErrorToken(ScannerError::IllegalToken);
+			}
 			break;
 		}
 		// Continue scanning for tokens as long as we're just skipping
 		// whitespace.
-	}
-	while (token == Token::Whitespace);
+	}while (token == Token::Whitespace);
 	m_nextToken.location.end = sourcePos();
 	m_nextToken.token = token;
 	m_nextToken.extendedTokenInfo = make_tuple(m, n);
@@ -892,7 +903,9 @@ tuple<Token, unsigned, unsigned> Scanner::scanIdentifierOrKeyword()
 	addLiteralCharAndAdvance();
 	// Scan the rest of the identifier characters.
 	while (isIdentifierPart(m_char) || (m_char == '.' && m_supportPeriodInIdentifier))
-		addLiteralCharAndAdvance();
+	{
+		addLiteralCharAndAdvance();	//현재 m_char를 .literal에 push_back을 사용하여 넣어버리고 그 다음 m_char을 advance를 통해 가져옴
+	}
 	literal.complete();
 	return TokenTraits::fromIdentifierOrKeyword(m_nextToken.literal);
 }

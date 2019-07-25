@@ -1,0 +1,2 @@
+/usr/bin/ar qc libyulInterpreter.a  CMakeFiles/yulInterpreter.dir/EVMInstructionInterpreter.cpp.o CMakeFiles/yulInterpreter.dir/Interpreter.cpp.o
+/usr/bin/ranlib libyulInterpreter.a

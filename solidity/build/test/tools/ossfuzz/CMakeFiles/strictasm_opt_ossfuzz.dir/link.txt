@@ -1,0 +1,2 @@
+/usr/bin/ar qc libstrictasm_opt_ossfuzz.a  CMakeFiles/strictasm_opt_ossfuzz.dir/strictasm_opt_ossfuzz.cpp.o
+/usr/bin/ranlib libstrictasm_opt_ossfuzz.a

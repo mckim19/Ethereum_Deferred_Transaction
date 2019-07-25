@@ -428,6 +428,7 @@ bool IRGeneratorForStatements::visit(BinaryOperation const& _binOp)
 
 void IRGeneratorForStatements::endVisit(FunctionCall const& _functionCall)
 {
+	cout << "[IRGeneratorForStatements::endVisit]\n";
 	solUnimplementedAssert(
 		_functionCall.annotation().kind == FunctionCallKind::FunctionCall ||
 		_functionCall.annotation().kind == FunctionCallKind::TypeConversion,

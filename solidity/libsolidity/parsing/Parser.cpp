@@ -1060,7 +1060,9 @@ ASTPointer<Statement> Parser::parseStatement()
 					m_scanner->next();
 				}
 			else
+			{
 				statement = parseSimpleStatement(docString);
+			}
 			break;
 		default:
 			statement = parseSimpleStatement(docString);
@@ -1326,7 +1328,6 @@ pair<Parser::LookAheadInfo, Parser::IndexAccessedPath> Parser::tryParseIndexAcce
 	// As an extension, we can even have:
 	// `x.y.z[1][2] a;` and `x.y.z[1][2] = 10;`
 	// Where in the first, x.y.z leads to a type name where in the second, it accesses structs.
-
 	auto statementType = peekStatementType();
 	switch (statementType)
 	{
@@ -1434,7 +1435,7 @@ ASTPointer<Expression> Parser::parseExpression(
 	RecursionGuard recursionGuard(*this);
 	ASTPointer<Expression> expression = parseBinaryExpression(4, _partiallyParsedExpression);
 	if (TokenTraits::isAssignmentOp(m_scanner->currentToken()))
-	{
+	{	
 		Token assignmentOperator = m_scanner->currentToken();
 		m_scanner->next();
 		ASTPointer<Expression> rightHandSide = parseExpression();
@@ -1452,7 +1453,7 @@ ASTPointer<Expression> Parser::parseExpression(
 		nodeFactory.setEndPositionFromNode(falseExpression);
 		return nodeFactory.createNode<Conditional>(expression, trueExpression, falseExpression);
 	}
-	else
+	else	
 		return expression;
 }
 
@@ -1516,7 +1517,9 @@ ASTPointer<Expression> Parser::parseLeftHandSideExpression(
 
 	ASTPointer<Expression> expression;
 	if (_partiallyParsedExpression)
+	{
 		expression = _partiallyParsedExpression;
+	}
 	else if (m_scanner->currentToken() == Token::New)
 	{
 		expectToken(Token::New);
@@ -1528,7 +1531,9 @@ ASTPointer<Expression> Parser::parseLeftHandSideExpression(
 		expression = nodeFactory.createNode<NewExpression>(typeName);
 	}
 	else
+	{
 		expression = parsePrimaryExpression();
+	}
 
 	while (true)
 	{
@@ -1575,7 +1580,6 @@ ASTPointer<Expression> Parser::parsePrimaryExpression()
 	ASTNodeFactory nodeFactory(*this);
 	Token token = m_scanner->currentToken();
 	ASTPointer<Expression> expression;
-
 	switch (token)
 	{
 	case Token::TrueLiteral:

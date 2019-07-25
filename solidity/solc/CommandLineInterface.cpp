@@ -792,8 +792,9 @@ Allowed options)",
 
 bool CommandLineInterface::processInput()
 {
+	//fileReader function does not executed!!!!!!!!!!!!!!!!!!
 	ReadCallback::Callback fileReader = [this](string const& _path)
-	{
+	{	
 		try
 		{
 			auto path = boost::filesystem::path(_path);
@@ -810,7 +811,7 @@ bool CommandLineInterface::processInput()
 					isAllowed = true;
 					break;
 				}
-			}
+			}	
 			if (!isAllowed)
 				return ReadCallback::Result{false, "File outside of allowed directories."};
 
@@ -833,7 +834,7 @@ bool CommandLineInterface::processInput()
 			return ReadCallback::Result{false, "Unknown exception in read callback."};
 		}
 	};
-
+	//sout() << "HEllO!! Outside of callback" << endl; //IT WORKED!!
 	if (m_args.count(g_argAllowPaths))
 	{
 		vector<string> paths;
@@ -957,7 +958,9 @@ bool CommandLineInterface::processInput()
 		settings.optimizeStackAllocation = settings.runYulOptimiser;
 		m_compiler->setOptimiserSettings(settings);
 
+		sout() << "[cli::processInput]m_compiler->compile()\n"; //YOOMEE
 		bool successful = m_compiler->compile();
+		
 
 		for (auto const& error: m_compiler->errors())
 		{

@@ -232,6 +232,7 @@ bool ControlFlowBuilder::visit(PlaceholderStatement const&)
 
 bool ControlFlowBuilder::visit(FunctionCall const& _functionCall)
 {
+	cout << "ControlFlowBuilder::visit\n";
 	solAssert(!!m_currentNode, "");
 	solAssert(!!_functionCall.expression().annotation().type, "");
 

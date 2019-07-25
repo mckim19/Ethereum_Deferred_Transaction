@@ -478,6 +478,7 @@ bool ExpressionCompiler::visit(BinaryOperation const& _binaryOperation)
 
 bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 {
+	cout << "[ExpressionCompiler::visit]\n";
 	CompilerContext::LocationSetter locationSetter(m_context, _functionCall);
 	if (_functionCall.annotation().kind == FunctionCallKind::TypeConversion)
 	{
@@ -708,6 +709,10 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 			arguments.front()->accept(*this);
 			utils().convertType(*arguments.front()->annotation().type, *function.parameterTypes().front(), true);
 			m_context << Instruction::SELFDESTRUCT;
+			break;
+		case FunctionType::Kind::Lock:
+			arguments.front()->accept(*this);
+			m_context << Instruction::LOCK;
 			break;
 		case FunctionType::Kind::Revert:
 		{
