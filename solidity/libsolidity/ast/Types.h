@@ -996,6 +996,7 @@ public:
 		Assert, ///< assert()
 		Require, ///< require()
 		Lock, ///< lock()
+		Unlock, ///< unlock()
 		ABIEncode,
 		ABIEncodePacked,
 		ABIEncodeWithSelector,

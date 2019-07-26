@@ -334,6 +334,7 @@ u256 EVMInstructionInterpreter::eval(
 		logTrace(_instruction, arg);
 		throw ExplicitlyTerminated();
 	case Instruction::LOCK:
+	case Instruction::UNLOCK:
 		logTrace(_instruction, arg);
 		throw ExplicitlyTerminated();
 	case Instruction::POP:

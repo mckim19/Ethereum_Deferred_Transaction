@@ -714,6 +714,10 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 			arguments.front()->accept(*this);
 			m_context << Instruction::LOCK;
 			break;
+		case FunctionType::Kind::Unlock:
+			arguments.front()->accept(*this);
+			m_context << Instruction::UNLOCK;
+			break;
 		case FunctionType::Kind::Revert:
 		{
 			if (!arguments.empty())

@@ -9,7 +9,7 @@
 #define ETH_BUILD_OS "Linux"
 #define ETH_BUILD_COMPILER "g++"
 #define ETH_BUILD_PLATFORM "Linux.g++"
-#define SOL_VERSION_PRERELEASE "develop.2019.7.25"
+#define SOL_VERSION_PRERELEASE "develop.2019.7.26"
 #define SOL_VERSION_BUILDINFO "commit.bdeb9e52.Linux.g++"
 #define SOL_VERSION_COMMIT "commit.bdeb9e52"
 #define SOL_VERSION_PLATFORM ""
