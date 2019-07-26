@@ -883,6 +883,16 @@ func opSuicide(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memo
 	interpreter.evm.StateDB.Suicide(contract.Address())
 	return nil, nil
 }
+func opLock(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
+	//loc := stack.peek()
+	//interpreter.evm.StateDB.Lock(contract.Address(), common.BigToHash(loc))
+	return nil, nil
+}
+func opUnlock(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
+	//loc := stack.peek()
+	//interpreter.evm.StateDB.Unlock(contract.Address(), common.BigToHash(loc))
+	return nil, nil
+}
 
 // following functions are used by the instruction jump  table
 

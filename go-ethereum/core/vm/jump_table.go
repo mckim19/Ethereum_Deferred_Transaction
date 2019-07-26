@@ -1104,5 +1104,23 @@ func newFrontierInstructionSet() [256]operation {
 			valid:      true,
 			writes:     true,
 		},
+		LOCK: {
+			execute:	opLock,
+			//dynamicGas:	gasLock
+			constantGas:GasFastestStep,
+			minStack:	minStack(1, 0),
+			maxStack:	maxStack(1, 0),
+			valid:		true,
+			writes:		true,
+		},
+		UNLOCK: {
+			execute:	opUnlock,
+			constantGas:GasFastestStep,
+			//dynamicGas:	gasUnlock,
+			minStack:	minStack(1, 0),
+			maxStack:	maxStack(1, 0),
+			valid:		true,
+			writes:		true,
+		},
 	}
 }
