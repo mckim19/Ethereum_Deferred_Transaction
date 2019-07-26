@@ -1,0 +1,277 @@
+ls
+eth.accounts
+eth.getBalance(eth.accounts)
+eth.getBalance(eth.account[0])
+eth.getBalance(eth.accounts[0])
+eth.getBalance(eth.accounts[1])
+eth.getBalance(eth.accounts[2])
+eth.getBalance(eth.accounts[3])
+eth.getBalance(eth.accounts[4])
+ls
+eth.blockNumber
+miner.start()
+miner.stop()
+miner.start(1)
+miner.stop()
+eth.mining
+ls
+eth.blockNumber
+eth.getBlockNumber(1)
+eth.getBlockNumber(2)
+eth.getBlockNumber("1")
+eth.getBlock(1))
+eth.getBlock(1)
+miner.start
+eth.mining
+miner.start()
+eth.
+eth.mining
+ls
+dir
+miner.start(1)
+miner.stop()
+miner.start()
+miner.stop()
+miner.start(1)
+miner.stop()
+clear
+miner.start(1)
+miner.stop()
+miner.start(1)
+miner.stop
+miner.stop()
+miner.start(1)
+miner.stop()
+miner.start(1)
+miner.stop()
+miner.start(1)
+miner.stop()
+miner.start(1)
+miner.stop()
+miner.start(1)
+miner.stop()
+miner.start(1)
+miner.stop()
+exi
+wex
+miner.start(1)
+miner.stop()
+miner.start(1)
+miner.stop()
+miner.start(1)
+miner.stop()
+miner.start(1)
+miner.stop()
+bytecode=[{"constant":false,"inputs":[],"name":"add","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"read","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]
+abi=[{"constant":false,"inputs":[],"name":"add","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"read","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]
+bytecode=6080604052348015600f57600080fd5b506000808190555060d1806100256000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80634f2be91f14603757806357de26a414603f575b600080fd5b603d605b565b005b6045606d565b6040518082815260200191505060405180910390f35b60016000808282540192505081905550565b6000805490509056fea265627a7a72315820c3e43b1ae3b563bccad935f0759b099c7d9fabaedf820f408c9aa0137ba6135a64736f6c637828302e352e31312d646576656c6f702e323031392e372e32362b636f6d6d69742e62646562396535320058
+btyecode
+bytecode
+bytecode=6080604052348015600f57600080fd5b506000808190555060d1806100256000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80634f2be91f14603757806357de26a414603f575b600080fd5b603d605b565b005b6045606d565b6040518082815260200191505060405180910390f35b60016000808282540192505081905550565b6000805490509056fea265627a7a72315820c3e43b1ae3b563bccad935f0759b099c7d9fabaedf820f408c9aa0137ba6135a64736f6c637828302e352e31312d646576656c6f702e323031392e372e32362b636f6d6d69742e62646562396535320058
+bytecode='6080604052348015600f57600080fd5b506000808190555060d1806100256000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80634f2be91f14603757806357de26a414603f575b600080fd5b603d605b565b005b6045606d565b6040518082815260200191505060405180910390f35b60016000808282540192505081905550565b6000805490509056fea265627a7a72315820c3e43b1ae3b563bccad935f0759b099c7d9fabaedf820f408c9aa0137ba6135a64736f6c637828302e352e31312d646576656c6f702e323031392e372e32362b636f6d6d69742e62646562396535320058'
+deploy={from:eth.coinbase,data:bytecode, gass:2000000}
+contract_instance=contract.new("DISQUALIFIED",deploy)
+contract=eth.contract(abi)
+contract_instance=contract.new("DISQUALIFIED",deploy)
+contract_context=eth.contract(abi)
+contract_deploy=contract_context.new({from:eth.coinbase,data: bytecode,gas:'4700000'})
+bytecode='0x6080604052348015600f57600080fd5b506000808190555060d1806100256000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80634f2be91f14603757806357de26a414603f575b600080fd5b603d605b565b005b6045606d565b6040518082815260200191505060405180910390f35b60016000808282540192505081905550565b6000805490509056fea265627a7a72315820c3e43b1ae3b563bccad935f0759b099c7d9fabaedf820f408c9aa0137ba6135a64736f6c637828302e352e31312d646576656c6f702e323031392e372e32362b636f6d6d69742e62646562396535320058'
+contract_deploy=contract_context.new({from:eth.coinbase,data: bytecode,gas:'4700000'})
+eth.pendingTransactions
+miner.start(1)
+eth.pendingTransactions
+miner.stop()
+ls
+contract_deploy
+contract_deploy.read
+contract_deploy.read()
+contract_deploy.add()
+contract_deploy.add.sendTransaction({from: eth.coinbase,gas: 1000000})
+miner.start(1)
+miner.stop()
+eth.pendingTransactions
+contract_deploy.read()
+bytecode=0x608060405234801561001057600080fd5b506000808190555060d7806100266000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80634f2be91f14603757806357de26a414603f575b600080fd5b603d605b565b005b60456073565b6040518082815260200191505060405180910390f35b6000c1600160008082825401925050819055506000c2565b6000805490509056fea265627a7a7231582034889d542bd0d06df4e3d1a8f7256554aa6834e642df56cab50e12082071f0b864736f6c637828302e352e31312d646576656c6f702e323031392e372e32362b636f6d6d69742e62646562396535320058
+bytecode='0x608060405234801561001057600080fd5b506000808190555060d7806100266000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80634f2be91f14603757806357de26a414603f575b600080fd5b603d605b565b005b60456073565b6040518082815260200191505060405180910390f35b6000c1600160008082825401925050819055506000c2565b6000805490509056fea265627a7a7231582034889d542bd0d06df4e3d1a8f7256554aa6834e642df56cab50e12082071f0b864736f6c637828302e352e31312d646576656c6f702e323031392e372e32362b636f6d6d69742e62646562396535320058'
+abi=[{"constant":false,"inputs":[],"name":"add","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"read","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]
+contract_context=eth.contract(abi)
+contract_deploy=contract_context.new({from:eth.coinbase,data: bytecode,gas:'4700000'})
+eth.pendingTransactions
+eth.miner.start(1)
+miner.start(1)
+miner.stop()
+contract_deploy.read()
+contract_deploy.add.sendTransaction({from: eth.coinbase,gas: 1000000})
+contract_deploy.read()
+contract_deploy.add.sendTransaction({from: eth.coinbase,gas: 1000000})
+miner.start(1)
+miner.stop()
+contract_deploy.read()
+contract_deploy.add.sendTransaction({from: eth.coinbase,gas: 1000000})
+abi=[{"constant":false,"inputs":[],"name":"add","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"read","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]
+bytecode='0x608060405234801561001057600080fd5b506000808190555060d7806100266000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80634f2be91f14603757806357de26a414603f575b600080fd5b603d605b565b005b60456073565b6040518082815260200191505060405180910390f35b6000c1600160008082825401925050819055506000c2565b6000805490509056fea265627a7a7231582034889d542bd0d06df4e3d1a8f7256554aa6834e642df56cab50e12082071f0b864736f6c637828302e352e31312d646576656c6f702e323031392e372e32362b636f6d6d69742e62646562396535320058'
+contract_context=eth.contract(abi)
+contract_deploy=contract_context.new({from:eth.coinbase,data: bytecode,gas:'4700000'})
+miner.start(1)
+miner.stop()
+contract_deploy.read()
+contract_deploy.add.sendTransaction({from: eth.coinbase,gas: 1000000})
+miner.start(1)
+miner.stop()
+bytecode ='0x608060405234801561001057600080fd5b506000808190555060d7806100266000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80634f2be91f14603757806357de26a414603f575b600080fd5b603d605b565b005b60456073565b6040518082815260200191505060405180910390f35b6000c1600160008082825401925050819055506000c2565b6000805490509056fea265627a7a7231582034889d542bd0d06df4e3d1a8f7256554aa6834e642df56cab50e12082071f0b864736f6c637828302e352e31312d646576656c6f702e323031392e372e32362b636f6d6d69742e62646562396535320058'
+abi= [{"constant":false,"inputs":[],"name":"add","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"read","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]
+contract_context=eth.contract(abi)
+contract_deploy=contract_context.new({from:eth.coinbase,data: bytecode,gas:'4700000'})
+miner.start(1)
+miner.stop()
+miner.start(1)
+miner.stop()
+contract_deploy.add.sendTransaction({from: eth.coinbase,gas: 1000000})
+bytecode ='0x608060405234801561001057600080fd5b506000808190555060d7806100266000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80634f2be91f14603757806357de26a414603f575b600080fd5b603d605b565b005b60456073565b6040518082815260200191505060405180910390f35b6000c1600160008082825401925050819055506000c2565b6000805490509056fea265627a7a7231582034889d542bd0d06df4e3d1a8f7256554aa6834e642df56cab50e12082071f0b864736f6c637828302e352e31312d646576656c6f702e323031392e372e32362b636f6d6d69742e62646562396535320058'
+abi= [{"constant":false,"inputs":[],"name":"add","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"read","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]
+contract_context=eth.contract(abi)
+contract_deploy=contract_context.new({from:eth.coinbase,data: bytecode,gas:'4700000'})
+miner.start(1)
+bytecode ='0x608060405234801561001057600080fd5b506000808190555060d7806100266000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80634f2be91f14603757806357de26a414603f575b600080fd5b603d605b565b005b60456073565b6040518082815260200191505060405180910390f35b6000c1600160008082825401925050819055506000c2565b6000805490509056fea265627a7a7231582034889d542bd0d06df4e3d1a8f7256554aa6834e642df56cab50e12082071f0b864736f6c637828302e352e31312d646576656c6f702e323031392e372e32362b636f6d6d69742e62646562396535320058'
+abi= [{"constant":false,"inputs":[],"name":"add","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"read","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]
+contract_context=eth.contract(abi)
+contract_deploy=contract_context.new({from:eth.coinbase,data: bytecode,gas:'4700000'})
+miner.start(1)
+miner.stop()
+bytecode ='0x608060405234801561001057600080fd5b506000808190555060d7806100266000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80634f2be91f14603757806357de26a414603f575b600080fd5b603d605b565b005b60456073565b6040518082815260200191505060405180910390f35b6000c1600160008082825401925050819055506000c2565b6000805490509056fea265627a7a7231582034889d542bd0d06df4e3d1a8f7256554aa6834e642df56cab50e12082071f0b864736f6c637828302e352e31312d646576656c6f702e323031392e372e32362b636f6d6d69742e62646562396535320058'
+abi= [{"constant":false,"inputs":[],"name":"add","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"read","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]
+contract_context=eth.contract(abi)
+contract_deploy=contract_context.new({from:eth.coinbase,data: bytecode,gas:'4700000'})
+miner.start(1)
+miner.stop()
+Successfully sealed new block            number=117 sealhash=ef83d5…763acd hash=e4ab63…676738 elapsed=11.060s
+bytecode ='0x608060405234801561001057600080fd5b506000808190555060d7806100266000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80634f2be91f14603757806357de26a414603f575b600080fd5b603d605b565b005b60456073565b6040518082815260200191505060405180910390f35b6000c1600160008082825401925050819055506000c2565b6000805490509056fea265627a7a7231582034889d542bd0d06df4e3d1a8f7256554aa6834e642df56cab50e12082071f0b864736f6c637828302e352e31312d646576656c6f702e323031392e372e32362b636f6d6d69742e62646562396535320058'
+abi= [{"constant":false,"inputs":[],"name":"add","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"read","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]
+contract_context=eth.contract(abi)
+contract_deploy=contract_context.new({from:eth.coinbase,data: bytecode,gas:'4700000'})
+miner.start(1)
+miner.stopt(1)
+miner.stop()
+>
+contract_deploy.add.sendTransaction({from: eth.coinbase,gas: 1000000})
+contract_deploy.read()
+miner.start(1)
+miner.stop()
+contract_deploy.add.sendTransaction({from: eth.coinbase,gas: 1000000})
+miner.start(1)
+miner.stop()
+bytecode ='0x608060405234801561001057600080fd5b506000808190555060d7806100266000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80634f2be91f14603757806357de26a414603f575b600080fd5b603d605b565b005b60456073565b6040518082815260200191505060405180910390f35b6000c1600160008082825401925050819055506000c2565b6000805490509056fea265627a7a7231582034889d542bd0d06df4e3d1a8f7256554aa6834e642df56cab50e12082071f0b864736f6c637828302e352e31312d646576656c6f702e323031392e372e32362b636f6d6d69742e62646562396535320058'
+abi= [{"constant":false,"inputs":[],"name":"add","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"read","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]
+contract_context=eth.contract(abi)
+contract_deploy=contract_context.new({from:eth.coinbase,data: bytecode,gas:'4700000'})
+eth.pendingTransactions
+miner.start(1)
+miner.stop()
+miner.start(1)
+miner.stop()
+eth.pendingTransactions
+clear
+bytecode ='0x608060405234801561001057600080fd5b506000808190555060d7806100266000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80634f2be91f14603757806357de26a414603f575b600080fd5b603d605b565b005b60456073565b6040518082815260200191505060405180910390f35b6000c1600160008082825401925050819055506000c2565b6000805490509056fea265627a7a7231582034889d542bd0d06df4e3d1a8f7256554aa6834e642df56cab50e12082071f0b864736f6c637828302e352e31312d646576656c6f702e323031392e372e32362b636f6d6d69742e62646562396535320058'
+abi= [{"constant":false,"inputs":[],"name":"add","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"read","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]
+contract_context=eth.contract(abi)
+contract_deploy=contract_context.new({from:eth.coinbase,data: bytecode,gas:'4700000'})
+miner.start(1)
+miner.stop()
+contract_deploy.add.sendTransaction({from: eth.coinbase,gas: 1000000})
+miner.start(1)
+miner.stop()
+bytecode ='0x608060405234801561001057600080fd5b506000808190555060d7806100266000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80634f2be91f14603757806357de26a414603f575b600080fd5b603d605b565b005b60456073565b6040518082815260200191505060405180910390f35b6000c1600160008082825401925050819055506000c2565b6000805490509056fea265627a7a7231582034889d542bd0d06df4e3d1a8f7256554aa6834e642df56cab50e12082071f0b864736f6c637828302e352e31312d646576656c6f702e323031392e372e32362b636f6d6d69742e62646562396535320058'
+abi= [{"constant":false,"inputs":[],"name":"add","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"read","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]
+contract_context=eth.contract(abi)
+contract_deploy=contract_context.new({from:eth.coinbase,data: bytecode,gas:'4700000'})
+miner.start(1)
+miner.stop()
+contract_deploy.add.sendTransaction({from: eth.coinbase,gas: 1000000})
+mimer.start(1)
+miner.start(1)
+miner.stop()
+bytecode ='0x608060405234801561001057600080fd5b506000808190555060d7806100266000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80634f2be91f14603757806357de26a414603f575b600080fd5b603d605b565b005b60456073565b6040518082815260200191505060405180910390f35b6000c1600160008082825401925050819055506000c2565b6000805490509056fea265627a7a7231582034889d542bd0d06df4e3d1a8f7256554aa6834e642df56cab50e12082071f0b864736f6c637828302e352e31312d646576656c6f702e323031392e372e32362b636f6d6d69742e62646562396535320058'
+abi= [{"constant":false,"inputs":[],"name":"add","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"read","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]
+contract_context=eth.contract(abi)
+contract_deploy=contract_context.new({from:eth.coinbase,data: bytecode,gas:'4700000'})
+mine.start(1)
+miner.start(1)
+miner.stop()
+contract_deploy.add.sendTransaction({from: eth.coinbase,gas: 1000000})
+bytecode ='0x608060405234801561001057600080fd5b506000808190555060d7806100266000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80634f2be91f14603757806357de26a414603f575b600080fd5b603d605b565b005b60456073565b6040518082815260200191505060405180910390f35b6000c1600160008082825401925050819055506000c2565b6000805490509056fea265627a7a7231582034889d542bd0d06df4e3d1a8f7256554aa6834e642df56cab50e12082071f0b864736f6c637828302e352e31312d646576656c6f702e323031392e372e32362b636f6d6d69742e62646562396535320058'
+abi= [{"constant":false,"inputs":[],"name":"add","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"read","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]
+contract_context=eth.contract(abi)
+contract_deploy=contract_context.new({from:eth.coinbase,data: bytecode,gas:'4700000'})
+miner.start(1)
+miner.stop()
+contract_deploy.add.sendTransaction({from: eth.coinbase,gas: 1000000})
+bytecode ='0x608060405234801561001057600080fd5b506000808190555060d7806100266000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80634f2be91f14603757806357de26a414603f575b600080fd5b603d605b565b005b60456073565b6040518082815260200191505060405180910390f35b6000c1600160008082825401925050819055506000c2565b6000805490509056fea265627a7a7231582034889d542bd0d06df4e3d1a8f7256554aa6834e642df56cab50e12082071f0b864736f6c637828302e352e31312d646576656c6f702e323031392e372e32362b636f6d6d69742e62646562396535320058'
+abi= [{"constant":false,"inputs":[],"name":"add","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"read","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]
+contract_context=eth.contract(abi)
+contract_deploy=contract_context.new({from:eth.coinbase,data: bytecode,gas:'4700000'})
+miner.start(1)
+miner.stop()
+eth.pendingTransactions
+contract_deploy.add.sendTransaction({from: eth.coinbase,gas: 1000000})
+miner.start(1)
+miner.stop()
+bytecode ='0x608060405234801561001057600080fd5b506000808190555060d7806100266000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80634f2be91f14603757806357de26a414603f575b600080fd5b603d605b565b005b60456073565b6040518082815260200191505060405180910390f35b6000c1600160008082825401925050819055506000c2565b6000805490509056fea265627a7a7231582034889d542bd0d06df4e3d1a8f7256554aa6834e642df56cab50e12082071f0b864736f6c637828302e352e31312d646576656c6f702e323031392e372e32362b636f6d6d69742e62646562396535320058'
+abi= [{"constant":false,"inputs":[],"name":"add","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"read","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]
+contract_context=eth.contract(abi)
+contract_deploy=contract_context.new({from:eth.coinbase,data: bytecode,gas:'4700000'})
+miner.start(1)
+miner.stop()
+contract_deploy.add.sendTransaction({from: eth.coinbase,gas: 1000000})
+miner.start(1)
+miner.stop()
+eth.pendingTransactions
+contract_deploy.read()
+contract_deploy.add.sendTransaction({from: eth.coinbase,gas: 1000000})
+miner.start(1)
+miner.stop()
+eth.pendingTransactions
+contract_deploy.read()
+bytecode ='0x608060405234801561001057600080fd5b506000808190555060d7806100266000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80634f2be91f14603757806357de26a414603f575b600080fd5b603d605b565b005b60456073565b6040518082815260200191505060405180910390f35b6000c1600160008082825401925050819055506000c2565b6000805490509056fea265627a7a7231582034889d542bd0d06df4e3d1a8f7256554aa6834e642df56cab50e12082071f0b864736f6c637828302e352e31312d646576656c6f702e323031392e372e32362b636f6d6d69742e62646562396535320058'
+abi= [{"constant":false,"inputs":[],"name":"add","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"read","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]
+contract_context=eth.contract(abi)
+contract_deploy=contract_context.new({from:eth.coinbase,data: bytecode,gas:'4700000'})
+miner.start(1)
+mienr.stop()
+miner.stop()
+contract_deploy.add.sendTransaction({from: eth.coinbase,gas: 1000000})
+miner.start(1)
+miner.stop()
+eth.pendingTransactions
+contract_deploy.read()
+eth.pendingTransactions
+contract_deploy.add.sendTransaction({from: eth.coinbase,gas: 1000000})
+eth.pendingTransactions
+miner.start(1)
+miner.stop()
+contract_deploy.read()
+bytecode ='0x608060405234801561001057600080fd5b506000808190555060d7806100266000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80634f2be91f14603757806357de26a414603f575b600080fd5b603d605b565b005b60456073565b6040518082815260200191505060405180910390f35b6000c1600160008082825401925050819055506000c2565b6000805490509056fea265627a7a7231582034889d542bd0d06df4e3d1a8f7256554aa6834e642df56cab50e12082071f0b864736f6c637828302e352e31312d646576656c6f702e323031392e372e32362b636f6d6d69742e62646562396535320058'
+abi= [{"constant":false,"inputs":[],"name":"add","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"read","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]
+contract_context=eth.contract(abi)
+contract_deploy=contract_context.new({from:eth.coinbase,data: bytecode,gas:'4700000'})
+miner.start(1)
+miner.stop()
+contract_deploy.add.sendTransaction({from: eth.coinbase,gas: 1000000})
+contract_deploy.read()
+eth.pendingTransactions
+miner.start(1)
+miner.stop
+miner.stop()
+contract_deploy.read()
+bytecode ='0x608060405234801561001057600080fd5b506000808190555060d7806100266000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80634f2be91f14603757806357de26a414603f575b600080fd5b603d605b565b005b60456073565b6040518082815260200191505060405180910390f35b6000c1600160008082825401925050819055506000c2565b6000805490509056fea265627a7a7231582034889d542bd0d06df4e3d1a8f7256554aa6834e642df56cab50e12082071f0b864736f6c637828302e352e31312d646576656c6f702e323031392e372e32362b636f6d6d69742e62646562396535320058'
+abi= [{"constant":false,"inputs":[],"name":"add","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"read","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]
+contract_context=eth.contract(abi)
+contract_deploy=contract_context.new({from:eth.coinbase,data: bytecode,gas:'4700000'})
+miner.start(1)
+miner.stop
+miner.stop()
+eth.pendingTransactions
+contract_deploy.read()
+contract_deploy.add.sendTransaction({from: eth.coinbase,gas: 1000000})
+miner.start(1)
+miner.stop()
+contract_deploy.read()

@@ -1,2 +1,0 @@
-/usr/bin/ar qc liblangutil.a  CMakeFiles/langutil.dir/CharStream.cpp.o CMakeFiles/langutil.dir/ErrorReporter.cpp.o CMakeFiles/langutil.dir/EVMVersion.cpp.o CMakeFiles/langutil.dir/Exceptions.cpp.o CMakeFiles/langutil.dir/ParserBase.cpp.o CMakeFiles/langutil.dir/Scanner.cpp.o CMakeFiles/langutil.dir/SemVerHandler.cpp.o CMakeFiles/langutil.dir/SourceReferenceExtractor.cpp.o CMakeFiles/langutil.dir/SourceReferenceFormatter.cpp.o CMakeFiles/langutil.dir/SourceReferenceFormatterHuman.cpp.o CMakeFiles/langutil.dir/Token.cpp.o
-/usr/bin/ranlib liblangutil.a

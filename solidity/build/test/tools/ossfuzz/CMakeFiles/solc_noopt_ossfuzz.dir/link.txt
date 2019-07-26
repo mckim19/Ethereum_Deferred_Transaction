@@ -1,2 +1,0 @@
-/usr/bin/ar qc libsolc_noopt_ossfuzz.a  CMakeFiles/solc_noopt_ossfuzz.dir/solc_noopt_ossfuzz.cpp.o CMakeFiles/solc_noopt_ossfuzz.dir/__/fuzzer_common.cpp.o
-/usr/bin/ranlib libsolc_noopt_ossfuzz.a

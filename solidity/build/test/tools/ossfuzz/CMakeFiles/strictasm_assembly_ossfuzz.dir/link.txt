@@ -1,2 +1,0 @@
-/usr/bin/ar qc libstrictasm_assembly_ossfuzz.a  CMakeFiles/strictasm_assembly_ossfuzz.dir/strictasm_assembly_ossfuzz.cpp.o
-/usr/bin/ranlib libstrictasm_assembly_ossfuzz.a

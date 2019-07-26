@@ -205,9 +205,9 @@ const (
 
 // lock, unlock
 const (
-	LOCK OpCode = 0xc0 + iota
+	LOCK OpCode = 0xc1 + iota
 	UNLOCK
-
+      )
 // 0xf0 range - closures.
 const (
 	CREATE OpCode = 0xf0 + iota

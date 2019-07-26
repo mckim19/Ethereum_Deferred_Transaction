@@ -1,2 +1,0 @@
-/usr/bin/ar qc libconst_opt_ossfuzz.a  CMakeFiles/const_opt_ossfuzz.dir/const_opt_ossfuzz.cpp.o CMakeFiles/const_opt_ossfuzz.dir/__/fuzzer_common.cpp.o
-/usr/bin/ranlib libconst_opt_ossfuzz.a
