@@ -1111,7 +1111,6 @@ func newFrontierInstructionSet() [256]operation {
 			minStack:	minStack(1, 0),
 			maxStack:	maxStack(1, 0),
 			valid:		true,
-			writes:		true,
 		},
 		UNLOCK: {
 			execute:	opUnlock,
@@ -1120,7 +1119,6 @@ func newFrontierInstructionSet() [256]operation {
 			minStack:	minStack(1, 0),
 			maxStack:	maxStack(1, 0),
 			valid:		true,
-			writes:		true,
 		},
 	}
 }
