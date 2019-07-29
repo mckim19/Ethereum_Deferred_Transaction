@@ -545,6 +545,7 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 			// Only delegatecall and internal functions can be bound, this might be lifted later.
 			solAssert(function.kind() == FunctionType::Kind::DelegateCall || function.kind() == FunctionType::Kind::Internal, "");
 		switch (function.kind())
+
 		{
 		case FunctionType::Kind::Internal:
 		{
@@ -712,10 +713,12 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 			break;
 		case FunctionType::Kind::Lock:
 			arguments.front()->accept(*this);
+			utils().convertType(*arguments.front()->annotation().type, *function.parameterTypes().front(), false);
 			m_context << Instruction::LOCK;
 			break;
 		case FunctionType::Kind::Unlock:
 			arguments.front()->accept(*this);
+			utils().convertType(*arguments.front()->annotation().type, *function.parameterTypes().front(), false);
 			m_context << Instruction::UNLOCK;
 			break;
 		case FunctionType::Kind::Revert:
