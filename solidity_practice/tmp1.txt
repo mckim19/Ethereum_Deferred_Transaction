@@ -1,0 +1,714 @@
+	[Scanner::next]scanToken Result
+	m_currentToken:	--, m_currentLiteral: 
+	m_nextToken:	pragma, m_nextLiteral: pragma
+	[Scanner::next]scanToken Result
+	m_currentToken:	pragma, m_currentLiteral: pragma
+	m_nextToken:	Identifier, m_nextLiteral: solidity
+[cli::processInput]m_compiler->compile()
+[CompilerStack::compile]compile()
+-------------[CompilerStack::parse]parse()------------
+	[Scanner::next]scanToken Result
+	m_currentToken:	Identifier, m_currentLiteral: solidity
+	m_nextToken:	pragma, m_nextLiteral: pragma
+	[Scanner::next]scanToken Result
+	m_currentToken:	pragma, m_currentLiteral: pragma
+	m_nextToken:	Identifier, m_nextLiteral: solidity
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	Identifier, m_currentLiteral: solidity
+	m_nextToken:	^, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	^, m_currentLiteral: 
+	m_nextToken:	Number, m_nextLiteral: 0.5
+	[Scanner::next]scanToken Result
+	m_currentToken:	Number, m_currentLiteral: 0.5
+	m_nextToken:	Number, m_nextLiteral: .2
+	[Scanner::next]scanToken Result
+	m_currentToken:	Number, m_currentLiteral: .2
+	m_nextToken:	;, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	;, m_currentLiteral: 
+	m_nextToken:	contract, m_nextLiteral: contract
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	contract, m_currentLiteral: contract
+	m_nextToken:	Identifier, m_nextLiteral: example
+	[Scanner::next]scanToken Result
+	m_currentToken:	Identifier, m_currentLiteral: example
+	m_nextToken:	{, m_nextLiteral: 
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	{, m_currentLiteral: 
+	m_nextToken:	uintM, m_nextLiteral: uint64
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	uintM, m_currentLiteral: uint64
+	m_nextToken:	Identifier, m_nextLiteral: num
+	[Scanner::next]scanToken Result
+	m_currentToken:	Identifier, m_currentLiteral: num
+	m_nextToken:	;, m_nextLiteral: 
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	;, m_currentLiteral: 
+	m_nextToken:	function, m_nextLiteral: function
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	function, m_currentLiteral: function
+	m_nextToken:	Identifier, m_nextLiteral: vote
+	[Scanner::next]scanToken Result
+	m_currentToken:	Identifier, m_currentLiteral: vote
+	m_nextToken:	(, m_nextLiteral: 
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	(, m_currentLiteral: 
+	m_nextToken:	uint, m_nextLiteral: uint
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	uint, m_currentLiteral: uint
+	m_nextToken:	Identifier, m_nextLiteral: candidate_num
+	[Scanner::next]scanToken Result
+	m_currentToken:	Identifier, m_currentLiteral: candidate_num
+	m_nextToken:	), m_nextLiteral: 
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	), m_currentLiteral: 
+	m_nextToken:	public, m_nextLiteral: public
+	[Scanner::next]scanToken Result
+	m_currentToken:	public, m_currentLiteral: public
+	m_nextToken:	{, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	{, m_currentLiteral: 
+	m_nextToken:	Identifier, m_nextLiteral: require
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	Identifier, m_currentLiteral: require
+	m_nextToken:	(, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	(, m_currentLiteral: 
+	m_nextToken:	Identifier, m_nextLiteral: candidate_num
+	[Scanner::next]scanToken Result
+	m_currentToken:	Identifier, m_currentLiteral: candidate_num
+	m_nextToken:	>, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	>, m_currentLiteral: 
+	m_nextToken:	Number, m_nextLiteral: 3
+	[Scanner::next]scanToken Result
+	m_currentToken:	Number, m_currentLiteral: 3
+	m_nextToken:	), m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	), m_currentLiteral: 
+	m_nextToken:	;, m_nextLiteral: 
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	;, m_currentLiteral: 
+	m_nextToken:	Identifier, m_nextLiteral: num
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	Identifier, m_currentLiteral: num
+	m_nextToken:	++, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	++, m_currentLiteral: 
+	m_nextToken:	;, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	;, m_currentLiteral: 
+	m_nextToken:	Identifier, m_nextLiteral: lock
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	Identifier, m_currentLiteral: lock
+	m_nextToken:	(, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	(, m_currentLiteral: 
+	m_nextToken:	Identifier, m_nextLiteral: num
+	[Scanner::next]scanToken Result
+	m_currentToken:	Identifier, m_currentLiteral: num
+	m_nextToken:	), m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	), m_currentLiteral: 
+	m_nextToken:	;, m_nextLiteral: 
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	;, m_currentLiteral: 
+	m_nextToken:	Identifier, m_nextLiteral: unlock
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	Identifier, m_currentLiteral: unlock
+	m_nextToken:	(, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	(, m_currentLiteral: 
+	m_nextToken:	Identifier, m_nextLiteral: num
+	[Scanner::next]scanToken Result
+	m_currentToken:	Identifier, m_currentLiteral: num
+	m_nextToken:	), m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	), m_currentLiteral: 
+	m_nextToken:	;, m_nextLiteral: 
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	;, m_currentLiteral: 
+	m_nextToken:	}, m_nextLiteral: 
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	}, m_currentLiteral: 
+	m_nextToken:	}, m_nextLiteral: 
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	}, m_currentLiteral: 
+	m_nextToken:	EOS, m_nextLiteral: 
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	EOS, m_currentLiteral: 
+	m_nextToken:	EOS, m_nextLiteral: 
+------------[CompilerStack::analyze()]-------------
+[SyntaxChecker::checkSyntax]
+		SourceUnit&ASTConstVisitor accept
+		PragmaDirective&ASTConstVisitor accept
+		ContractDefinition&ASTConstVisitor accept
+		VariableDeclaration&ASTConstVisitor accept
+		ElementaryTypeName&ASTConstVisitor accept
+		FunctionDefinition&ASTConstVisitor accept
+		ParameterList&ASTConstVisitor accept
+		VariableDeclaration&ASTConstVisitor accept
+		ElementaryTypeName&ASTConstVisitor accept
+		ParameterList&ASTConstVisitor accept
+		Block&ASTConstVisitor accept
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is require
+		BinaryOperation&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is candidate_num
+		Literal&ASTConstVisitor accept
+		ExpressionStatement&ASTConstVisitor accept
+		UnaryOperation&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is num
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is lock
+		Identifier&ASTConstVisitor accept
+			name is num
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is unlock
+		Identifier&ASTConstVisitor accept
+			name is num
+[DocStringAnalyser::analyseDocStrings]
+		SourceUnit&ASTConstVisitor accept
+		PragmaDirective&ASTConstVisitor accept
+		ContractDefinition&ASTConstVisitor accept
+		VariableDeclaration&ASTConstVisitor accept
+		ElementaryTypeName&ASTConstVisitor accept
+		FunctionDefinition&ASTConstVisitor accept
+		ParameterList&ASTConstVisitor accept
+		VariableDeclaration&ASTConstVisitor accept
+		ElementaryTypeName&ASTConstVisitor accept
+		ParameterList&ASTConstVisitor accept
+		Block&ASTConstVisitor accept
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is require
+		BinaryOperation&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is candidate_num
+		Literal&ASTConstVisitor accept
+		ExpressionStatement&ASTConstVisitor accept
+		UnaryOperation&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is num
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is lock
+		Identifier&ASTConstVisitor accept
+			name is num
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is unlock
+		Identifier&ASTConstVisitor accept
+			name is num
+		SourceUnit&ASTVisitor accept
+		PragmaDirective&ASTVisitor accept
+		ContractDefinition&ASTVisitor accept
+		VariableDeclaration&ASTVisitor accept
+		ElementaryTypeName&ASTVisitor accept
+		FunctionDefinition&ASTVisitor accept
+		ParameterList&ASTVisitor accept
+		VariableDeclaration&ASTVisitor accept
+		ElementaryTypeName&ASTVisitor accept
+		ParameterList&ASTVisitor accept
+		Block&ASTVisitor accept
+		ExpressionStatement&ASTVisitor accept
+		FunctionCall&ASTVisitor accept
+		Identifier&ASTVisitor accept
+		BinaryOperation&ASTVisitor accept
+		Identifier&ASTVisitor accept
+		Literal&ASTVisitor accept
+		ExpressionStatement&ASTVisitor accept
+		UnaryOperation&ASTVisitor accept
+		Identifier&ASTVisitor accept
+		ExpressionStatement&ASTVisitor accept
+		FunctionCall&ASTVisitor accept
+		Identifier&ASTVisitor accept
+		Identifier&ASTVisitor accept
+		ExpressionStatement&ASTVisitor accept
+		FunctionCall&ASTVisitor accept
+		Identifier&ASTVisitor accept
+		Identifier&ASTVisitor accept
+		VariableDeclaration&ASTConstVisitor accept
+		ElementaryTypeName&ASTConstVisitor accept
+		FunctionDefinition&ASTConstVisitor accept
+		ParameterList&ASTConstVisitor accept
+		VariableDeclaration&ASTConstVisitor accept
+		ElementaryTypeName&ASTConstVisitor accept
+		ParameterList&ASTConstVisitor accept
+		Block&ASTConstVisitor accept
+		VariableDeclaration&ASTConstVisitor accept
+		ElementaryTypeName&ASTConstVisitor accept
+		FunctionDefinition&ASTConstVisitor accept
+		ParameterList&ASTConstVisitor accept
+		VariableDeclaration&ASTConstVisitor accept
+		ElementaryTypeName&ASTConstVisitor accept
+		ParameterList&ASTConstVisitor accept
+		Block&ASTConstVisitor accept
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is require
+		BinaryOperation&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is candidate_num
+		Literal&ASTConstVisitor accept
+		ExpressionStatement&ASTConstVisitor accept
+		UnaryOperation&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is num
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is lock
+		Identifier&ASTConstVisitor accept
+			name is num
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is unlock
+		Identifier&ASTConstVisitor accept
+			name is num
+[TypeChecker::checkTypeRequirements]
+		ContractDefinition&ASTConstVisitor accept
+		VariableDeclaration&ASTConstVisitor accept
+		ElementaryTypeName&ASTConstVisitor accept
+		FunctionDefinition&ASTConstVisitor accept
+		VariableDeclaration&ASTConstVisitor accept
+		ElementaryTypeName&ASTConstVisitor accept
+		Block&ASTConstVisitor accept
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+		BinaryOperation&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is candidate_num
+		Literal&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is require
+		ExpressionStatement&ASTConstVisitor accept
+		UnaryOperation&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is num
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is num
+		Identifier&ASTConstVisitor accept
+			name is lock
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is num
+		Identifier&ASTConstVisitor accept
+			name is unlock
+		SourceUnit&ASTConstVisitor accept
+		PragmaDirective&ASTConstVisitor accept
+		ContractDefinition&ASTConstVisitor accept
+		VariableDeclaration&ASTConstVisitor accept
+		ElementaryTypeName&ASTConstVisitor accept
+		FunctionDefinition&ASTConstVisitor accept
+		ParameterList&ASTConstVisitor accept
+		VariableDeclaration&ASTConstVisitor accept
+		ElementaryTypeName&ASTConstVisitor accept
+		ParameterList&ASTConstVisitor accept
+		Block&ASTConstVisitor accept
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is require
+		BinaryOperation&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is candidate_num
+		Literal&ASTConstVisitor accept
+		ExpressionStatement&ASTConstVisitor accept
+		UnaryOperation&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is num
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is lock
+		Identifier&ASTConstVisitor accept
+			name is num
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is unlock
+		Identifier&ASTConstVisitor accept
+			name is num
+		SourceUnit&ASTConstVisitor accept
+		PragmaDirective&ASTConstVisitor accept
+		ContractDefinition&ASTConstVisitor accept
+		VariableDeclaration&ASTConstVisitor accept
+		ElementaryTypeName&ASTConstVisitor accept
+		FunctionDefinition&ASTConstVisitor accept
+		FunctionDefinition&ASTConstVisitor accept
+		VariableDeclaration&ASTConstVisitor accept
+		ElementaryTypeName&ASTConstVisitor accept
+		Block&ASTConstVisitor accept
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+ControlFlowBuilder::visit
+		Identifier&ASTConstVisitor accept
+			name is require
+		BinaryOperation&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is candidate_num
+		Literal&ASTConstVisitor accept
+		ExpressionStatement&ASTConstVisitor accept
+		UnaryOperation&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is num
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+ControlFlowBuilder::visit
+		Identifier&ASTConstVisitor accept
+			name is lock
+		Identifier&ASTConstVisitor accept
+			name is num
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+ControlFlowBuilder::visit
+		Identifier&ASTConstVisitor accept
+			name is unlock
+		Identifier&ASTConstVisitor accept
+			name is num
+		SourceUnit&ASTConstVisitor accept
+		PragmaDirective&ASTConstVisitor accept
+		ContractDefinition&ASTConstVisitor accept
+		VariableDeclaration&ASTConstVisitor accept
+		ElementaryTypeName&ASTConstVisitor accept
+		FunctionDefinition&ASTConstVisitor accept
+		SourceUnit&ASTConstVisitor accept
+		PragmaDirective&ASTConstVisitor accept
+		ContractDefinition&ASTConstVisitor accept
+		VariableDeclaration&ASTConstVisitor accept
+		ElementaryTypeName&ASTConstVisitor accept
+		FunctionDefinition&ASTConstVisitor accept
+		ParameterList&ASTConstVisitor accept
+		VariableDeclaration&ASTConstVisitor accept
+		ElementaryTypeName&ASTConstVisitor accept
+		ParameterList&ASTConstVisitor accept
+		Block&ASTConstVisitor accept
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is require
+		BinaryOperation&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is candidate_num
+		Literal&ASTConstVisitor accept
+		ExpressionStatement&ASTConstVisitor accept
+		UnaryOperation&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is num
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is lock
+		Identifier&ASTConstVisitor accept
+			name is num
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is unlock
+		Identifier&ASTConstVisitor accept
+			name is num
+		ContractDefinition&ASTConstVisitor accept
+		VariableDeclaration&ASTConstVisitor accept
+		ElementaryTypeName&ASTConstVisitor accept
+		FunctionDefinition&ASTConstVisitor accept
+		ParameterList&ASTConstVisitor accept
+		VariableDeclaration&ASTConstVisitor accept
+		ElementaryTypeName&ASTConstVisitor accept
+		ParameterList&ASTConstVisitor accept
+		Block&ASTConstVisitor accept
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is require
+		BinaryOperation&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is candidate_num
+		Literal&ASTConstVisitor accept
+		ExpressionStatement&ASTConstVisitor accept
+		UnaryOperation&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is num
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is lock
+		Identifier&ASTConstVisitor accept
+			name is num
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is unlock
+		Identifier&ASTConstVisitor accept
+			name is num
+	parseAndAnalyze succeed
+	[Scanner::next]scanToken Result
+	m_currentToken:	EOS, m_currentLiteral: 
+	m_nextToken:	{, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	{, m_currentLiteral: 
+	m_nextToken:	if, m_nextLiteral: if
+	[Scanner::next]scanToken Result
+	m_currentToken:	if, m_currentLiteral: if
+	m_nextToken:	{, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	{, m_currentLiteral: 
+	m_nextToken:	if, m_nextLiteral: if
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	if, m_currentLiteral: if
+	m_nextToken:	Identifier, m_nextLiteral: condition
+	[Scanner::next]scanToken Result
+	m_currentToken:	Identifier, m_currentLiteral: condition
+	m_nextToken:	{, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	{, m_currentLiteral: 
+	m_nextToken:	Identifier, m_nextLiteral: revert
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	Identifier, m_currentLiteral: revert
+	m_nextToken:	(, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	(, m_currentLiteral: 
+	m_nextToken:	Number, m_nextLiteral: 0
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	Number, m_currentLiteral: 0
+	m_nextToken:	,, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	,, m_currentLiteral: 
+	m_nextToken:	Number, m_nextLiteral: 0
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	Number, m_currentLiteral: 0
+	m_nextToken:	), m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	), m_currentLiteral: 
+	m_nextToken:	}, m_nextLiteral: 
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	}, m_currentLiteral: 
+	m_nextToken:	}, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	}, m_currentLiteral: 
+	m_nextToken:	EOS, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	EOS, m_currentLiteral: 
+	m_nextToken:	EOS, m_nextLiteral: 
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	EOS, m_currentLiteral: 
+	m_nextToken:	EOS, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	EOS, m_currentLiteral: 
+	m_nextToken:	EOS, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	EOS, m_currentLiteral: 
+	m_nextToken:	EOS, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	EOS, m_currentLiteral: 
+	m_nextToken:	{, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	{, m_currentLiteral: 
+	m_nextToken:	if, m_nextLiteral: if
+	[Scanner::next]scanToken Result
+	m_currentToken:	if, m_currentLiteral: if
+	m_nextToken:	{, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	{, m_currentLiteral: 
+	m_nextToken:	if, m_nextLiteral: if
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	if, m_currentLiteral: if
+	m_nextToken:	Identifier, m_nextLiteral: lt
+	[Scanner::next]scanToken Result
+	m_currentToken:	Identifier, m_currentLiteral: lt
+	m_nextToken:	(, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	(, m_currentLiteral: 
+	m_nextToken:	Identifier, m_nextLiteral: len
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	Identifier, m_currentLiteral: len
+	m_nextToken:	,, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	,, m_currentLiteral: 
+	m_nextToken:	Number, m_nextLiteral: 32
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	Number, m_currentLiteral: 32
+	m_nextToken:	), m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	), m_currentLiteral: 
+	m_nextToken:	{, m_nextLiteral: 
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	{, m_currentLiteral: 
+	m_nextToken:	Identifier, m_nextLiteral: revert
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	Identifier, m_currentLiteral: revert
+	m_nextToken:	(, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	(, m_currentLiteral: 
+	m_nextToken:	Number, m_nextLiteral: 0
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	Number, m_currentLiteral: 0
+	m_nextToken:	,, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	,, m_currentLiteral: 
+	m_nextToken:	Number, m_nextLiteral: 0
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	Number, m_currentLiteral: 0
+	m_nextToken:	), m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	), m_currentLiteral: 
+	m_nextToken:	}, m_nextLiteral: 
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	}, m_currentLiteral: 
+	m_nextToken:	}, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	}, m_currentLiteral: 
+	m_nextToken:	EOS, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	EOS, m_currentLiteral: 
+	m_nextToken:	EOS, m_nextLiteral: 
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	EOS, m_currentLiteral: 
+	m_nextToken:	EOS, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	EOS, m_currentLiteral: 
+	m_nextToken:	EOS, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	EOS, m_currentLiteral: 
+	m_nextToken:	EOS, m_nextLiteral: 
+		FunctionDefinition&ASTConstVisitor accept
+		Block&ASTConstVisitor accept
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+[ExpressionCompiler::visit]
+		BinaryOperation&ASTConstVisitor accept
+		Literal&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is candidate_num
+		ExpressionStatement&ASTConstVisitor accept
+		UnaryOperation&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is num
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+[ExpressionCompiler::visit]
+		Identifier&ASTConstVisitor accept
+			name is num
+		ExpressionStatement&ASTConstVisitor accept
+		FunctionCall&ASTConstVisitor accept
+[ExpressionCompiler::visit]
+		Identifier&ASTConstVisitor accept
+			name is num
+	[Scanner::next]scanToken Result
+	m_currentToken:	EOS, m_currentLiteral: 
+	m_nextToken:	{, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	{, m_currentLiteral: 
+	m_nextToken:	if, m_nextLiteral: if
+	[Scanner::next]scanToken Result
+	m_currentToken:	if, m_currentLiteral: if
+	m_nextToken:	{, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	{, m_currentLiteral: 
+	m_nextToken:	if, m_nextLiteral: if
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	if, m_currentLiteral: if
+	m_nextToken:	Identifier, m_nextLiteral: condition
+	[Scanner::next]scanToken Result
+	m_currentToken:	Identifier, m_currentLiteral: condition
+	m_nextToken:	{, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	{, m_currentLiteral: 
+	m_nextToken:	Identifier, m_nextLiteral: revert
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	Identifier, m_currentLiteral: revert
+	m_nextToken:	(, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	(, m_currentLiteral: 
+	m_nextToken:	Number, m_nextLiteral: 0
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	Number, m_currentLiteral: 0
+	m_nextToken:	,, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	,, m_currentLiteral: 
+	m_nextToken:	Number, m_nextLiteral: 0
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	Number, m_currentLiteral: 0
+	m_nextToken:	), m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	), m_currentLiteral: 
+	m_nextToken:	}, m_nextLiteral: 
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	}, m_currentLiteral: 
+	m_nextToken:	}, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	}, m_currentLiteral: 
+	m_nextToken:	EOS, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	EOS, m_currentLiteral: 
+	m_nextToken:	EOS, m_nextLiteral: 
+	[ParserBase::expectToken]
+	[Scanner::next]scanToken Result
+	m_currentToken:	EOS, m_currentLiteral: 
+	m_nextToken:	EOS, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	EOS, m_currentLiteral: 
+	m_nextToken:	EOS, m_nextLiteral: 
+	[Scanner::next]scanToken Result
+	m_currentToken:	EOS, m_currentLiteral: 
+	m_nextToken:	EOS, m_nextLiteral: 
+
+======= solidity_example1.sol:example =======
+Contract JSON ABI 
+[{"constant":false,"inputs":[{"name":"candidate_num","type":"uint256"}],"name":"vote","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]
