@@ -20,13 +20,19 @@ import (
 	"errors"
 	"math/big"
 
+	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/params"
 	"golang.org/x/crypto/sha3"
 )
-
+type Message struct {
+	Thread_num int64
+	LockName   int64
+	LockType  string
+	Channel chan Message 
+}
 var (
 	bigZero                  = new(big.Int)
 	tt255                    = math.BigPow(2, 255)
@@ -884,13 +890,35 @@ func opSuicide(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memo
 	return nil, nil
 }
 func opLock(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
-	//loc := stack.peek()
+	com_channel:=interpreter.evm.StateDB.GetChannel()
+	param:= stack.pop().Int64()
+	map_result:=interpreter.evm.StateDB.Do_mapping(contract.Address(),param)
+	msg:=Message{Thread_num:1,LockName:map_result, LockType:"LOCK", Channel: make(chan Message, 10)}
+        com_channel<- msg
+        fmt.Println("hhhhhhhhhhjjjjjjjjjjjjjjjjj-opLock: send request!! ")
+
+      //  fmt.Println("hhhhhhhhhhhhhhhhhhjjjjjjjjjj-opLock: AddCount", interpreter.evm.StateDB.AddCount())
+	//com_channel_respond:=interpreter.evm.StateDB.GetResChannel()
+	msg_res:=<-msg.Channel
+        fmt.Println("hhhhhhhhhhjjjjjjjjjjjjjjjjj -opLock : receive respond!!!!!", msg_res)
+
 	//interpreter.evm.StateDB.Lock(contract.Address(), common.BigToHash(loc))
 	return nil, nil
 }
 func opUnlock(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
-	//loc := stack.peek()
-	//interpreter.evm.StateDB.Unlock(contract.Address(), common.BigToHash(loc))
+	param:= stack.pop().Int64()
+	fmt.Println("hhhhhhhhhhhhhhhhjjjjjjjjjjjjjjjjj -opUnLock : find Contract address!!!", contract.Address(),"param:", param)
+	map_result:=interpreter.evm.StateDB.Do_mapping(contract.Address(), param)
+	msg:=Message{Thread_num:1,LockName:map_result, LockType:"UNLOCK", Channel: make(chan Message,10)}
+	com_channel:=interpreter.evm.StateDB.GetChannel()
+	com_channel<-msg
+	fmt.Println("hhhhhhhhhjjjjjjjjjjjjjjjj- opUNLOCK: send request!!")
+
+	com_channel_respond:=msg.Channel
+	msg_res:=<-com_channel_respond
+	fmt.Println("hhhhhhhhhhjjjjjjjjjjjjjj- opUNLOCK: receive respond!!!",msg_res.LockType)
+	//stack.pop()
+
 	return nil, nil
 }
 

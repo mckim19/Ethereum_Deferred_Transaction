@@ -31,13 +31,12 @@ import (
 	"github.com/ethereum/go-ethereum/metrics"
 	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/ethereum/go-ethereum/trie"
+	"github.com/ethereum/go-ethereum/core/vm"
 )
-
 type revision struct {
 	id           int
 	journalIndex int
 }
-
 var (
 	// emptyRoot is the known root hash of an empty trie.
 	emptyRoot = common.HexToHash("56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421")
@@ -56,7 +55,10 @@ func (n *proofList) Put(key []byte, value []byte) error {
 func (n *proofList) Delete(key []byte) error {
 	panic("not supported")
 }
-
+type Map_channel_struct struct{
+	ContractAddress 	common.Address
+	LockNumber		int64
+}
 // StateDBs within the ethereum protocol are used to store anything
 // within the merkle trie. StateDBs take care of caching and storing
 // nested states. It's the general query interface to retrieve:
@@ -102,6 +104,9 @@ type StateDB struct {
 	StorageHashes  time.Duration
 	StorageUpdates time.Duration
 	StorageCommits time.Duration
+	ch_com		chan vm.Message
+	map_channel	map[Map_channel_struct]int64
+
 }
 
 // Create a new state from a given trie.
@@ -118,6 +123,8 @@ func New(root common.Hash, db Database) (*StateDB, error) {
 		logs:              make(map[common.Hash][]*types.Log),
 		preimages:         make(map[common.Hash][]byte),
 		journal:           newJournal(),
+		ch_com:		   make(chan vm.Message,10),
+		map_channel:	   make(map[Map_channel_struct]int64),
 	}, nil
 }
 
@@ -162,7 +169,26 @@ func (self *StateDB) AddLog(log *types.Log) {
 	self.logs[self.thash] = append(self.logs[self.thash], log)
 	self.logSize++
 }
+func (self *StateDB) Do_mapping(address common.Address, Locknumber int64)( int64){
+	key:=Map_channel_struct{ ContractAddress:  address, LockNumber: Locknumber}
+	if val, ok:= self.map_channel[key]; ok{
+		return val
+	}else{
+		self.map_channel[key]=int64(len(self.map_channel))
+		return self.map_channel[key]
+	}
 
+}
+func (self *StateDB)GetChannel()(chan vm.Message){
+	return self.ch_com
+}
+func (self *StateDB) InitMapping() {
+	fmt.Println("hhhhhhhhjjjjjjjjjjjj InitMapping:", self.map_channel)
+	for k:=range self.map_channel{
+		delete(self.map_channel,k)
+	}
+	fmt.Println("hhhhhhhhhhhhhhhjjjjjjjjjjjjjj InitMapping: ", self.map_channel)
+}
 func (self *StateDB) GetLogs(hash common.Hash) []*types.Log {
 	return self.logs[hash]
 }

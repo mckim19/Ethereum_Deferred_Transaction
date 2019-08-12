@@ -23,6 +23,7 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+	"fmt"
 
 	mapset "github.com/deckarep/golang-set"
 	"github.com/ethereum/go-ethereum/common"
@@ -34,6 +35,7 @@ import (
 	"github.com/ethereum/go-ethereum/event"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/params"
+	"github.com/ethereum/go-ethereum/core/vm"
 )
 
 const (
@@ -121,6 +123,7 @@ type intervalAdjust struct {
 
 // worker is the main object which takes care of submitting new work to consensus engine
 // and gathering the sealing result.
+var Message vm.Message
 type worker struct {
 	config      *Config
 	chainConfig *params.ChainConfig
@@ -174,6 +177,8 @@ type worker struct {
 	skipSealHook func(*task) bool                   // Method to decide whether skipping the sealing.
 	fullTaskHook func()                             // Method to call before pushing the full sealing task.
 	resubmitHook func(time.Duration, time.Duration) // Method to call upon updating resubmitting interval.
+	LockRequestArray	[][]vm.Message
+	CurrentLockArray	[]vm.Message
 }
 
 func newWorker(config *Config, chainConfig *params.ChainConfig, engine consensus.Engine, eth Backend, mux *event.TypeMux, isLocalBlock func(*types.Block) bool) *worker {
@@ -405,9 +410,12 @@ func (w *worker) mainLoop() {
 	for {
 		select {
 		case req := <-w.newWorkCh:
+			  fmt.Println("newWorkCh")
+			go w.MainThread()
 			w.commitNewWork(req.interrupt, req.noempty, req.timestamp)
 
 		case ev := <-w.chainSideCh:
+			 fmt.Println("chainSideCh")
 			// Short circuit for duplicate side blocks
 			if _, exist := w.localUncles[ev.Block.Hash()]; exist {
 				continue
@@ -447,6 +455,7 @@ func (w *worker) mainLoop() {
 			}
 
 		case ev := <-w.txsCh:
+			 fmt.Println("hhhhjjjjjtxsCh")
 			// Apply transactions to the pending state if we're not mining.
 			//
 			// Note all transactions received may not be continuous with transactions
@@ -463,6 +472,7 @@ func (w *worker) mainLoop() {
 					txs[acc] = append(txs[acc], tx)
 				}
 				txset := types.NewTransactionsByPriceAndNonce(w.current.signer, txs)
+				go w.MainThread()
 				w.commitTransactions(txset, coinbase, nil)
 				w.updateSnapshot()
 			} else {
@@ -476,6 +486,7 @@ func (w *worker) mainLoop() {
 
 		// System stopped
 		case <-w.exitCh:
+			fmt.Println("exiCh")
 			return
 		case <-w.txsSub.Err():
 			return
@@ -935,7 +946,56 @@ func (w *worker) commitTransactions_goloop(txs *types.TransactionsByPriceAndNonc
 	log.Info("this go loop is returning false!!")
 	c <-false
 }
+func (w *worker) MainThread(){
+	com_channel:= w.current.state.GetChannel()
+	fmt.Println("start finishg get channel")
+         for{
+		fmt.Println("hhhhhhhhhhhjjjjjjjjjjjj - CurrentLockArray, :",w.CurrentLockArray, "/ LockRequestARray: ",w.LockRequestArray)
+		msg:=<-com_channel
+		if(msg.LockType =="LOCK") {
+			fmt.Println("hhhhhhhhhhhjjjjjjjjjj MainThread: get LOCK message!!",len(w.LockRequestArray))
+			if(len(w.LockRequestArray)==0){
+			//row:=[]vm.Message{}
+				w.LockRequestArray=append(w.LockRequestArray,[]vm.Message{})
+				w.CurrentLockArray=append(w.CurrentLockArray, vm.Message{})
+			}
+			if( int(msg.LockName) > len(w.LockRequestArray)){
+				//row:=[]vm.Message{}
+				for int(msg.LockName)!=len(w.LockRequestArray){
+					w.LockRequestArray=append(w.LockRequestArray,[]vm.Message{})
+					w.CurrentLockArray=append(w.CurrentLockArray,vm.Message{})
+				}
+			}
+			w.LockRequestArray[msg.LockName]=append(w.LockRequestArray[msg.LockName],msg)
+			fmt.Println("hhhhhhhhhhhjjjjjjjjjjjj MainThread: put message to array!!")
+		}else if (msg.LockType=="UNLOCK"){
+			if( w.CurrentLockArray[msg.LockName]!=vm.Message{}){
+				w.CurrentLockArray=append(w.CurrentLockArray[:msg.LockName],w.CurrentLockArray[msg.LockName+1:]...)
+			//	com_resChannel:=w.current.state.GetResChannel()
+				com_resChannel:=msg.Channel
+				msg.LockType="LOCK_OK"
+				com_resChannel<-msg
+				fmt.Println("hhhhhhhhhhhjjjjjjjjjjj MainThread: send UNLOCK response message")
+			}
+		 }
+		fmt.Println("jhhhhhhhhhhjjjjjjjj LockRequestArray: ", w.LockRequestArray, "CurrentLockarray:", w.CurrentLockArray)
+		fmt.Println(len(w.LockRequestArray)>0,  len(w.CurrentLockArray)==0)
 
+		//doing locking 
+		for  row_num:=0;row_num<len(w.LockRequestArray);row_num++{
+			if(len(w.LockRequestArray[row_num])>0 && w.CurrentLockArray[row_num]==vm.Message{} ){
+				msg:=w.LockRequestArray[row_num][0]
+				w.CurrentLockArray[msg.LockName]= w.LockRequestArray[msg.LockName][0]
+				w.LockRequestArray=append(w.LockRequestArray[:msg.LockName],w.LockRequestArray[msg.LockName+1:]...)
+				ch_resChannel:=msg.Channel
+				msg.LockType="UNLOCK_OK"
+				ch_resChannel<-msg
+				fmt.Println("hhhhhhhhjjjjjjjj MainThread: send LOCK response message")
+			}
+		}
+
+         }
+}
 // commitNewWork generates several new sealing tasks based on the parent block.
 func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) {
 	w.mu.RLock()
@@ -1069,6 +1129,9 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 		}
 		txs1 := types.NewTransactionsByPriceAndNonce(w.current.signer, localTxs1)
 		txs2 := types.NewTransactionsByPriceAndNonce(w.current.signer, localTxs2)
+		fmt.Println("hhhhhhhhhhhhhhhhhhhhjjjjjjjjjjjj goloop:tx1 ", txs1)
+		fmt.Println("hhhhhhhhhhhhhhhhhhhhjjjjjjjjjjjj goloop:tx2 ", txs2)
+
 		go w.commitTransactions_goloop(txs1, w.coinbase, interrupt, c)
 		log.Info("<Yoomee> localTxs: w.commitTransactions_goloop(txs1, w.coinbase, interrupt, c)")
 		go w.commitTransactions_goloop(txs2, w.coinbase, interrupt, c)
@@ -1116,6 +1179,9 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 
 	}
 	log.Info("<Yoomee> loop is ended!")
+	go w.current.state.InitMapping()
+
+	
 	/*
 	//5. ORIGINAL METHOD!!
 	if len(localTxs) > 0 {
