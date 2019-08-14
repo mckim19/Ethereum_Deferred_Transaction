@@ -959,18 +959,21 @@ func (w *worker) MainThread(){
 				w.LockRequestArray=append(w.LockRequestArray,[]vm.Message{})
 				w.CurrentLockArray=append(w.CurrentLockArray, vm.Message{})
 			}
-			if( int(msg.LockName) > len(w.LockRequestArray)){
+			if( int(msg.LockName) >= len(w.LockRequestArray)){
 				//row:=[]vm.Message{}
-				for int(msg.LockName)!=len(w.LockRequestArray){
+				for int(msg.LockName)>=len(w.LockRequestArray){
 					w.LockRequestArray=append(w.LockRequestArray,[]vm.Message{})
 					w.CurrentLockArray=append(w.CurrentLockArray,vm.Message{})
 				}
 			}
+			fmt.Println("hhhhhhhhhhhjjjjjjjjjjjj - CurrentLockArray, :",w.CurrentLockArray, "/ LockRequestARray: ",w.LockRequestArray)
+			fmt.Println("hhhhhhhhhhjjjjjjjhjjjjj- msg.LockName,: ",msg.LockName)  
+
 			w.LockRequestArray[msg.LockName]=append(w.LockRequestArray[msg.LockName],msg)
 			fmt.Println("hhhhhhhhhhhjjjjjjjjjjjj MainThread: put message to array!!")
 		}else if (msg.LockType=="UNLOCK"){
 			if( w.CurrentLockArray[msg.LockName]!=vm.Message{}){
-				w.CurrentLockArray=append(w.CurrentLockArray[:msg.LockName],w.CurrentLockArray[msg.LockName+1:]...)
+				w.CurrentLockArray[msg.LockName]=vm.Message{}
 			//	com_resChannel:=w.current.state.GetResChannel()
 				com_resChannel:=msg.Channel
 				msg.LockType="LOCK_OK"
@@ -986,7 +989,7 @@ func (w *worker) MainThread(){
 			if(len(w.LockRequestArray[row_num])>0 && w.CurrentLockArray[row_num]==vm.Message{} ){
 				msg:=w.LockRequestArray[row_num][0]
 				w.CurrentLockArray[msg.LockName]= w.LockRequestArray[msg.LockName][0]
-				w.LockRequestArray=append(w.LockRequestArray[:msg.LockName],w.LockRequestArray[msg.LockName+1:]...)
+				w.LockRequestArray[msg.LockName]=append(w.LockRequestArray[msg.LockName][1:])
 				ch_resChannel:=msg.Channel
 				msg.LockType="UNLOCK_OK"
 				ch_resChannel<-msg
