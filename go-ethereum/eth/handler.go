@@ -375,6 +375,7 @@ func (pm *ProtocolManager) handleMsg(p *peer) error {
 
 	// Block header query, collect the requested headers and reply
 	case msg.Code == GetBlockHeadersMsg:
+		fmt.Println("block header msg is arrived!")
 		// Decode the complex header query
 		var query getBlockHeadersData
 		if err := msg.Decode(&query); err != nil {
@@ -737,6 +738,7 @@ func (pm *ProtocolManager) BroadcastBlock(block *types.Block, propagate bool) {
 
 	// If propagation is requested, send to a subset of the peer
 	if propagate {
+		fmt.Println("It receives the propagate request.. It will broadcast to a subset of the peer!!!");
 		// Calculate the TD of the block (it's not imported yet, so block.Td is not valid)
 		var td *big.Int
 		if parent := pm.blockchain.GetBlock(block.ParentHash(), block.NumberU64()-1); parent != nil {
@@ -762,6 +764,7 @@ func (pm *ProtocolManager) BroadcastBlock(block *types.Block, propagate bool) {
 	}
 	// Otherwise if the block is indeed in out own chain, announce it
 	if pm.blockchain.HasBlock(hash, block.NumberU64()) {
+		fmt.Println("The peer has a block to broadcast! It will broadcast the hash of the block asynchronously.");
 		for _, peer := range peers {
 			peer.AsyncSendNewBlockHash(block)
 		}
