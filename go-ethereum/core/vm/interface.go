@@ -64,7 +64,11 @@ type StateDB interface {
 	AddPreimage(common.Hash, []byte)
 
 	ForEachStorage(common.Address, func(common.Hash, common.Hash) bool) error
-
+/*
+	OSDC parallel project. Hyojin Jeon.
+	Description.
+	
+*/
 	GetChannel() chan Message
 	Do_mapping(address common.Address, Locknumber int64)(int64)
 	InitMapping()

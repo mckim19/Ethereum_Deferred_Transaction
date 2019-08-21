@@ -55,6 +55,12 @@ func (n *proofList) Put(key []byte, value []byte) error {
 func (n *proofList) Delete(key []byte) error {
 	panic("not supported")
 }
+
+/*
+	OSDC parallel project. Hyojin Jeon.
+	Description.
+	
+*/
 type Map_channel_struct struct{
 	ContractAddress 	common.Address
 	LockNumber		int64
@@ -104,6 +110,11 @@ type StateDB struct {
 	StorageHashes  time.Duration
 	StorageUpdates time.Duration
 	StorageCommits time.Duration
+	/*
+		OSDC parallel project. Hyojin Jeon.
+		Description.
+	
+	*/
 	ch_com		chan vm.Message
 	map_channel	map[Map_channel_struct]int64
 
@@ -123,6 +134,11 @@ func New(root common.Hash, db Database) (*StateDB, error) {
 		logs:              make(map[common.Hash][]*types.Log),
 		preimages:         make(map[common.Hash][]byte),
 		journal:           newJournal(),
+		/*
+			OSDC parallel project. Hyojin Jeon.
+			Description.
+	
+		*/
 		ch_com:		   make(chan vm.Message,10),
 		map_channel:	   make(map[Map_channel_struct]int64),
 	}, nil
@@ -169,6 +185,12 @@ func (self *StateDB) AddLog(log *types.Log) {
 	self.logs[self.thash] = append(self.logs[self.thash], log)
 	self.logSize++
 }
+
+/*
+	OSDC parallel project. Hyojin Jeon.
+	Description.
+	
+*/
 func (self *StateDB) Do_mapping(address common.Address, Locknumber int64)( int64){
 	key:=Map_channel_struct{ ContractAddress:  address, LockNumber: Locknumber}
 	if val, ok:= self.map_channel[key]; ok{
@@ -177,17 +199,24 @@ func (self *StateDB) Do_mapping(address common.Address, Locknumber int64)( int64
 		self.map_channel[key]=int64(len(self.map_channel))
 		return self.map_channel[key]
 	}
-
 }
+/*
+	OSDC parallel project. Hyojin Jeon.
+	Description.
+	
+*/
 func (self *StateDB)GetChannel()(chan vm.Message){
 	return self.ch_com
 }
+/*
+	OSDC parallel project. Hyojin Jeon.
+	Description.
+	
+*/
 func (self *StateDB) InitMapping() {
-	fmt.Println("hhhhhhhhjjjjjjjjjjjj InitMapping:", self.map_channel)
 	for k:=range self.map_channel{
 		delete(self.map_channel,k)
 	}
-	fmt.Println("hhhhhhhhhhhhhhhjjjjjjjjjjjjjj InitMapping: ", self.map_channel)
 }
 func (self *StateDB) GetLogs(hash common.Hash) []*types.Log {
 	return self.logs[hash]

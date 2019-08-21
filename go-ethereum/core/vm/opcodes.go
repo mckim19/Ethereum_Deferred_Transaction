@@ -203,6 +203,11 @@ const (
 	SWAP
 )
 
+/*
+	OSDC parallel project. Yoomee Ko.
+	Description.
+	
+*/
 // lock, unlock
 const (
 	LOCK OpCode = 0xc1 + iota

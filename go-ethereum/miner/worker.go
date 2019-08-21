@@ -177,6 +177,11 @@ type worker struct {
 	skipSealHook func(*task) bool                   // Method to decide whether skipping the sealing.
 	fullTaskHook func()                             // Method to call before pushing the full sealing task.
 	resubmitHook func(time.Duration, time.Duration) // Method to call upon updating resubmitting interval.
+/*
+	OSDC parallel project. Hyojin Jeon.
+	Description.
+	
+*/
 	LockRequestArray	[][]vm.Message
 	CurrentLockArray	[]vm.Message
 }
@@ -410,12 +415,15 @@ func (w *worker) mainLoop() {
 	for {
 		select {
 		case req := <-w.newWorkCh:
-			  fmt.Println("newWorkCh")
+			/*
+				OSDC parallel project. Hyojin Jeon.
+				Description.
+				
+			*/
 			go w.MainThread()
 			w.commitNewWork(req.interrupt, req.noempty, req.timestamp)
 
 		case ev := <-w.chainSideCh:
-			 fmt.Println("chainSideCh")
 			// Short circuit for duplicate side blocks
 			if _, exist := w.localUncles[ev.Block.Hash()]; exist {
 				continue
@@ -455,7 +463,6 @@ func (w *worker) mainLoop() {
 			}
 
 		case ev := <-w.txsCh:
-			 fmt.Println("hhhhjjjjjtxsCh")
 			// Apply transactions to the pending state if we're not mining.
 			//
 			// Note all transactions received may not be continuous with transactions
@@ -472,6 +479,11 @@ func (w *worker) mainLoop() {
 					txs[acc] = append(txs[acc], tx)
 				}
 				txset := types.NewTransactionsByPriceAndNonce(w.current.signer, txs)
+				/*
+					OSDC parallel project. Hyojin Jeon.
+					Description.
+					
+				*/
 				go w.MainThread()
 				w.commitTransactions(txset, coinbase, nil)
 				w.updateSnapshot()
@@ -486,7 +498,6 @@ func (w *worker) mainLoop() {
 
 		// System stopped
 		case <-w.exitCh:
-			fmt.Println("exiCh")
 			return
 		case <-w.txsSub.Err():
 			return
@@ -829,6 +840,11 @@ func (w *worker) commitTransactions(txs *types.TransactionsByPriceAndNonce, coin
 	}
 	return false
 }
+/*
+	OSDC parallel project. Yoomee Ko.
+	Description.
+	
+*/
 func (w *worker) commitTransactions_goloop(txs *types.TransactionsByPriceAndNonce, coinbase common.Address, interrupt *int32, c chan<- bool) {
 	// Short circuit if current is nil
 	if w.current == nil {
@@ -946,28 +962,29 @@ func (w *worker) commitTransactions_goloop(txs *types.TransactionsByPriceAndNonc
 	log.Info("this go loop is returning false!!")
 	c <-false
 }
+
+/*
+	OSDC parallel project. Hyojin Jeon.
+	Description.
+	
+*/
 func (w *worker) MainThread(){
 	com_channel:= w.current.state.GetChannel()
-	fmt.Println("start finishg get channel")
          for{
-		fmt.Println("hhhhhhhhhhhjjjjjjjjjjjj - CurrentLockArray, :",w.CurrentLockArray, "/ LockRequestARray: ",w.LockRequestArray)
 		msg:=<-com_channel
 		if(msg.LockType =="LOCK") {
-			fmt.Println("hhhhhhhhhhhjjjjjjjjjj MainThread: get LOCK message!!",len(w.LockRequestArray))
+			fmt.Println("MainThread: get LOCK message!!",len(w.LockRequestArray))
 			if(len(w.LockRequestArray)==0){
-			//row:=[]vm.Message{}
 				w.LockRequestArray=append(w.LockRequestArray,[]vm.Message{})
 				w.CurrentLockArray=append(w.CurrentLockArray, vm.Message{})
 			}
 			if( int(msg.LockName) > len(w.LockRequestArray)){
-				//row:=[]vm.Message{}
 				for int(msg.LockName)!=len(w.LockRequestArray){
 					w.LockRequestArray=append(w.LockRequestArray,[]vm.Message{})
 					w.CurrentLockArray=append(w.CurrentLockArray,vm.Message{})
 				}
 			}
 			w.LockRequestArray[msg.LockName]=append(w.LockRequestArray[msg.LockName],msg)
-			fmt.Println("hhhhhhhhhhhjjjjjjjjjjjj MainThread: put message to array!!")
 		}else if (msg.LockType=="UNLOCK"){
 			if( w.CurrentLockArray[msg.LockName]!=vm.Message{}){
 				w.CurrentLockArray=append(w.CurrentLockArray[:msg.LockName],w.CurrentLockArray[msg.LockName+1:]...)
@@ -975,12 +992,9 @@ func (w *worker) MainThread(){
 				com_resChannel:=msg.Channel
 				msg.LockType="LOCK_OK"
 				com_resChannel<-msg
-				fmt.Println("hhhhhhhhhhhjjjjjjjjjjj MainThread: send UNLOCK response message")
+				fmt.Println("MainThread: send UNLOCK response message")
 			}
 		 }
-		fmt.Println("jhhhhhhhhhhjjjjjjjj LockRequestArray: ", w.LockRequestArray, "CurrentLockarray:", w.CurrentLockArray)
-		fmt.Println(len(w.LockRequestArray)>0,  len(w.CurrentLockArray)==0)
-
 		//doing locking 
 		for  row_num:=0;row_num<len(w.LockRequestArray);row_num++{
 			if(len(w.LockRequestArray[row_num])>0 && w.CurrentLockArray[row_num]==vm.Message{} ){
@@ -993,7 +1007,6 @@ func (w *worker) MainThread(){
 				fmt.Println("hhhhhhhhjjjjjjjj MainThread: send LOCK response message")
 			}
 		}
-
          }
 }
 // commitNewWork generates several new sealing tasks based on the parent block.
@@ -1108,6 +1121,11 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 			localTxs[account] = txs
 		}
 	}
+/*
+	OSDC parallel project. Yoomee Ko.
+	Description.
+	
+*/
 	//log.Info("[YOOMEE] The number of CPU number: ", runtime.GOMAXPROCS(0))
 	c := make(chan bool, 4)
 	local_flag := false
@@ -1129,9 +1147,6 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 		}
 		txs1 := types.NewTransactionsByPriceAndNonce(w.current.signer, localTxs1)
 		txs2 := types.NewTransactionsByPriceAndNonce(w.current.signer, localTxs2)
-		fmt.Println("hhhhhhhhhhhhhhhhhhhhjjjjjjjjjjjj goloop:tx1 ", txs1)
-		fmt.Println("hhhhhhhhhhhhhhhhhhhhjjjjjjjjjjjj goloop:tx2 ", txs2)
-
 		go w.commitTransactions_goloop(txs1, w.coinbase, interrupt, c)
 		log.Info("<Yoomee> localTxs: w.commitTransactions_goloop(txs1, w.coinbase, interrupt, c)")
 		go w.commitTransactions_goloop(txs2, w.coinbase, interrupt, c)
@@ -1180,8 +1195,6 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 	}
 	log.Info("<Yoomee> loop is ended!")
 	go w.current.state.InitMapping()
-
-	
 	/*
 	//5. ORIGINAL METHOD!!
 	if len(localTxs) > 0 {

@@ -1,4 +1,4 @@
-
+// Copyright 2015 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -27,6 +27,12 @@ import (
 	"github.com/ethereum/go-ethereum/params"
 	"golang.org/x/crypto/sha3"
 )
+
+/*
+	OSDC parallel project. Hyojin Jeon.
+	Description.
+	
+*/
 type Message struct {
 	Thread_num int64
 	LockName   int64
@@ -889,35 +895,42 @@ func opSuicide(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memo
 	interpreter.evm.StateDB.Suicide(contract.Address())
 	return nil, nil
 }
+/*
+	OSDC parallel project. Hyojin Jeon.
+	Description.
+	
+*/
 func opLock(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
 	com_channel:=interpreter.evm.StateDB.GetChannel()
 	param:= stack.pop().Int64()
 	map_result:=interpreter.evm.StateDB.Do_mapping(contract.Address(),param)
 	msg:=Message{Thread_num:1,LockName:map_result, LockType:"LOCK", Channel: make(chan Message, 10)}
         com_channel<- msg
-        fmt.Println("hhhhhhhhhhjjjjjjjjjjjjjjjjj-opLock: send request!! ")
+        fmt.Println("opLock: send request!! ")
 
-      //  fmt.Println("hhhhhhhhhhhhhhhhhhjjjjjjjjjj-opLock: AddCount", interpreter.evm.StateDB.AddCount())
-	//com_channel_respond:=interpreter.evm.StateDB.GetResChannel()
+	//fmt.Println("hhhhhhhhhhhhhhhhhhjjjjjjjjjj-opLock: AddCount", interpreter.evm.StateDB.AddCount())
 	msg_res:=<-msg.Channel
-        fmt.Println("hhhhhhhhhhjjjjjjjjjjjjjjjjj -opLock : receive respond!!!!!", msg_res)
+        fmt.Println("opLock : receive respond!!!!!", msg_res)
 
-	//interpreter.evm.StateDB.Lock(contract.Address(), common.BigToHash(loc))
 	return nil, nil
 }
+/*
+	OSDC parallel project. Hyojin Jeon.
+	Description.
+	
+*/
 func opUnlock(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
 	param:= stack.pop().Int64()
-	fmt.Println("hhhhhhhhhhhhhhhhjjjjjjjjjjjjjjjjj -opUnLock : find Contract address!!!", contract.Address(),"param:", param)
+	//fmt.Println("opUnLock : find Contract address!!!", contract.Address(),"param:", param)
 	map_result:=interpreter.evm.StateDB.Do_mapping(contract.Address(), param)
 	msg:=Message{Thread_num:1,LockName:map_result, LockType:"UNLOCK", Channel: make(chan Message,10)}
 	com_channel:=interpreter.evm.StateDB.GetChannel()
 	com_channel<-msg
-	fmt.Println("hhhhhhhhhjjjjjjjjjjjjjjjj- opUNLOCK: send request!!")
+	fmt.Println("opUNLOCK: send request!!")
 
 	com_channel_respond:=msg.Channel
 	msg_res:=<-com_channel_respond
-	fmt.Println("hhhhhhhhhhjjjjjjjjjjjjjj- opUNLOCK: receive respond!!!",msg_res.LockType)
-	//stack.pop()
+
 
 	return nil, nil
 }
