@@ -56,15 +56,7 @@ func (n *proofList) Delete(key []byte) error {
 	panic("not supported")
 }
 
-/*
-	OSDC parallel project. Hyojin Jeon.
-	Description.
-	
-*/
-type Map_channel_struct struct{
-	ContractAddress 	common.Address
-	LockNumber		int64
-}
+
 // StateDBs within the ethereum protocol are used to store anything
 // within the merkle trie. StateDBs take care of caching and storing
 // nested states. It's the general query interface to retrieve:
@@ -115,8 +107,8 @@ type StateDB struct {
 		Description.
 	
 	*/
-	ch_com		chan vm.Message
-	map_channel	map[Map_channel_struct]int64
+	ch_com			chan vm.Message
+	//map_channel	map[Map_channel_struct]int64
 
 }
 
@@ -139,8 +131,8 @@ func New(root common.Hash, db Database) (*StateDB, error) {
 			Description.
 	
 		*/
-		ch_com:		   make(chan vm.Message,10),
-		map_channel:	   make(map[Map_channel_struct]int64),
+		ch_com:			   make(chan vm.Message,10),
+		//map_channel:	   make(map[Map_channel_struct]int64),
 	}, nil
 }
 
@@ -186,11 +178,13 @@ func (self *StateDB) AddLog(log *types.Log) {
 	self.logSize++
 }
 
+
 /*
 	OSDC parallel project. Hyojin Jeon.
 	Description.
 	
 */
+/*
 func (self *StateDB) Do_mapping(address common.Address, Locknumber int64)( int64){
 	key:=Map_channel_struct{ ContractAddress:  address, LockNumber: Locknumber}
 	if val, ok:= self.map_channel[key]; ok{
@@ -200,6 +194,7 @@ func (self *StateDB) Do_mapping(address common.Address, Locknumber int64)( int64
 		return self.map_channel[key]
 	}
 }
+*/
 /*
 	OSDC parallel project. Hyojin Jeon.
 	Description.
@@ -213,11 +208,14 @@ func (self *StateDB)GetChannel()(chan vm.Message){
 	Description.
 	
 */
+/*
 func (self *StateDB) InitMapping() {
 	for k:=range self.map_channel{
 		delete(self.map_channel,k)
 	}
 }
+*/
+
 func (self *StateDB) GetLogs(hash common.Hash) []*types.Log {
 	return self.logs[hash]
 }

@@ -88,6 +88,12 @@ type Context struct {
 	BlockNumber *big.Int       // Provides information for NUMBER
 	Time        *big.Int       // Provides information for TIME
 	Difficulty  *big.Int       // Provides information for DIFFICULTY
+
+	/*
+		OSDC parallel. Yoomee Ko.
+	*/
+	// OSDC information
+	TxHash		common.Hash
 }
 
 // EVM is the Ethereum Virtual Machine base object and provides

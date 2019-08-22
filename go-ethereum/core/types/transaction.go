@@ -226,6 +226,10 @@ func (tx *Transaction) AsMessage(s Signer) (Message, error) {
 		amount:     tx.data.Amount,
 		data:       tx.data.Payload,
 		checkNonce: true,
+		/*
+			OSDC parallel. Yoomee Ko.
+		*/
+		txHash:		tx.Hash(),
 	}
 
 	var err error
@@ -392,6 +396,12 @@ type Message struct {
 	gasPrice   *big.Int
 	data       []byte
 	checkNonce bool
+	/*
+		OSDC parallel. Yoomee Ko.
+		Description
+		tx hash is needed for recording execution information
+	*/
+	txHash		common.Hash
 }
 
 func NewMessage(from common.Address, to *common.Address, nonce uint64, amount *big.Int, gasLimit uint64, gasPrice *big.Int, data []byte, checkNonce bool) Message {
@@ -415,3 +425,9 @@ func (m Message) Gas() uint64          { return m.gasLimit }
 func (m Message) Nonce() uint64        { return m.nonce }
 func (m Message) Data() []byte         { return m.data }
 func (m Message) CheckNonce() bool     { return m.checkNonce }
+/*
+	OSDC parallel. Yoomee Ko.
+	Description
+	tx hash is needed for recording execution information
+*/
+func (m Message) TxHash() common.Hash	{ return m.txHash }

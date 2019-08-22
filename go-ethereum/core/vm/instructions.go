@@ -28,17 +28,7 @@ import (
 	"golang.org/x/crypto/sha3"
 )
 
-/*
-	OSDC parallel project. Hyojin Jeon.
-	Description.
-	
-*/
-type Message struct {
-	Thread_num int64
-	LockName   int64
-	LockType  string
-	Channel chan Message 
-}
+
 var (
 	bigZero                  = new(big.Int)
 	tt255                    = math.BigPow(2, 255)
@@ -898,39 +888,56 @@ func opSuicide(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memo
 /*
 	OSDC parallel project. Hyojin Jeon.
 	Description.
+
+	OSDC parallel project. Yoomee Ko.
+	Description.
+	
+	
+*/
+type Message struct {
+	TxHash			common.Hash
+	ContractAddress	common.Address	
+	LockName		int64
+	LockType		string
+	IsLockBusy		bool
+	Channel			chan Message 
+}
+/*
+	OSDC parallel project. Hyojin Jeon.
+	Description.
+
 	
 */
 func opLock(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
 	com_channel:=interpreter.evm.StateDB.GetChannel()
 	param:= stack.pop().Int64()
-	map_result:=interpreter.evm.StateDB.Do_mapping(contract.Address(),param)
-	msg:=Message{Thread_num:1,LockName:map_result, LockType:"LOCK", Channel: make(chan Message, 10)}
-        com_channel<- msg
-        fmt.Println("opLock: send request!! ")
+	//map_result:=interpreter.evm.StateDB.Do_mapping(contract.Address(),param)
+	msg:=Message{TxHash: interpreter.evm.Context.TxHash, ContractAddress: contract.Address(), LockName: param, LockType:"LOCK", IsLockBusy: false, Channel: make(chan Message, 10)}
+    com_channel<- msg
+    fmt.Println("opLock: send request!! ")
 
 	//fmt.Println("hhhhhhhhhhhhhhhhhhjjjjjjjjjj-opLock: AddCount", interpreter.evm.StateDB.AddCount())
-	msg_res:=<-msg.Channel
-        fmt.Println("opLock : receive respond!!!!!", msg_res)
+	<-msg.Channel
+    //fmt.Println("opLock: receive respond!!!!!", msg_res)
 
 	return nil, nil
 }
 /*
 	OSDC parallel project. Hyojin Jeon.
 	Description.
-	
+
 */
 func opUnlock(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
-	param:= stack.pop().Int64()
-	//fmt.Println("opUnLock : find Contract address!!!", contract.Address(),"param:", param)
-	map_result:=interpreter.evm.StateDB.Do_mapping(contract.Address(), param)
-	msg:=Message{Thread_num:1,LockName:map_result, LockType:"UNLOCK", Channel: make(chan Message,10)}
 	com_channel:=interpreter.evm.StateDB.GetChannel()
+	param:= stack.pop().Int64()
+	//map_result:=interpreter.evm.StateDB.Do_mapping(contract.Address(), param)
+	msg:=Message{TxHash:interpreter.evm.Context.TxHash, ContractAddress: contract.Address(), LockName: param, LockType:"UNLOCK", IsLockBusy: false, Channel: make(chan Message,10)}
 	com_channel<-msg
 	fmt.Println("opUNLOCK: send request!!")
 
-	com_channel_respond:=msg.Channel
-	msg_res:=<-com_channel_respond
-
+	//com_channel_respond:=msg.Channel
+	<-msg.Channel
+	//fmt.Println("opUnlock: receive respond!!!!!", msg_res)
 
 	return nil, nil
 }

@@ -70,8 +70,7 @@ type StateDB interface {
 	
 */
 	GetChannel() chan Message
-	Do_mapping(address common.Address, Locknumber int64)(int64)
-	InitMapping()
+	//InitMapping()
 }
 
 // CallContext provides a basic interface for the EVM calling conventions. The EVM

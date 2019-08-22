@@ -23,7 +23,7 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
-	"fmt"
+	//"fmt"
 
 	mapset "github.com/deckarep/golang-set"
 	"github.com/ethereum/go-ethereum/common"
@@ -123,7 +123,6 @@ type intervalAdjust struct {
 
 // worker is the main object which takes care of submitting new work to consensus engine
 // and gathering the sealing result.
-var Message vm.Message
 type worker struct {
 	config      *Config
 	chainConfig *params.ChainConfig
@@ -177,13 +176,7 @@ type worker struct {
 	skipSealHook func(*task) bool                   // Method to decide whether skipping the sealing.
 	fullTaskHook func()                             // Method to call before pushing the full sealing task.
 	resubmitHook func(time.Duration, time.Duration) // Method to call upon updating resubmitting interval.
-/*
-	OSDC parallel project. Hyojin Jeon.
-	Description.
-	
-*/
-	LockRequestArray	[][]vm.Message
-	CurrentLockArray	[]vm.Message
+
 }
 
 func newWorker(config *Config, chainConfig *params.ChainConfig, engine consensus.Engine, eth Backend, mux *event.TypeMux, isLocalBlock func(*types.Block) bool) *worker {
@@ -962,52 +955,64 @@ func (w *worker) commitTransactions_goloop(txs *types.TransactionsByPriceAndNonc
 	log.Info("this go loop is returning false!!")
 	c <-false
 }
-
 /*
 	OSDC parallel project. Hyojin Jeon.
 	Description.
-	
+	OSDC parallel project. Yoomee Ko.
+	Description.
+*/
+type RecordingInfoStruct struct{
+	ContractAddress 	common.Address
+	LockName			int64
+}
+/*
+	OSDC parallel project. Hyojin Jeon.
+	Description.
+	OSDC parallel project. Yoomee Ko.
+	Description.
+
 */
 func (w *worker) MainThread(){
-	com_channel:= w.current.state.GetChannel()
-         for{
+
+	LockRequestArray	:= make(map[RecordingInfoStruct][]vm.Message)
+	CurrentLockArray	:= make(map[RecordingInfoStruct]vm.Message)
+	recording_info		:= make(map[RecordingInfoStruct][]common.Hash)
+	com_channel			:= w.current.state.GetChannel()
+
+    for{
 		msg:=<-com_channel
-		if(msg.LockType =="LOCK") {
-			fmt.Println("MainThread: get LOCK message!!",len(w.LockRequestArray))
-			if(len(w.LockRequestArray)==0){
-				w.LockRequestArray=append(w.LockRequestArray,[]vm.Message{})
-				w.CurrentLockArray=append(w.CurrentLockArray, vm.Message{})
-			}
-			if( int(msg.LockName) > len(w.LockRequestArray)){
-				for int(msg.LockName)!=len(w.LockRequestArray){
-					w.LockRequestArray=append(w.LockRequestArray,[]vm.Message{})
-					w.CurrentLockArray=append(w.CurrentLockArray,vm.Message{})
-				}
-			}
-			w.LockRequestArray[msg.LockName]=append(w.LockRequestArray[msg.LockName],msg)
-		}else if (msg.LockType=="UNLOCK"){
-			if( w.CurrentLockArray[msg.LockName]!=vm.Message{}){
-				w.CurrentLockArray=append(w.CurrentLockArray[:msg.LockName],w.CurrentLockArray[msg.LockName+1:]...)
-			//	com_resChannel:=w.current.state.GetResChannel()
-				com_resChannel:=msg.Channel
-				msg.LockType="LOCK_OK"
-				com_resChannel<-msg
-				fmt.Println("MainThread: send UNLOCK response message")
-			}
-		 }
-		//doing locking 
-		for  row_num:=0;row_num<len(w.LockRequestArray);row_num++{
-			if(len(w.LockRequestArray[row_num])>0 && w.CurrentLockArray[row_num]==vm.Message{} ){
-				msg:=w.LockRequestArray[row_num][0]
-				w.CurrentLockArray[msg.LockName]= w.LockRequestArray[msg.LockName][0]
-				w.LockRequestArray=append(w.LockRequestArray[:msg.LockName],w.LockRequestArray[msg.LockName+1:]...)
-				ch_resChannel:=msg.Channel
-				msg.LockType="UNLOCK_OK"
-				ch_resChannel<-msg
-				fmt.Println("hhhhhhhhjjjjjjjj MainThread: send LOCK response message")
-			}
+		key:=RecordingInfoStruct{
+			ContractAddress: msg.ContractAddress,
+			LockName: msg.LockName,
 		}
-         }
+		if(msg.LockType =="LOCK") {
+			recording_info[key] = append(recording_info[key], msg.TxHash)
+			msg.LockType="OK"
+			msg.IsLockBusy = true
+			if(CurrentLockArray[key].IsLockBusy == false){	//nobody holds this lock\
+				CurrentLockArray[key] = msg
+				msg.Channel <- msg
+			} else {								//somebody holds this lock	
+				LockRequestArray[key] = append(LockRequestArray[key], msg)
+			}
+		}else if (msg.LockType=="UNLOCK"){
+			if(CurrentLockArray[key].TxHash == msg.TxHash){ //it must be a same transaction who have been locked
+				msg.LockType="OK"
+				msg.Channel <- msg
+				if(len(LockRequestArray[key]) != 0){ //somebody is waiting
+					LockRequestArray[key][0].Channel <- msg
+					CurrentLockArray[key] = LockRequestArray[key][0]	//change current lock tx
+					LockRequestArray[key] = LockRequestArray[key][1:]	//get rid of the current lock tx from lock request array
+				} else {
+					msg.IsLockBusy = false
+					CurrentLockArray[key] = msg
+				}
+			} else { //somebody tries to unlock fakely
+				msg.LockType="NOT_OK"
+				msg.Channel <- msg
+			}
+		}	
+    }
 }
 // commitNewWork generates several new sealing tasks based on the parent block.
 func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) {
@@ -1194,7 +1199,7 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 
 	}
 	log.Info("<Yoomee> loop is ended!")
-	go w.current.state.InitMapping()
+	//go w.current.state.InitMapping()
 	/*
 	//5. ORIGINAL METHOD!!
 	if len(localTxs) > 0 {
