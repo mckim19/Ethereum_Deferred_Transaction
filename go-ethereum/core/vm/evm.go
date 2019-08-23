@@ -20,6 +20,7 @@ import (
 	"math/big"
 	"sync/atomic"
 	"time"
+	"fmt"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -94,6 +95,7 @@ type Context struct {
 	*/
 	// OSDC information
 	TxHash		common.Hash
+	IsDoCall	bool
 }
 
 // EVM is the Ethereum Virtual Machine base object and provides
@@ -180,6 +182,7 @@ func (evm *EVM) Interpreter() Interpreter {
 	return evm.interpreter
 }
 
+
 // Call executes the contract associated with the addr with the given input as
 // parameters. It also handles any necessary value transfer required and takes
 // the necessary steps to create accounts and reverses the state in case of an
@@ -234,6 +237,16 @@ func (evm *EVM) Call(caller ContractRef, addr common.Address, input []byte, gas 
 			evm.vmConfig.Tracer.CaptureEnd(ret, gas-contract.Gas, time.Since(start), err)
 		}()
 	}
+	/*
+		OSDC Parallel. Yoomee Ko.
+		Description.
+	*/
+	if evm.Context.IsDoCall == true {
+		fmt.Println("DoCall MutexThread creation!")
+		go evm.StateDB.MutexThread(true)
+	}
+
+	// to returns the recipient of the message.
 	ret, err = run(evm, contract, input, false)
 
 	// When an error was returned by the EVM or when setting the creation code

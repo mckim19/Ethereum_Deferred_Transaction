@@ -23,7 +23,7 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
-	//"fmt"
+	"fmt"
 
 	mapset "github.com/deckarep/golang-set"
 	"github.com/ethereum/go-ethereum/common"
@@ -408,12 +408,6 @@ func (w *worker) mainLoop() {
 	for {
 		select {
 		case req := <-w.newWorkCh:
-			/*
-				OSDC parallel project. Hyojin Jeon.
-				Description.
-				
-			*/
-			go w.MainThread()
 			w.commitNewWork(req.interrupt, req.noempty, req.timestamp)
 
 		case ev := <-w.chainSideCh:
@@ -477,8 +471,10 @@ func (w *worker) mainLoop() {
 					Description.
 					
 				*/
-				go w.MainThread()
-				w.commitTransactions(txset, coinbase, nil)
+				c := make(chan bool)
+				go w.commitTransactions_goloop(txset, coinbase, nil, c)
+				<-c
+				fmt.Println("After commitTransactions_goloop!")
 				w.updateSnapshot()
 			} else {
 				// If clique is running in dev mode(period is 0), disable
@@ -852,6 +848,7 @@ func (w *worker) commitTransactions_goloop(txs *types.TransactionsByPriceAndNonc
 	var coalescedLogs []*types.Log
 
 	log.Info("<Yoomee> hello this is commitTransactions_goloop.. I'm going to start for loop")
+	go w.current.state.MutexThread(false)
 	for {
 		// In the following three cases, we will interrupt the execution of the transaction.
 		// (1) new head block event arrival, the interrupt signal is 1
@@ -930,7 +927,11 @@ func (w *worker) commitTransactions_goloop(txs *types.TransactionsByPriceAndNonc
 			txs.Shift()
 		}
 	}
-
+	var nil_hash common.Hash
+	var nil_address common.Address
+	msg:=vm.Message{TxHash: nil_hash, ContractAddress: nil_address, LockName: 0, LockType:"TERMINATION", IsLockBusy: false, Channel: nil}
+    w.current.state.GetChannel(false)<- msg
+	
 	if !w.isRunning() && len(coalescedLogs) > 0 {
 		// We don't push the pendingLogsEvent while we are mining. The reason is that
 		// when we are mining, the worker will regenerate a mining block every 3 seconds.
@@ -955,65 +956,7 @@ func (w *worker) commitTransactions_goloop(txs *types.TransactionsByPriceAndNonc
 	log.Info("this go loop is returning false!!")
 	c <-false
 }
-/*
-	OSDC parallel project. Hyojin Jeon.
-	Description.
-	OSDC parallel project. Yoomee Ko.
-	Description.
-*/
-type RecordingInfoStruct struct{
-	ContractAddress 	common.Address
-	LockName			int64
-}
-/*
-	OSDC parallel project. Hyojin Jeon.
-	Description.
-	OSDC parallel project. Yoomee Ko.
-	Description.
 
-*/
-func (w *worker) MainThread(){
-
-	LockRequestArray	:= make(map[RecordingInfoStruct][]vm.Message)
-	CurrentLockArray	:= make(map[RecordingInfoStruct]vm.Message)
-	recording_info		:= make(map[RecordingInfoStruct][]common.Hash)
-	com_channel			:= w.current.state.GetChannel()
-
-    for{
-		msg:=<-com_channel
-		key:=RecordingInfoStruct{
-			ContractAddress: msg.ContractAddress,
-			LockName: msg.LockName,
-		}
-		if(msg.LockType =="LOCK") {
-			recording_info[key] = append(recording_info[key], msg.TxHash)
-			msg.LockType="OK"
-			msg.IsLockBusy = true
-			if(CurrentLockArray[key].IsLockBusy == false){	//nobody holds this lock\
-				CurrentLockArray[key] = msg
-				msg.Channel <- msg
-			} else {								//somebody holds this lock	
-				LockRequestArray[key] = append(LockRequestArray[key], msg)
-			}
-		}else if (msg.LockType=="UNLOCK"){
-			if(CurrentLockArray[key].TxHash == msg.TxHash){ //it must be a same transaction who have been locked
-				msg.LockType="OK"
-				msg.Channel <- msg
-				if(len(LockRequestArray[key]) != 0){ //somebody is waiting
-					LockRequestArray[key][0].Channel <- msg
-					CurrentLockArray[key] = LockRequestArray[key][0]	//change current lock tx
-					LockRequestArray[key] = LockRequestArray[key][1:]	//get rid of the current lock tx from lock request array
-				} else {
-					msg.IsLockBusy = false
-					CurrentLockArray[key] = msg
-				}
-			} else { //somebody tries to unlock fakely
-				msg.LockType="NOT_OK"
-				msg.Channel <- msg
-			}
-		}	
-    }
-}
 // commitNewWork generates several new sealing tasks based on the parent block.
 func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) {
 	w.mu.RLock()
@@ -1039,7 +982,7 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 		GasLimit:   core.CalcGasLimit(parent, w.config.GasFloor, w.config.GasCeil),
 		Extra:      w.extra,
 		Time:       uint64(timestamp),
-	}
+	} 
 	// Only set the coinbase if our consensus engine is running (avoid spurious block rewards)
 	if w.isRunning() {
 		if w.coinbase == (common.Address{}) {

@@ -390,7 +390,7 @@ func (s *PrivateAccountAPI) SendTransaction(ctx context.Context, args SendTxArgs
 }
 
 // SignTransaction will create a transaction from the given arguments and
-// tries to sign it with the key associated with args.To. If the given passwd isn't
+// triesj to sign it with the key associated with args.To. If the given passwd isn't
 // able to decrypt the key it fails. The transaction is returned in RLP-form, not broadcast
 // to other nodes
 func (s *PrivateAccountAPI) SignTransaction(ctx context.Context, args SendTxArgs, passwd string) (*SignTransactionResult, error) {
@@ -723,6 +723,7 @@ type CallArgs struct {
 
 func DoCall(ctx context.Context, b Backend, args CallArgs, blockNr rpc.BlockNumber, vmCfg vm.Config, timeout time.Duration, globalGasCap *big.Int) ([]byte, uint64, bool, error) {
 	defer func(start time.Time) { log.Debug("Executing EVM call finished", "runtime", time.Since(start)) }(time.Now())
+	fmt.Println("Docall")
 
 	state, header, err := b.StateAndHeaderByNumber(ctx, blockNr)
 	if state == nil || err != nil {
@@ -793,7 +794,17 @@ func DoCall(ctx context.Context, b Backend, args CallArgs, blockNr rpc.BlockNumb
 	// Setup the gas pool (also for unmetered requests)
 	// and apply the message.
 	gp := new(core.GasPool).AddGas(math.MaxUint64)
+	/*
+		OSDC parallel.
+	*/
+	evm.Context.IsDoCall = true
 	res, gas, failed, err := core.ApplyMessage(evm, msg, gp)
+
+	var nil_hash common.Hash
+	var nil_address common.Address
+	ch_msg:=vm.Message{TxHash: nil_hash, ContractAddress: nil_address, LockName: 0, LockType:"TERMINATION", IsLockBusy: false, Channel: nil}
+    evm.StateDB.GetChannel(true)<- ch_msg
+
 	if err := vmError(); err != nil {
 		return nil, 0, false, err
 	}
