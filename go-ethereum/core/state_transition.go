@@ -73,11 +73,6 @@ type Message interface {
 	Nonce() uint64
 	CheckNonce() bool
 	Data() []byte
-
-	/*
-		OSDC parallel. Yoomee Ko.
-	*/
-	TxHash() common.Hash
 }
 
 // IntrinsicGas computes the 'intrinsic gas' for a message with the given data.
@@ -213,7 +208,25 @@ func (st *StateTransition) TransitionDb() (ret []byte, usedGas uint64, failed bo
 	} else {
 		// Increment the nonce for the next transaction
 		st.state.SetNonce(msg.From(), st.state.GetNonce(sender.Address())+1)
+
+		/*
+			OSDC Parallel. Yoomee Ko.
+			Description.
+		*/
+		if evm.Context.IsDoCall == true {
+			evm.StateDB.SetChannel(make(chan vm.Message, 10), true)
+			go evm.StateDB.MutexThread(evm.StateDB.GetChannel(true), true)
+		}
+		
 		ret, st.gas, vmerr = evm.Call(sender, st.to(), st.data, st.gas, st.value)
+		
+		if evm.Context.IsDoCall == true {
+			var nil_hash common.Hash
+			var nil_address common.Address
+			ch_msg:=vm.Message{TxHash: nil_hash, ContractAddress: nil_address, LockName: 0, LockType:"TERMINATION", IsLockBusy: false, Channel: nil}
+    		evm.StateDB.GetChannel(true)<- ch_msg	
+		}
+ 	
 	}
 	if vmerr != nil {
 		log.Debug("VM returned with error", "err", vmerr)

@@ -20,7 +20,7 @@ import (
 	"math/big"
 	"sync/atomic"
 	"time"
-	"fmt"
+	//"fmt"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -94,7 +94,7 @@ type Context struct {
 		OSDC parallel. Yoomee Ko.
 	*/
 	// OSDC information
-	TxHash		common.Hash
+	YMTxHash		common.Hash
 	IsDoCall	bool
 }
 
@@ -236,14 +236,6 @@ func (evm *EVM) Call(caller ContractRef, addr common.Address, input []byte, gas 
 		defer func() { // Lazy evaluation of the parameters
 			evm.vmConfig.Tracer.CaptureEnd(ret, gas-contract.Gas, time.Since(start), err)
 		}()
-	}
-	/*
-		OSDC Parallel. Yoomee Ko.
-		Description.
-	*/
-	if evm.Context.IsDoCall == true {
-		fmt.Println("DoCall MutexThread creation!")
-		go evm.StateDB.MutexThread(true)
 	}
 
 	// to returns the recipient of the message.

@@ -19,8 +19,8 @@ package vm
 import (
 	"errors"
 	"math/big"
+	//"fmt"
 
-	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -909,18 +909,12 @@ type Message struct {
 	
 */
 func opLock(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
-	tmp_ch := make(chan Message, 10)
-	msg:=Message{TxHash: interpreter.evm.Context.TxHash, ContractAddress: contract.Address(), LockName: 0, LockType:"LOCK", IsLockBusy: false, Channel: make(chan Message, 10)}
-    tmp_ch <- msg 
-    fmt.Println(tmp_ch)
-    fmt.Println("send request")
-    
+	//fmt.Println("<opLock> IsDoCall=",interpreter.evm.IsDoCall)
 	ch_com := interpreter.evm.StateDB.GetChannel(interpreter.evm.IsDoCall)
-	//param:= stack.pop().Int64()
-	fmt.Println(ch_com)
-	//msg:=Message{TxHash: interpreter.evm.Context.TxHash, ContractAddress: contract.Address(), LockName: param, LockType:"LOCK", IsLockBusy: false, Channel: make(chan Message, 10)}
+	param:= stack.pop().Int64()
+    msg:=Message{TxHash: interpreter.evm.Context.YMTxHash, ContractAddress: contract.Address(), LockName: param, LockType:"LOCK", IsLockBusy: false, Channel: make(chan Message, 10)}
     ch_com <- msg 
-    fmt.Println("opLock: send request!! ")
+    //fmt.Println("opLock: send request!! ")
 
 	<-msg.Channel
 	
@@ -932,12 +926,12 @@ func opLock(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory 
 
 */
 func opUnlock(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
-	com_channel:=interpreter.evm.StateDB.GetChannel(interpreter.evm.IsDoCall)
+	//fmt.Println("<opUnlock> IsDoCall=",interpreter.evm.IsDoCall)
+	ch_com:=interpreter.evm.StateDB.GetChannel(interpreter.evm.IsDoCall)
 	param:= stack.pop().Int64()
-	//map_result:=interpreter.evm.StateDB.Do_mapping(contract.Address(), param)
-	msg:=Message{TxHash:interpreter.evm.Context.TxHash, ContractAddress: contract.Address(), LockName: param, LockType:"UNLOCK", IsLockBusy: false, Channel: make(chan Message,10)}
-	com_channel<-msg
-	fmt.Println("opUNLOCK: send request!!")
+	msg:=Message{TxHash:interpreter.evm.Context.YMTxHash, ContractAddress: contract.Address(), LockName: param, LockType:"UNLOCK", IsLockBusy: false, Channel: make(chan Message,10)}
+	ch_com<-msg
+	//fmt.Println("opUNLOCK: send request!!")
 
 	<-msg.Channel
 

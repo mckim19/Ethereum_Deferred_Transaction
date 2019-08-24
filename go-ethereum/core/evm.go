@@ -59,7 +59,6 @@ func NewEVMContext(msg Message, header *types.Header, chain ChainContext, author
 		/*
 			OSDC parallel. Yoomee Ko.
 		*/
-		TxHash:		 msg.TxHash(),
 		IsDoCall:	 false,
 	}
 }

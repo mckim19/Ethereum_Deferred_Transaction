@@ -103,16 +103,13 @@ type StateDB struct {
 	StorageUpdates time.Duration
 	StorageCommits time.Duration
 
-	/*
-		OSDC Parallel. Hyojin Jeon.
-		Description
-	*/
 	ch_com			chan vm.Message
 	ch_com2			chan vm.Message
 }
 
 // Create a new state from a given trie.
 func New(root common.Hash, db Database) (*StateDB, error) {
+	fmt.Println("new function of statedb executed!!")
 	tr, err := db.OpenTrie(root)
 	if err != nil {
 		return nil, err
@@ -125,10 +122,6 @@ func New(root common.Hash, db Database) (*StateDB, error) {
 		logs:              make(map[common.Hash][]*types.Log),
 		preimages:         make(map[common.Hash][]byte),
 		journal:           newJournal(),
-		/*
-			OSDC Parallel. Hyojin Jeon.
-			Description
-		*/
 		ch_com:			   make(chan vm.Message, 10),
 		ch_com2:		   make(chan vm.Message, 10),
 	}, nil
@@ -181,23 +174,20 @@ type RecordingInfoStruct struct{
 	Description.
 
 */
-func (self *StateDB) MutexThread(isDoCall bool){
+func (self *StateDB) MutexThread(com_channel chan vm.Message, isDoCall bool){
 
 	LockRequestArray	:= make(map[RecordingInfoStruct][]vm.Message)
 	CurrentLockArray	:= make(map[RecordingInfoStruct]vm.Message)
 	recording_info		:= make(map[RecordingInfoStruct][]common.Hash)
-	com_channel			:= self.GetChannel(isDoCall)
-	fmt.Println("MutexThread start!")
+	//com_channel			:= self.GetChannel(isDoCall)
     for{
-		fmt.Println("receiving!")
 		msg := <- com_channel
-		fmt.Println("msg.LockType: ",msg.LockType,", msg.LockName: ",msg.LockName)
+		fmt.Println("msg.TxHash",msg.TxHash,"msg.LockType: ",msg.LockType,", msg.LockName: ",msg.LockName)
 		key:=RecordingInfoStruct{
 			ContractAddress: msg.ContractAddress,
 			LockName: msg.LockName,
 		}
 		if(msg.LockType =="LOCK") {
-			fmt.Println("Lock Message comes in")
 			recording_info[key] = append(recording_info[key], msg.TxHash)
 			msg.LockType="OK"
 			msg.IsLockBusy = true
@@ -208,7 +198,6 @@ func (self *StateDB) MutexThread(isDoCall bool){
 				LockRequestArray[key] = append(LockRequestArray[key], msg)
 			}
 		}else if (msg.LockType=="UNLOCK"){
-			fmt.Println("Unlock Message comes in")
 			if(CurrentLockArray[key].TxHash == msg.TxHash){ //it must be a same transaction who have been locked
 				msg.LockType="OK"
 				msg.Channel <- msg
@@ -225,7 +214,9 @@ func (self *StateDB) MutexThread(isDoCall bool){
 				msg.Channel <- msg
 			}
 		}else if(msg.LockType=="TERMINATION") {
-			fmt.Println("Termination Message comes in")
+			//if(msg.isDoCall!=true) { //when mining
+
+			//}
 			return
 		}	
     }
@@ -238,11 +229,21 @@ func (self *StateDB) MutexThread(isDoCall bool){
 */
 func (self *StateDB)GetChannel(isDoCall bool)(chan vm.Message){
 	if isDoCall == true {
-		//fmt.Println("channel: ", &self.ch_com2)
 		return self.ch_com2
 	}
 	return self.ch_com
 	
+}
+/*
+	OSDC parallel project. Yoomee Ko.
+	Description.
+	
+*/
+func (self *StateDB)SetChannel(new_ch chan vm.Message, isDoCall bool){
+	if isDoCall == true {
+		self.ch_com2 = new_ch
+	}
+	self.ch_com = new_ch
 }
 func (self *StateDB) AddLog(log *types.Log) {
 	self.journal.append(addLogChange{txhash: self.thash})

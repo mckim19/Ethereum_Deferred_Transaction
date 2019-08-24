@@ -723,7 +723,6 @@ type CallArgs struct {
 
 func DoCall(ctx context.Context, b Backend, args CallArgs, blockNr rpc.BlockNumber, vmCfg vm.Config, timeout time.Duration, globalGasCap *big.Int) ([]byte, uint64, bool, error) {
 	defer func(start time.Time) { log.Debug("Executing EVM call finished", "runtime", time.Since(start)) }(time.Now())
-	fmt.Println("Docall")
 
 	state, header, err := b.StateAndHeaderByNumber(ctx, blockNr)
 	if state == nil || err != nil {
@@ -794,17 +793,14 @@ func DoCall(ctx context.Context, b Backend, args CallArgs, blockNr rpc.BlockNumb
 	// Setup the gas pool (also for unmetered requests)
 	// and apply the message.
 	gp := new(core.GasPool).AddGas(math.MaxUint64)
+	
 	/*
-		OSDC parallel.
+		OSDC parallel. Yoomee Ko.
+		Description
 	*/
 	evm.Context.IsDoCall = true
 	res, gas, failed, err := core.ApplyMessage(evm, msg, gp)
-
-	var nil_hash common.Hash
-	var nil_address common.Address
-	ch_msg:=vm.Message{TxHash: nil_hash, ContractAddress: nil_address, LockName: 0, LockType:"TERMINATION", IsLockBusy: false, Channel: nil}
-    evm.StateDB.GetChannel(true)<- ch_msg
-
+	evm.Context.IsDoCall = false
 	if err := vmError(); err != nil {
 		return nil, 0, false, err
 	}
