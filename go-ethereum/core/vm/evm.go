@@ -94,7 +94,7 @@ type Context struct {
 		OSDC parallel. Yoomee Ko.
 	*/
 	// OSDC information
-	YMTxHash		common.Hash
+	YMTxHash	common.Hash
 	IsDoCall	bool
 }
 

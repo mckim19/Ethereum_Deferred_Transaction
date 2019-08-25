@@ -82,6 +82,7 @@ type rpcBlock struct {
 	Hash         common.Hash      `json:"hash"`
 	Transactions []rpcTransaction `json:"transactions"`
 	UncleHashes  []common.Hash    `json:"uncles"`
+	RecInfos	 []*types.RecInfo  `json:"recInfos"`
 }
 
 func (ec *Client) getBlock(ctx context.Context, method string, args ...interface{}) (*types.Block, error) {
@@ -101,6 +102,7 @@ func (ec *Client) getBlock(ctx context.Context, method string, args ...interface
 	if err := json.Unmarshal(raw, &body); err != nil {
 		return nil, err
 	}
+	fmt.Println("[ethclient][getBlock] body.RecInfos: ", body.RecInfos)
 	// Quick-verify transaction and uncle lists. This mostly helps with debugging the server.
 	if head.UncleHash == types.EmptyUncleHash && len(body.UncleHashes) > 0 {
 		return nil, fmt.Errorf("server returned non-empty uncle list but block header indicates no uncles")
@@ -146,7 +148,15 @@ func (ec *Client) getBlock(ctx context.Context, method string, args ...interface
 		}
 		txs[i] = tx.tx
 	}
-	return types.NewBlockWithHeader(head).WithBody(txs, uncles), nil
+	/*
+		OSDC Parallel. Yoomee Ko.
+	*/
+	recInfos := make([]*types.RecInfo, len(body.RecInfos))
+	for i, recInfo := range body.RecInfos {
+		recInfos[i] = recInfo
+	}
+	return types.NewBlockWithHeader(head).WithBody(txs, uncles, recInfos), nil
+	//return types.NewBlockWithHeader(head).WithBody(txs, uncles), nil
 }
 
 // HeaderByHash returns the block header with the given hash.

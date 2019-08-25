@@ -215,7 +215,7 @@ func (st *StateTransition) TransitionDb() (ret []byte, usedGas uint64, failed bo
 			Description.
 		*/
 		if evm.Context.IsDoCall == true {
-			evm.StateDB.SetChannel(make(chan types.ChanMessage, 10), true)
+			evm.StateDB.SetChannel(make(chan types.ChanMsg, 10), true)
 			go evm.StateDB.MutexThread(evm.StateDB.GetChannel(true), true, nil)
 		}
 		
@@ -224,8 +224,8 @@ func (st *StateTransition) TransitionDb() (ret []byte, usedGas uint64, failed bo
 		if evm.Context.IsDoCall == true {
 			var nil_hash common.Hash
 			var nil_address common.Address
-			ch_msg:=types.ChanMessage{
-				TxHash: nil_hash, ContractAddress: nil_address, LockName: 0, 
+			ch_msg:=types.ChanMsg{
+				TxHash: nil_hash, ContractAddr: nil_address, LockName: 0, 
 				LockType:"TERMINATION", IsLockBusy: false, Channel: nil,
 			}
     		evm.StateDB.GetChannel(true)<- ch_msg	

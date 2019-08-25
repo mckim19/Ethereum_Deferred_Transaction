@@ -15,7 +15,7 @@
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package ethapi
-
+ 
 import (
 	"bytes"
 	"context"
@@ -615,7 +615,11 @@ func (s *PublicBlockChainAPI) GetProof(ctx context.Context, address common.Addre
 // GetBlockByNumber returns the requested block. When blockNr is -1 the chain head is returned. When fullTx is true all
 // transactions in the block are returned in full detail, otherwise only the transaction hash is returned.
 func (s *PublicBlockChainAPI) GetBlockByNumber(ctx context.Context, blockNr rpc.BlockNumber, fullTx bool) (map[string]interface{}, error) {
+	fmt.Println("[api]\t[GetBlockByNumber]")
 	block, err := s.b.BlockByNumber(ctx, blockNr)
+	if blockNr != 0 {
+		fmt.Println("[api]\t[GetBlockByNumber] num of recInfo is ", len(block.RecInfos()))
+	}
 	if block != nil {
 		response, err := s.rpcOutputBlock(block, true, fullTx)
 		if err == nil && blockNr == rpc.PendingBlockNumber {
@@ -955,6 +959,10 @@ func RPCMarshalBlock(b *types.Block, inclTx bool, fullTx bool) (map[string]inter
 		"timestamp":        hexutil.Uint64(head.Time),
 		"transactionsRoot": head.TxHash,
 		"receiptsRoot":     head.ReceiptHash,
+		/*
+			OSDC parallel. Yoomee Ko
+		*/
+		//"recInfo":			b.RecInfo(),
 	}
 
 	if inclTx {
@@ -995,6 +1003,7 @@ func (s *PublicBlockChainAPI) rpcOutputBlock(b *types.Block, inclTx bool, fullTx
 		return nil, err
 	}
 	fields["totalDifficulty"] = (*hexutil.Big)(s.b.GetTd(b.Hash()))
+	fmt.Println(b.RecInfos())
 	return fields, err
 }
 

@@ -102,8 +102,8 @@ type StateDB struct {
 	StorageUpdates time.Duration
 	StorageCommits time.Duration
 
-	ch_com			chan types.ChanMessage
-	ch_com2			chan types.ChanMessage
+	ch_com			chan types.ChanMsg
+	ch_com2			chan types.ChanMsg
 }
 
 // Create a new state from a given trie.
@@ -120,8 +120,8 @@ func New(root common.Hash, db Database) (*StateDB, error) {
 		logs:              make(map[common.Hash][]*types.Log),
 		preimages:         make(map[common.Hash][]byte),
 		journal:           newJournal(),
-		ch_com:			   make(chan types.ChanMessage, 10),
-		ch_com2:		   make(chan types.ChanMessage, 10),
+		ch_com:			   make(chan types.ChanMsg, 10),
+		ch_com2:		   make(chan types.ChanMsg, 10),
 	}, nil
 }
 
@@ -163,39 +163,38 @@ func (self *StateDB) Reset(root common.Hash) error {
 	Description.
 
 */
-func (self *StateDB) MutexThread(com_channel chan types.ChanMessage, isDoCall bool, resChannel chan types.RecInfo){
+func (self *StateDB) MutexThread(com_channel chan types.ChanMsg, isDoCall bool, resChannel chan []*types.RecInfo){
 
-	LockRequestArray	:= make(map[types.RecInfoKey][]types.ChanMessage)
-	CurrentLockArray	:= make(map[types.RecInfoKey]types.ChanMessage)
-	recording_info		:= make(map[types.RecInfoKey][]common.Hash)
+	LockReq		:= make(map[types.ChanMsgKey][]types.ChanMsg)
+	CurrLock	:= make(map[types.ChanMsgKey]types.ChanMsg)
+
+	recInfo		:= make([]*types.RecInfo, 0, 0)
+ 
     for{
 		msg := <- com_channel
 		//fmt.Println("msg.LockType: ",msg.LockType,", msg.LockName: ",msg.LockName)
-		key:=types.RecInfoKey{
-			ContractAddress: msg.ContractAddress,
-			LockName: msg.LockName,
-		}
+		key:=types.ChanMsgKey{ContractAddr:msg.ContractAddr,LockName:msg.LockName}
 		if(msg.LockType =="LOCK") {
-			recording_info[key] = append(recording_info[key], msg.TxHash)
+			recInfo = append(recInfo, &types.RecInfo{ContractAddr:&msg.ContractAddr,LockName:msg.LockName,TxHash:&msg.TxHash})
 			msg.LockType="OK"
 			msg.IsLockBusy = true
-			if(CurrentLockArray[key].IsLockBusy == false){	//nobody holds this lock
-				CurrentLockArray[key] = msg
+			if(CurrLock[key].IsLockBusy == false){	//nobody holds this lock
+				CurrLock[key] = msg
 				msg.Channel <- msg
 			} else {								//somebody holds this lock	
-				LockRequestArray[key] = append(LockRequestArray[key], msg)
+				LockReq[key] = append(LockReq[key], msg)
 			}
 		}else if (msg.LockType=="UNLOCK"){
-			if(CurrentLockArray[key].TxHash == msg.TxHash){ //it must be a same transaction who have been locked
+			if(CurrLock[key].TxHash == msg.TxHash){ //it must be a same transaction who have been locked
 				msg.LockType="OK"
 				msg.Channel <- msg
-				if(len(LockRequestArray[key]) != 0){ //somebody is waiting
-					LockRequestArray[key][0].Channel <- msg
-					CurrentLockArray[key] = LockRequestArray[key][0]	//change current lock tx
-					LockRequestArray[key] = LockRequestArray[key][1:]	//get rid of the current lock tx from lock request array
+				if(len(LockReq[key]) != 0){ //somebody is waiting
+					LockReq[key][0].Channel <- msg
+					CurrLock[key] = LockReq[key][0]	//change current lock tx
+					LockReq[key] = LockReq[key][1:]	//get rid of the current lock tx from lock request array
 				} else {
 					msg.IsLockBusy = false
-					CurrentLockArray[key] = msg
+					CurrLock[key] = msg
 				}
 			} else { //somebody tries to unlock fakely
 				msg.LockType="NOT_OK"
@@ -203,7 +202,7 @@ func (self *StateDB) MutexThread(com_channel chan types.ChanMessage, isDoCall bo
 			}
 		}else if(msg.LockType=="TERMINATION") {
 			if(isDoCall!=true) { //when mining
-				resChannel<-recording_info
+				resChannel<-recInfo
 			}
 			return
 		}	
@@ -215,7 +214,7 @@ func (self *StateDB) MutexThread(com_channel chan types.ChanMessage, isDoCall bo
 	Description.
 	
 */
-func (self *StateDB)GetChannel(isDoCall bool)(chan types.ChanMessage){
+func (self *StateDB)GetChannel(isDoCall bool)(chan types.ChanMsg){
 	if isDoCall == true {
 		return self.ch_com2
 	}
@@ -227,7 +226,7 @@ func (self *StateDB)GetChannel(isDoCall bool)(chan types.ChanMessage){
 	Description.
 	
 */
-func (self *StateDB)SetChannel(new_ch chan types.ChanMessage, isDoCall bool){
+func (self *StateDB)SetChannel(new_ch chan types.ChanMsg, isDoCall bool){
 	if isDoCall == true {
 		self.ch_com2 = new_ch
 	}

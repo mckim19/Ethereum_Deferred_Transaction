@@ -47,6 +47,10 @@ type bodyPack struct {
 	peerID       string
 	transactions [][]*types.Transaction
 	uncles       [][]*types.Header
+	/*
+		OSDC Parallel. Yoomee Ko. 
+	*/
+	recInfos	 [][]*types.RecInfo
 }
 
 func (p *bodyPack) PeerId() string { return p.peerID }

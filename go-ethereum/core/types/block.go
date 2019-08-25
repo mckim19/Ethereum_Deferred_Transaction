@@ -25,6 +25,7 @@ import (
 	"sort"
 	"sync/atomic"
 	"time"
+	"fmt"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -122,13 +123,20 @@ func rlpHash(x interface{}) (h common.Hash) {
 type Body struct {
 	Transactions []*Transaction
 	Uncles       []*Header
+	/*
+		OSDC Parallel. Yoomee Ko.
+	*/
+	RecInfos 	 []*RecInfo
 }
-
 // Block represents an entire block in the Ethereum blockchain.
 type Block struct {
 	header       *Header
 	uncles       []*Header
 	transactions Transactions
+	/*
+		OSDC Parallel. Yoomee Ko.
+	*/
+	recInfos 	 []*RecInfo
 
 	// caches
 	hash atomic.Value
@@ -142,6 +150,8 @@ type Block struct {
 	// inter-peer block relay.
 	ReceivedAt   time.Time
 	ReceivedFrom interface{}
+
+	
 }
 
 // DeprecatedTd is an old relic for extracting the TD of a block. It is in the
@@ -162,6 +172,7 @@ type extblock struct {
 	Header *Header
 	Txs    []*Transaction
 	Uncles []*Header
+	RecInfos []*RecInfo
 }
 
 // [deprecated by eth/63]
@@ -171,6 +182,7 @@ type storageblock struct {
 	Txs    []*Transaction
 	Uncles []*Header
 	TD     *big.Int
+	RecInfos []*RecInfo
 }
 
 // NewBlock creates a new block. The input data is copied,
@@ -180,7 +192,7 @@ type storageblock struct {
 // The values of TxHash, UncleHash, ReceiptHash and Bloom in header
 // are ignored and set to values derived from the given txs, uncles
 // and receipts.
-func NewBlock(header *Header, txs []*Transaction, uncles []*Header, receipts []*Receipt) *Block {
+func NewBlock(header *Header, txs []*Transaction, uncles []*Header, receipts []*Receipt, recInfos []*RecInfo) *Block {
 	b := &Block{header: CopyHeader(header), td: new(big.Int)}
 
 	// TODO: panic if len(txs) != len(receipts)
@@ -208,7 +220,15 @@ func NewBlock(header *Header, txs []*Transaction, uncles []*Header, receipts []*
 			b.uncles[i] = CopyHeader(uncles[i])
 		}
 	}
-
+	/*
+		OSDC Parallel. Yoomee Ko.
+		Description.
+		Put recInfos in the block.
+	*/
+	if len(recInfos) != 0 {
+		b.recInfos = make([]*RecInfo, len(recInfos))
+		copy(b.recInfos, recInfos)
+	}
 	return b
 }
 
@@ -243,17 +263,20 @@ func (b *Block) DecodeRLP(s *rlp.Stream) error {
 	if err := s.Decode(&eb); err != nil {
 		return err
 	}
-	b.header, b.uncles, b.transactions = eb.Header, eb.Uncles, eb.Txs
+	b.header, b.uncles, b.transactions, b.recInfos = eb.Header, eb.Uncles, eb.Txs, eb.RecInfos
+	fmt.Println("[DecodeRLP]: num of recInfos",len(b.recInfos))
 	b.size.Store(common.StorageSize(rlp.ListSize(size)))
 	return nil
 }
 
 // EncodeRLP serializes b into the Ethereum RLP block format.
 func (b *Block) EncodeRLP(w io.Writer) error {
+	fmt.Println("[EncodeRLP]: num of recInfos",len(b.recInfos))
 	return rlp.Encode(w, extblock{
 		Header: b.header,
 		Txs:    b.transactions,
 		Uncles: b.uncles,
+		RecInfos:	b.recInfos,
 	})
 }
 
@@ -263,7 +286,7 @@ func (b *StorageBlock) DecodeRLP(s *rlp.Stream) error {
 	if err := s.Decode(&sb); err != nil {
 		return err
 	}
-	b.header, b.uncles, b.transactions, b.td = sb.Header, sb.Uncles, sb.Txs, sb.TD
+	b.header, b.uncles, b.transactions, b.td, b.recInfos = sb.Header, sb.Uncles, sb.Txs, sb.TD, sb.RecInfos
 	return nil
 }
 
@@ -281,6 +304,10 @@ func (b *Block) Transaction(hash common.Hash) *Transaction {
 	return nil
 }
 
+/*
+	OSDC Parallel. Yoomee Ko.
+*/
+func (b *Block) RecInfos() []*RecInfo   { return b.recInfos}
 func (b *Block) Number() *big.Int     { return new(big.Int).Set(b.header.Number) }
 func (b *Block) GasLimit() uint64     { return b.header.GasLimit }
 func (b *Block) GasUsed() uint64      { return b.header.GasUsed }
@@ -301,9 +328,12 @@ func (b *Block) Extra() []byte            { return common.CopyBytes(b.header.Ext
 
 func (b *Block) Header() *Header { return CopyHeader(b.header) }
 
+/*
+	OSDC Parallel. Yoomee Ko.
+*/
 // Body returns the non-header content of the block.
-func (b *Block) Body() *Body { return &Body{b.transactions, b.uncles} }
-
+func (b *Block) Body() *Body { return &Body{b.transactions, b.uncles, b.recInfos} }
+//func (b *Block) Body() *Body { return &Body{b.transactions, b.uncles} }
 // Size returns the true RLP encoded storage size of the block, either by encoding
 // and returning it, or returning a previsouly cached value.
 func (b *Block) Size() common.StorageSize {
@@ -339,17 +369,29 @@ func (b *Block) WithSeal(header *Header) *Block {
 		header:       &cpy,
 		transactions: b.transactions,
 		uncles:       b.uncles,
+		/*
+			OSDC Parallel. Yoomee Ko.
+		*/
+		recInfos:	  b.recInfos,
 	}
 }
 
 // WithBody returns a new block with the given transaction and uncle contents.
-func (b *Block) WithBody(transactions []*Transaction, uncles []*Header) *Block {
+func (b *Block) WithBody(transactions []*Transaction, uncles []*Header, recInfos []*RecInfo) *Block {
 	block := &Block{
 		header:       CopyHeader(b.header),
 		transactions: make([]*Transaction, len(transactions)),
 		uncles:       make([]*Header, len(uncles)),
+		/*
+			OSDC Parallel. Yoomee Ko.
+		*/
+		recInfos:	  make([]*RecInfo, len(recInfos)),
 	}
 	copy(block.transactions, transactions)
+	/*
+		OSDC Parallel. Yoomee Ko.
+	*/
+	copy(block.recInfos, recInfos)
 	for i := range uncles {
 		block.uncles[i] = CopyHeader(uncles[i])
 	}

@@ -552,18 +552,30 @@ func (pm *ProtocolManager) handleMsg(p *peer) error {
 		// Deliver them all to the downloader for queuing
 		transactions := make([][]*types.Transaction, len(request))
 		uncles := make([][]*types.Header, len(request))
+		/*
+			OSDC Parallel. Yoomee Ko.
+		*/
+		recInfos := make([][]*types.RecInfo, len(request))
 
 		for i, body := range request {
 			transactions[i] = body.Transactions
 			uncles[i] = body.Uncles
+			recInfos[i] = body.RecInfos
 		}
 		// Filter out any explicitly requested bodies, deliver the rest to the downloader
-		filter := len(transactions) > 0 || len(uncles) > 0
+		/*
+			OSDC Paralle. Yoomee Ko.
+		*/
+		filter := len(transactions) > 0 || len(uncles)>0 || len(recInfos) > 0
+		//filter := len(transactions) > 0 || len(uncles) > 0
 		if filter {
-			transactions, uncles = pm.fetcher.FilterBodies(p.id, transactions, uncles, time.Now())
+			transactions, uncles, recInfos = pm.fetcher.FilterBodies(p.id, transactions, uncles, recInfos, time.Now())
+			//transactions, uncles = pm.fetcher.FilterBodies(p.id, transactions, uncles, time.Now())
 		}
-		if len(transactions) > 0 || len(uncles) > 0 || !filter {
-			err := pm.downloader.DeliverBodies(p.id, transactions, uncles)
+		if len(transactions) > 0 || len(uncles) > 0 || len(recInfos)>0 || !filter {
+		//if len(transactions) > 0 || len(uncles) > 0 || !filter {
+			err := pm.downloader.DeliverBodies(p.id, transactions, uncles, recInfos)
+			//err := pm.downloader.DeliverBodies(p.id, transactions, uncles)
 			if err != nil {
 				log.Debug("Failed to deliver bodies", "err", err)
 			}

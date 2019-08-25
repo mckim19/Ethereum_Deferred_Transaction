@@ -121,18 +121,24 @@ func (p *FakePeer) RequestHeadersByNumber(number uint64, amount int, skip int, r
 
 // RequestBodies implements downloader.Peer, returning a batch of block bodies
 // corresponding to the specified block hashes.
+/*
+	OSDC Parallel. Yoomee Ko.
+*/
 func (p *FakePeer) RequestBodies(hashes []common.Hash) error {
 	var (
 		txs    [][]*types.Transaction
 		uncles [][]*types.Header
+		recInfos [][]*types.RecInfo
 	)
 	for _, hash := range hashes {
 		block := rawdb.ReadBlock(p.db, hash, *p.hc.GetBlockNumber(hash))
 
 		txs = append(txs, block.Transactions())
 		uncles = append(uncles, block.Uncles())
+		recInfos = append(recInfos, block.RecInfos())
 	}
-	p.dl.DeliverBodies(p.id, txs, uncles)
+	p.dl.DeliverBodies(p.id, txs, uncles, recInfos)
+	//p.dl.DeliverBodies(p.id, txs, uncles)
 	return nil
 }
 

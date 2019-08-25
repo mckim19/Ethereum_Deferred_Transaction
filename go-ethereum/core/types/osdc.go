@@ -20,6 +20,7 @@ import (
 	//"fmt"
 
 	"github.com/ethereum/go-ethereum/common"
+	"unsafe"
 )
 /*
 	OSDC parallel project. Hyojin Jeon.
@@ -30,13 +31,13 @@ import (
 	
 	
 */
-type ChanMessage struct {
+type ChanMsg struct {
 	TxHash			common.Hash
-	ContractAddress	common.Address	
-	LockName		int64
+	ContractAddr	common.Address	
+	LockName		uint64
 	LockType		string
 	IsLockBusy		bool
-	Channel			chan ChanMessage
+	Channel			chan ChanMsg
 }
 /*
 	OSDC parallel project. Hyojin Jeon.
@@ -44,32 +45,20 @@ type ChanMessage struct {
 	OSDC parallel project. Yoomee Ko.
 	Description.
 */
-type RecInfoKey struct{
-	ContractAddress 	common.Address
-	LockName			int64
+type RecInfo struct{
+	ContractAddr 		*common.Address
+	LockName			uint64
+	TxHash				*common.Hash
 }
-type RecInfo	map[RecInfoKey][]common.Hash
-
+func (r *RecInfo) Size() common.StorageSize {
+	size := common.StorageSize(unsafe.Sizeof(*r))
+	return size
+}
 /*
-// Receipt represents the results of a transaction.
-type Receipt struct {
-	// Consensus fields: These fields are defined by the Yellow Paper
-	PostState         []byte `json:"root"`
-	Status            uint64 `json:"status"`
-	CumulativeGasUsed uint64 `json:"cumulativeGasUsed" gencodec:"required"`
-	Bloom             Bloom  `json:"logsBloom"         gencodec:"required"`
-	Logs              []*Log `json:"logs"              gencodec:"required"`
-
-	// Implementation fields: These fields are added by geth when processing a transaction.
-	// They are stored in the chain database.
-	TxHash          common.Hash    `json:"transactionHash" gencodec:"required"`
-	ContractAddress common.Address `json:"contractAddress"`
-	GasUsed         uint64         `json:"gasUsed" gencodec:"required"`
-
-	// Inclusion information: These fields provide information about the inclusion of the
-	// transaction corresponding to this receipt.
-	BlockHash        common.Hash `json:"blockHash,omitempty"`
-	BlockNumber      *big.Int    `json:"blockNumber,omitempty"`
-	TransactionIndex uint        `json:"transactionIndex"`
-}
+	OSDC Parallel project. Yoomee Ko.
+	Description.
 */
+type ChanMsgKey struct{
+	ContractAddr 		common.Address
+	LockName			uint64
+}

@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"math/big"
+	"fmt"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -294,12 +295,19 @@ func ReadBody(db ethdb.Reader, hash common.Hash, number uint64) *types.Body {
 		log.Error("Invalid block body RLP", "hash", hash, "err", err)
 		return nil
 	}
+	//fmt.Println("[ReadBody] decoded body.RecInfos: ",body.RecInfos)
 	return body
 }
 
 // WriteBody stores a block body into the database.
 func WriteBody(db ethdb.KeyValueWriter, hash common.Hash, number uint64, body *types.Body) {
+	fmt.Println("[WriteBody] original body.RecInfos: ",body.RecInfos)
 	data, err := rlp.EncodeToBytes(body)
+	body_tmp := new(types.Body)
+	rlp.DecodeBytes(data,body_tmp)
+	fmt.Println("[WriteBody] decoded body.RecInfos: ",body_tmp.RecInfos)
+
+	//fmt.Println("WriteBody. The block Number is: ", number, ", The data: ", data)
 	if err != nil {
 		log.Crit("Failed to RLP encode body", "err", err)
 	}
@@ -475,7 +483,11 @@ func ReadBlock(db ethdb.Reader, hash common.Hash, number uint64) *types.Block {
 	if body == nil {
 		return nil
 	}
-	return types.NewBlockWithHeader(header).WithBody(body.Transactions, body.Uncles)
+	/*
+		OSDC Parallel. Yoomee Ko.
+	*/
+	return types.NewBlockWithHeader(header).WithBody(body.Transactions, body.Uncles, body.RecInfos)
+	//return types.NewBlockWithHeader(header).WithBody(body.Transactions, body.Uncles)
 }
 
 // WriteBlock serializes a block into the database, header and body separately.

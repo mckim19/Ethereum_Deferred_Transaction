@@ -726,9 +726,11 @@ func (bc *BlockChain) HasBlockAndState(hash common.Hash, number uint64) bool {
 func (bc *BlockChain) GetBlock(hash common.Hash, number uint64) *types.Block {
 	// Short circuit if the block's already in the cache, retrieve otherwise
 	if block, ok := bc.blockCache.Get(hash); ok {
+		fmt.Println("Blockchain]\t[GetBlock] Block number is ",number,". The block is cached!")
 		return block.(*types.Block)
 	}
 	block := rawdb.ReadBlock(bc.db, hash, number)
+	//fmt.Println("[Blockchain]\t[GetBlock] Block nubmer is ", number, ", Block is not cached! num of RecInfo is ",len(block.RecInfos()))
 	if block == nil {
 		return nil
 	}

@@ -95,7 +95,7 @@ type environment struct {
 		OSDC parallel. Yoomee Ko.
 		Description.
 	*/
-	recInfo   types.RecInfo
+	recInfos   []*types.RecInfo
 }
 
 // task contains all information for consensus engine sealing and result submitting.
@@ -475,15 +475,15 @@ func (w *worker) mainLoop() {
 					Description.
 					
 				*/
-				w.current.state.SetChannel(make(chan types.ChanMessage, 10),true)
+				w.current.state.SetChannel(make(chan types.ChanMsg, 10),true)
 				go w.current.state.MutexThread(w.current.state.GetChannel(true), true, nil)
 				c := make(chan bool)
 				go w.commitTransactions(txset, coinbase, nil, c)
 				<-c
 				var nil_hash common.Hash
 				var nil_address common.Address
-				msg:=types.ChanMessage{
-					TxHash: nil_hash, ContractAddress: nil_address, LockName: 0, LockType:"TERMINATION", 
+				msg:=types.ChanMsg{
+					TxHash: nil_hash, ContractAddr: nil_address, LockName: 0, LockType:"TERMINATION", 
 					IsLockBusy: false, Channel: nil,
 				}
     			w.current.state.GetChannel(true)<- msg
@@ -712,6 +712,10 @@ func (w *worker) updateSnapshot() {
 		w.current.txs,
 		uncles,
 		w.current.receipts,
+		/*
+			OSDC Parallel. Yoomee Ko.
+		*/
+		w.current.recInfos,
 	)
 
 	w.snapshotState = w.current.state.Copy()
@@ -989,7 +993,7 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 	
 */
 	//log.Info("[YOOMEE] The number of CPU number: ", runtime.GOMAXPROCS(0))
-	resChannel := make(chan types.RecInfo)
+	resChannel := make(chan []*types.RecInfo)
 	go w.current.state.MutexThread(w.current.state.GetChannel(false), false, resChannel)
 
 	c := make(chan bool, 4)
@@ -1050,12 +1054,12 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 	}
 	var nil_hash common.Hash
 	var nil_address common.Address
-	msg:=types.ChanMessage{
-		TxHash: nil_hash, ContractAddress: nil_address, LockName: 0, 
+	msg:=types.ChanMsg{
+		TxHash: nil_hash, ContractAddr: nil_address, LockName: 0, 
 		LockType:"TERMINATION", IsLockBusy: false, Channel: nil,
 	}
     w.current.state.GetChannel(false)<- msg
-    w.current.recInfo = <-resChannel
+    w.current.recInfos = <-resChannel
 
 	if true_flag == true {
 		return
@@ -1079,6 +1083,10 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 	w.commit(uncles, w.fullTaskHook, true, tstart)
 }
 
+/*
+	OSDC Parallel. Yoomee Ko.
+	Description.
+*/
 // commit runs any post-transaction state modifications, assembles the final block
 // and commits new work if consensus engine is running.
 func (w *worker) commit(uncles []*types.Header, interval func(), update bool, start time.Time) error {
@@ -1089,10 +1097,13 @@ func (w *worker) commit(uncles []*types.Header, interval func(), update bool, st
 		*receipts[i] = *l
 	}
 	s := w.current.state.Copy()
-	//recInfo := w.current.recInfo
-	//block, err := w.engine.FinalizeAndAssemble(w.chain, w.current.header, s, w.current.txs, uncles, w.current.receipts, w.current.recInfo)
-	block, err := w.engine.FinalizeAndAssemble(w.chain, w.current.header, s, w.current.txs, uncles, w.current.receipts)
-
+	recInfos := make([]*types.RecInfo, len(w.current.recInfos))
+	for i, l := range w.current.recInfos {
+		recInfos[i] = new(types.RecInfo)
+		*recInfos[i] = *l
+	}
+	block, err := w.engine.FinalizeAndAssemble(w.chain, w.current.header, s, w.current.txs, uncles, w.current.receipts, w.current.recInfos)
+	//block, err := w.engine.FinalizeAndAssemble(w.chain, w.current.header, s, w.current.txs, uncles, w.current.receipts)
 	if err != nil {
 		return err
 	}
@@ -1101,7 +1112,7 @@ func (w *worker) commit(uncles []*types.Header, interval func(), update bool, st
 			interval()
 		}
 		select {
-		//case w.taskCh <- &task{receipts: receipts, state: s, recInfo: recInfo, block: block, createdAt: time.Now()}:
+		//case w.taskCh <- &task{receipts: receipts, state: s, recInfos: recInfos, block: block, createdAt: time.Now()}:
 		case w.taskCh <- &task{receipts: receipts, state: s, block: block, createdAt: time.Now()}:
 			w.unconfirmed.Shift(block.NumberU64() - 1)
 

@@ -94,6 +94,10 @@ type bodyFilterTask struct {
 	peer         string                 // The source peer of block bodies
 	transactions [][]*types.Transaction // Collection of transactions per block bodies
 	uncles       [][]*types.Header      // Collection of uncles per block bodies
+	/*
+		OSDC Parallel. Yoomee Ko.
+	*/
+	recInfos 	 [][]*types.RecInfo
 	time         time.Time              // Arrival time of the blocks' contents
 }
 
@@ -246,29 +250,40 @@ func (f *Fetcher) FilterHeaders(peer string, headers []*types.Header, time time.
 
 // FilterBodies extracts all the block bodies that were explicitly requested by
 // the fetcher, returning those that should be handled differently.
-func (f *Fetcher) FilterBodies(peer string, transactions [][]*types.Transaction, uncles [][]*types.Header, time time.Time) ([][]*types.Transaction, [][]*types.Header) {
-	log.Trace("Filtering bodies", "peer", peer, "txs", len(transactions), "uncles", len(uncles))
-
+func (f *Fetcher) FilterBodies(peer string, transactions [][]*types.Transaction, uncles [][]*types.Header, recInfos [][]*types.RecInfo, time time.Time) ([][]*types.Transaction, [][]*types.Header, [][]*types.RecInfo) {
+	/*
+		OSDC Parallel. Yoomee Ko.
+	*/
+	log.Trace("Filtering bodies", "peer", peer, "txs", len(transactions), "uncles", len(uncles), "recInfos", len(recInfos))
+	//log.Trace("Filtering bodies", "peer", peer, "txs", len(transactions), "uncles", len(uncles))
 	// Send the filter channel to the fetcher
 	filter := make(chan *bodyFilterTask)
 
 	select {
 	case f.bodyFilter <- filter:
 	case <-f.quit:
-		return nil, nil
+		return nil, nil, nil
 	}
 	// Request the filtering of the body list
 	select {
-	case filter <- &bodyFilterTask{peer: peer, transactions: transactions, uncles: uncles, time: time}:
+	/*
+		OSDC Parallel. Yoomee Ko.
+	*/
+	case filter <- &bodyFilterTask{peer: peer, transactions: transactions, uncles: uncles, recInfos: recInfos, time: time}:
+	//case filter <- &bodyFilterTask{peer: peer, transactions: transactions, uncles: uncles, time: time}:
 	case <-f.quit:
-		return nil, nil
+		return nil, nil, nil
 	}
 	// Retrieve the bodies remaining after filtering
 	select {
+	/*
+		OSDC Parallel. Yoomee Ko.
+	*/
 	case task := <-filter:
-		return task.transactions, task.uncles
+		return task.transactions, task.uncles, task.recInfos
+		//return task.transactions, task.uncles
 	case <-f.quit:
-		return nil, nil
+		return nil, nil,nil
 	}
 }
 
@@ -514,7 +529,11 @@ func (f *Fetcher) loop() {
 			bodyFilterInMeter.Mark(int64(len(task.transactions)))
 
 			blocks := []*types.Block{}
-			for i := 0; i < len(task.transactions) && i < len(task.uncles); i++ {
+			/*
+				OSDC Parallel. Yoomee Ko.
+			*/
+			for i := 0; i < len(task.transactions) && i < len(task.uncles) && i<len(task.recInfos); i++ {
+			//for i := 0; i < len(task.transactions) && i < len(task.uncles); i++ {
 				// Match up a body to any possible completion request
 				matched := false
 
@@ -528,7 +547,7 @@ func (f *Fetcher) loop() {
 							matched = true
 
 							if f.getBlock(hash) == nil {
-								block := types.NewBlockWithHeader(announce.header).WithBody(task.transactions[i], task.uncles[i])
+								block := types.NewBlockWithHeader(announce.header).WithBody(task.transactions[i], task.uncles[i], task.recInfos[i])
 								block.ReceivedAt = task.time
 
 								blocks = append(blocks, block)
@@ -541,6 +560,10 @@ func (f *Fetcher) loop() {
 				if matched {
 					task.transactions = append(task.transactions[:i], task.transactions[i+1:]...)
 					task.uncles = append(task.uncles[:i], task.uncles[i+1:]...)
+					/*
+						OSDC Parallel. Yoomee Ko.
+					*/
+					task.recInfos = append(task.recInfos[:i], task.recInfos[i+1:]...)
 					i--
 					continue
 				}
