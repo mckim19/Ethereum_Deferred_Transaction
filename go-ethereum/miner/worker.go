@@ -35,7 +35,6 @@ import (
 	"github.com/ethereum/go-ethereum/event"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/core/vm"
 )
 
 const (
@@ -92,6 +91,11 @@ type environment struct {
 	header   *types.Header
 	txs      []*types.Transaction
 	receipts []*types.Receipt
+	/*
+		OSDC parallel. Yoomee Ko.
+		Description.
+	*/
+	recInfo   types.RecInfo
 }
 
 // task contains all information for consensus engine sealing and result submitting.
@@ -471,14 +475,17 @@ func (w *worker) mainLoop() {
 					Description.
 					
 				*/
-				w.current.state.SetChannel(make(chan vm.Message, 10),true)
-				go w.current.state.MutexThread(w.current.state.GetChannel(true), true)
+				w.current.state.SetChannel(make(chan types.ChanMessage, 10),true)
+				go w.current.state.MutexThread(w.current.state.GetChannel(true), true, nil)
 				c := make(chan bool)
 				go w.commitTransactions(txset, coinbase, nil, c)
 				<-c
 				var nil_hash common.Hash
 				var nil_address common.Address
-				msg:=vm.Message{TxHash: nil_hash, ContractAddress: nil_address, LockName: 0, LockType:"TERMINATION", IsLockBusy: false, Channel: nil}
+				msg:=types.ChanMessage{
+					TxHash: nil_hash, ContractAddress: nil_address, LockName: 0, LockType:"TERMINATION", 
+					IsLockBusy: false, Channel: nil,
+				}
     			w.current.state.GetChannel(true)<- msg
 
 				fmt.Println("After commitTransactions!")
@@ -982,7 +989,8 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 	
 */
 	//log.Info("[YOOMEE] The number of CPU number: ", runtime.GOMAXPROCS(0))
-	go w.current.state.MutexThread(w.current.state.GetChannel(false), false)
+	resChannel := make(chan types.RecInfo)
+	go w.current.state.MutexThread(w.current.state.GetChannel(false), false, resChannel)
 
 	c := make(chan bool, 4)
 	local_flag := false
@@ -1025,34 +1033,34 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 		go w.commitTransactions(txs1, w.coinbase, interrupt, c)
 		go w.commitTransactions(txs2, w.coinbase, interrupt, c)
 	}
-	if local_flag && remote_flag == true {
-		for i := 0; i<4; i++ {
-			select {
-			case ret := <-c:
-				if ret == true{
-					return
-				}
+	true_flag := false
+	if local_flag == true {
+		for i := 0; i<2; i++ {
+			if <-c == true{
+				true_flag = true
 			}
 		}
 	}
-	if local_flag && remote_flag == false {
+	if remote_flag == true {
 		for i := 0; i<2; i++ {
-			select {
-			case ret := <-c:
-				if ret == true{
-					return
-				}
+			if <-c == true{
+				true_flag = true
 			}
 		}
-
 	}
 	var nil_hash common.Hash
 	var nil_address common.Address
-	msg:=vm.Message{TxHash: nil_hash, ContractAddress: nil_address, LockName: 0, LockType:"TERMINATION", IsLockBusy: false, Channel: nil}
+	msg:=types.ChanMessage{
+		TxHash: nil_hash, ContractAddress: nil_address, LockName: 0, 
+		LockType:"TERMINATION", IsLockBusy: false, Channel: nil,
+	}
     w.current.state.GetChannel(false)<- msg
+    w.current.recInfo = <-resChannel
 
-	log.Info("<Yoomee> loop is ended!")
-	//go w.current.state.InitMapping()
+	if true_flag == true {
+		return
+	}
+
 	/*
 	//5. ORIGINAL METHOD!!
 	if len(localTxs) > 0 {
@@ -1081,7 +1089,10 @@ func (w *worker) commit(uncles []*types.Header, interval func(), update bool, st
 		*receipts[i] = *l
 	}
 	s := w.current.state.Copy()
+	//recInfo := w.current.recInfo
+	//block, err := w.engine.FinalizeAndAssemble(w.chain, w.current.header, s, w.current.txs, uncles, w.current.receipts, w.current.recInfo)
 	block, err := w.engine.FinalizeAndAssemble(w.chain, w.current.header, s, w.current.txs, uncles, w.current.receipts)
+
 	if err != nil {
 		return err
 	}
@@ -1090,6 +1101,7 @@ func (w *worker) commit(uncles []*types.Header, interval func(), update bool, st
 			interval()
 		}
 		select {
+		//case w.taskCh <- &task{receipts: receipts, state: s, recInfo: recInfo, block: block, createdAt: time.Now()}:
 		case w.taskCh <- &task{receipts: receipts, state: s, block: block, createdAt: time.Now()}:
 			w.unconfirmed.Shift(block.NumberU64() - 1)
 

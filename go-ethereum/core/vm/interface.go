@@ -69,9 +69,9 @@ type StateDB interface {
 	Description.
 	
 */
-	MutexThread(chan Message, bool)
-	GetChannel(bool) chan Message
-	SetChannel(chan Message, bool)
+	MutexThread(chan types.ChanMessage, bool, chan types.RecInfo)
+	GetChannel(bool) chan types.ChanMessage
+	SetChannel(chan types.ChanMessage, bool)
 }
 
 // CallContext provides a basic interface for the EVM calling conventions. The EVM

@@ -31,7 +31,6 @@ import (
 	"github.com/ethereum/go-ethereum/metrics"
 	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/ethereum/go-ethereum/trie"
-	"github.com/ethereum/go-ethereum/core/vm"
 )
 type revision struct {
 	id           int
@@ -103,13 +102,12 @@ type StateDB struct {
 	StorageUpdates time.Duration
 	StorageCommits time.Duration
 
-	ch_com			chan vm.Message
-	ch_com2			chan vm.Message
+	ch_com			chan types.ChanMessage
+	ch_com2			chan types.ChanMessage
 }
 
 // Create a new state from a given trie.
 func New(root common.Hash, db Database) (*StateDB, error) {
-	fmt.Println("new function of statedb executed!!")
 	tr, err := db.OpenTrie(root)
 	if err != nil {
 		return nil, err
@@ -122,8 +120,8 @@ func New(root common.Hash, db Database) (*StateDB, error) {
 		logs:              make(map[common.Hash][]*types.Log),
 		preimages:         make(map[common.Hash][]byte),
 		journal:           newJournal(),
-		ch_com:			   make(chan vm.Message, 10),
-		ch_com2:		   make(chan vm.Message, 10),
+		ch_com:			   make(chan types.ChanMessage, 10),
+		ch_com2:		   make(chan types.ChanMessage, 10),
 	}, nil
 }
 
@@ -157,16 +155,7 @@ func (self *StateDB) Reset(root common.Hash) error {
 	self.clearJournalAndRefund()
 	return nil
 }
-/*
-	OSDC parallel project. Hyojin Jeon.
-	Description.
-	OSDC parallel project. Yoomee Ko.
-	Description.
-*/
-type RecordingInfoStruct struct{
-	ContractAddress 	common.Address
-	LockName			int64
-}
+
 /*
 	OSDC parallel project. Hyojin Jeon.
 	Description.
@@ -174,16 +163,15 @@ type RecordingInfoStruct struct{
 	Description.
 
 */
-func (self *StateDB) MutexThread(com_channel chan vm.Message, isDoCall bool){
+func (self *StateDB) MutexThread(com_channel chan types.ChanMessage, isDoCall bool, resChannel chan types.RecInfo){
 
-	LockRequestArray	:= make(map[RecordingInfoStruct][]vm.Message)
-	CurrentLockArray	:= make(map[RecordingInfoStruct]vm.Message)
-	recording_info		:= make(map[RecordingInfoStruct][]common.Hash)
-	//com_channel			:= self.GetChannel(isDoCall)
+	LockRequestArray	:= make(map[types.RecInfoKey][]types.ChanMessage)
+	CurrentLockArray	:= make(map[types.RecInfoKey]types.ChanMessage)
+	recording_info		:= make(map[types.RecInfoKey][]common.Hash)
     for{
 		msg := <- com_channel
-		fmt.Println("msg.TxHash",msg.TxHash,"msg.LockType: ",msg.LockType,", msg.LockName: ",msg.LockName)
-		key:=RecordingInfoStruct{
+		//fmt.Println("msg.LockType: ",msg.LockType,", msg.LockName: ",msg.LockName)
+		key:=types.RecInfoKey{
 			ContractAddress: msg.ContractAddress,
 			LockName: msg.LockName,
 		}
@@ -191,7 +179,7 @@ func (self *StateDB) MutexThread(com_channel chan vm.Message, isDoCall bool){
 			recording_info[key] = append(recording_info[key], msg.TxHash)
 			msg.LockType="OK"
 			msg.IsLockBusy = true
-			if(CurrentLockArray[key].IsLockBusy == false){	//nobody holds this lock\
+			if(CurrentLockArray[key].IsLockBusy == false){	//nobody holds this lock
 				CurrentLockArray[key] = msg
 				msg.Channel <- msg
 			} else {								//somebody holds this lock	
@@ -214,9 +202,9 @@ func (self *StateDB) MutexThread(com_channel chan vm.Message, isDoCall bool){
 				msg.Channel <- msg
 			}
 		}else if(msg.LockType=="TERMINATION") {
-			//if(msg.isDoCall!=true) { //when mining
-
-			//}
+			if(isDoCall!=true) { //when mining
+				resChannel<-recording_info
+			}
 			return
 		}	
     }
@@ -227,7 +215,7 @@ func (self *StateDB) MutexThread(com_channel chan vm.Message, isDoCall bool){
 	Description.
 	
 */
-func (self *StateDB)GetChannel(isDoCall bool)(chan vm.Message){
+func (self *StateDB)GetChannel(isDoCall bool)(chan types.ChanMessage){
 	if isDoCall == true {
 		return self.ch_com2
 	}
@@ -239,7 +227,7 @@ func (self *StateDB)GetChannel(isDoCall bool)(chan vm.Message){
 	Description.
 	
 */
-func (self *StateDB)SetChannel(new_ch chan vm.Message, isDoCall bool){
+func (self *StateDB)SetChannel(new_ch chan types.ChanMessage, isDoCall bool){
 	if isDoCall == true {
 		self.ch_com2 = new_ch
 	}

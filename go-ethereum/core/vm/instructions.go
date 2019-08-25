@@ -885,23 +885,7 @@ func opSuicide(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memo
 	interpreter.evm.StateDB.Suicide(contract.Address())
 	return nil, nil
 }
-/*
-	OSDC parallel project. Hyojin Jeon.
-	Description.
 
-	OSDC parallel project. Yoomee Ko.
-	Description.
-	
-	
-*/
-type Message struct {
-	TxHash			common.Hash
-	ContractAddress	common.Address	
-	LockName		int64
-	LockType		string
-	IsLockBusy		bool
-	Channel			chan Message 
-}
 /*
 	OSDC parallel project. Hyojin Jeon.
 	Description.
@@ -912,7 +896,10 @@ func opLock(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory 
 	//fmt.Println("<opLock> IsDoCall=",interpreter.evm.IsDoCall)
 	ch_com := interpreter.evm.StateDB.GetChannel(interpreter.evm.IsDoCall)
 	param:= stack.pop().Int64()
-    msg:=Message{TxHash: interpreter.evm.Context.YMTxHash, ContractAddress: contract.Address(), LockName: param, LockType:"LOCK", IsLockBusy: false, Channel: make(chan Message, 10)}
+    msg:=types.ChanMessage{
+    	TxHash: interpreter.evm.Context.YMTxHash, ContractAddress: contract.Address(), 
+    	LockName: param, LockType:"LOCK", IsLockBusy: false, Channel: make(chan types.ChanMessage, 10),
+    }
     ch_com <- msg 
     //fmt.Println("opLock: send request!! ")
 
@@ -929,7 +916,10 @@ func opUnlock(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memor
 	//fmt.Println("<opUnlock> IsDoCall=",interpreter.evm.IsDoCall)
 	ch_com:=interpreter.evm.StateDB.GetChannel(interpreter.evm.IsDoCall)
 	param:= stack.pop().Int64()
-	msg:=Message{TxHash:interpreter.evm.Context.YMTxHash, ContractAddress: contract.Address(), LockName: param, LockType:"UNLOCK", IsLockBusy: false, Channel: make(chan Message,10)}
+	msg:=types.ChanMessage{
+		TxHash:interpreter.evm.Context.YMTxHash, ContractAddress: contract.Address(), 
+		LockName: param, LockType:"UNLOCK", IsLockBusy: false, Channel: make(chan types.ChanMessage,10),
+	}
 	ch_com<-msg
 	//fmt.Println("opUNLOCK: send request!!")
 
