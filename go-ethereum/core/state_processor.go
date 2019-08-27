@@ -17,7 +17,7 @@
 package core
 
 import (
-	//"fmt"
+	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/consensus"
 	"github.com/ethereum/go-ethereum/consensus/misc"
@@ -55,6 +55,7 @@ func NewStateProcessor(config *params.ChainConfig, bc *BlockChain, engine consen
 // returns the amount of gas that was used in the process. If any of the
 // transactions failed to execute due to insufficient gas it will return an error.
 func (p *StateProcessor) Process(block *types.Block, statedb *state.StateDB, cfg vm.Config) (types.Receipts, []*types.Log, uint64, error) {
+	fmt.Println("[StateProcessor][Process]")
 	var (
 		receipts types.Receipts
 		usedGas  = new(uint64)
@@ -66,7 +67,13 @@ func (p *StateProcessor) Process(block *types.Block, statedb *state.StateDB, cfg
 	if p.config.DAOForkSupport && p.config.DAOForkBlock != nil && p.config.DAOForkBlock.Cmp(block.Number()) == 0 {
 		misc.ApplyDAOHardFork(statedb)
 	}
+	/*
+		OSDC Paralle. Yoomee Ko.
+		Description
+	*/
 	// Iterate over and process the individual transactions
+	statedb.SetChannel(make(chan types.ChanMessage, 10), true)
+	go statedb.MutexThread(statedb.GetChannel(true), true, nil)
 	for i, tx := range block.Transactions() {
 		statedb.Prepare(tx.Hash(), block.Hash(), i)
 		receipt, _, err := ApplyTransaction(p.config, p.bc, nil, gp, statedb, header, tx, usedGas, cfg)
@@ -76,6 +83,13 @@ func (p *StateProcessor) Process(block *types.Block, statedb *state.StateDB, cfg
 		receipts = append(receipts, receipt)
 		allLogs = append(allLogs, receipt.Logs...)
 	}
+	var nil_hash common.Hash
+	var nil_address common.Address
+	msg:=types.ChanMessage{
+		TxHash: nil_hash, ContractAddress: nil_address, LockName: 0, LockType:"TERMINATION", 
+		IsLockBusy: false, Channel: nil,
+	}
+    statedb.GetChannel(true)<- msg
 	// Finalize the block, applying any consensus engine specific extras (e.g. block rewards)
 	p.engine.Finalize(p.bc, header, statedb, block.Transactions(), block.Uncles())
 
