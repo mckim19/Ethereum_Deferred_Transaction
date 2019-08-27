@@ -540,9 +540,11 @@ func (d *Downloader) syncWithPeer(p *peerConnection, hash common.Hash, td *big.I
 // spawnSync runs d.process and all given fetcher functions to completion in
 // separate goroutines, returning the first error that appears.
 func (d *Downloader) spawnSync(fetchers []func() error) error {
+	fmt.Println("[spawnSync] spawnSync start!")
 	errc := make(chan error, len(fetchers))
 	d.cancelWg.Add(len(fetchers))
 	for _, fn := range fetchers {
+		fmt.Println("[spawnSync] fetcher created")
 		fn := fn
 		go func() { defer d.cancelWg.Done(); errc <- fn() }()
 	}
@@ -561,6 +563,7 @@ func (d *Downloader) spawnSync(fetchers []func() error) error {
 	}
 	d.queue.Close()
 	d.Cancel()
+	fmt.Println("[spawnSync] spawnSync end!")
 	return err
 }
 
