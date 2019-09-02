@@ -19,7 +19,6 @@ package vm
 import (
 	"errors"
 	"math/big"
-	//"fmt"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
@@ -27,7 +26,6 @@ import (
 	"github.com/ethereum/go-ethereum/params"
 	"golang.org/x/crypto/sha3"
 )
-
 
 var (
 	bigZero                  = new(big.Int)

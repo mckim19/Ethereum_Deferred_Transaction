@@ -17,7 +17,6 @@
 package core
 
 import (
-	//"fmt"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -56,10 +55,6 @@ func NewEVMContext(msg Message, header *types.Header, chain ChainContext, author
 		Difficulty:  new(big.Int).Set(header.Difficulty),
 		GasLimit:    header.GasLimit,
 		GasPrice:    new(big.Int).Set(msg.GasPrice()),
-		/*
-			OSDC parallel. Yoomee Ko.
-		*/
-		IsDoCall:	 false,
 	}
 }
 
