@@ -31,7 +31,6 @@ import (
 	"github.com/ethereum/go-ethereum/metrics"
 	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/ethereum/go-ethereum/trie"
-	"github.com/ethereum/go-ethereum/core/vm"
 )
 type revision struct {
 	id           int
@@ -55,10 +54,7 @@ func (n *proofList) Put(key []byte, value []byte) error {
 func (n *proofList) Delete(key []byte) error {
 	panic("not supported")
 }
-type Map_channel_struct struct{
-	ContractAddress 	common.Address
-	LockNumber		int64
-}
+
 // StateDBs within the ethereum protocol are used to store anything
 // within the merkle trie. StateDBs take care of caching and storing
 // nested states. It's the general query interface to retrieve:
@@ -104,9 +100,9 @@ type StateDB struct {
 	StorageHashes  time.Duration
 	StorageUpdates time.Duration
 	StorageCommits time.Duration
-	ch_com		chan vm.Message
-	map_channel	map[Map_channel_struct]int64
 
+	ch_com			chan types.ChanMessage
+	ch_com2			chan types.ChanMessage
 }
 
 // Create a new state from a given trie.
@@ -123,8 +119,8 @@ func New(root common.Hash, db Database) (*StateDB, error) {
 		logs:              make(map[common.Hash][]*types.Log),
 		preimages:         make(map[common.Hash][]byte),
 		journal:           newJournal(),
-		ch_com:		   make(chan vm.Message,10),
-		map_channel:	   make(map[Map_channel_struct]int64),
+		ch_com:			   make(chan types.ChanMessage, 10),
+		ch_com2:		   make(chan types.ChanMessage, 10),
 	}, nil
 }
 
@@ -159,6 +155,83 @@ func (self *StateDB) Reset(root common.Hash) error {
 	return nil
 }
 
+/*
+	OSDC parallel project. Hyojin Jeon.
+	Description.
+	OSDC parallel project. Yoomee Ko.
+	Description.
+
+*/
+func (self *StateDB) MutexThread(com_channel chan types.ChanMessage, isDoCall bool, resChannel chan types.RecInfo){
+
+	LockRequestArray	:= make(map[types.RecInfoKey][]types.ChanMessage)
+	CurrentLockArray	:= make(map[types.RecInfoKey]types.ChanMessage)
+	recording_info		:= make(map[types.RecInfoKey][]common.Hash)
+    for{
+		msg := <- com_channel
+		//fmt.Println("msg.LockType: ",msg.LockType,", msg.LockName: ",msg.LockName)
+		key:=types.RecInfoKey{
+			ContractAddress: msg.ContractAddress,
+			LockName: msg.LockName,
+		}
+		if(msg.LockType =="LOCK") {
+			recording_info[key] = append(recording_info[key], msg.TxHash)
+			msg.LockType="OK"
+			msg.IsLockBusy = true
+			if(CurrentLockArray[key].IsLockBusy == false){	//nobody holds this lock
+				CurrentLockArray[key] = msg
+				msg.Channel <- msg
+			} else {								//somebody holds this lock	
+				LockRequestArray[key] = append(LockRequestArray[key], msg)
+			}
+		}else if (msg.LockType=="UNLOCK"){
+			if(CurrentLockArray[key].TxHash == msg.TxHash){ //it must be a same transaction who have been locked
+				msg.LockType="OK"
+				msg.Channel <- msg
+				if(len(LockRequestArray[key]) != 0){ //somebody is waiting
+					LockRequestArray[key][0].Channel <- msg
+					CurrentLockArray[key] = LockRequestArray[key][0]	//change current lock tx
+					LockRequestArray[key] = LockRequestArray[key][1:]	//get rid of the current lock tx from lock request array
+				} else {
+					msg.IsLockBusy = false
+					CurrentLockArray[key] = msg
+				}
+			} else { //somebody tries to unlock fakely
+				msg.LockType="NOT_OK"
+				msg.Channel <- msg
+			}
+		}else if(msg.LockType=="TERMINATION") {
+			if(isDoCall!=true) { //when mining
+				resChannel<-recording_info
+			}
+			return
+		}	
+    }
+}
+
+/*
+	OSDC parallel project. Hyojin Jeon.
+	Description.
+	
+*/
+func (self *StateDB)GetChannel(isDoCall bool)(chan types.ChanMessage){
+	if isDoCall == true {
+		return self.ch_com2
+	}
+	return self.ch_com
+	
+}
+/*
+	OSDC parallel project. Yoomee Ko.
+	Description.
+	
+*/
+func (self *StateDB)SetChannel(new_ch chan types.ChanMessage, isDoCall bool){
+	if isDoCall == true {
+		self.ch_com2 = new_ch
+	}
+	self.ch_com = new_ch
+}
 func (self *StateDB) AddLog(log *types.Log) {
 	self.journal.append(addLogChange{txhash: self.thash})
 
@@ -169,26 +242,7 @@ func (self *StateDB) AddLog(log *types.Log) {
 	self.logs[self.thash] = append(self.logs[self.thash], log)
 	self.logSize++
 }
-func (self *StateDB) Do_mapping(address common.Address, Locknumber int64)( int64){
-	key:=Map_channel_struct{ ContractAddress:  address, LockNumber: Locknumber}
-	if val, ok:= self.map_channel[key]; ok{
-		return val
-	}else{
-		self.map_channel[key]=int64(len(self.map_channel))
-		return self.map_channel[key]
-	}
 
-}
-func (self *StateDB)GetChannel()(chan vm.Message){
-	return self.ch_com
-}
-func (self *StateDB) InitMapping() {
-	fmt.Println("hhhhhhhhjjjjjjjjjjjj InitMapping:", self.map_channel)
-	for k:=range self.map_channel{
-		delete(self.map_channel,k)
-	}
-	fmt.Println("hhhhhhhhhhhhhhhjjjjjjjjjjjjjj InitMapping: ", self.map_channel)
-}
 func (self *StateDB) GetLogs(hash common.Hash) []*types.Log {
 	return self.logs[hash]
 }

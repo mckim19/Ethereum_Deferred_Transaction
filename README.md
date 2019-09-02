@@ -17,7 +17,6 @@ $ sudo apt-get install golang-go
 ```
 #### B.	편의를 위해 환경설정을 등록
 
-source 명령어는 재부팅을 하지 않는 이상 각 쉘마다 다시 실행해야 한다.
 ```
 $ cd $home
 $ echo "PATH=\$PATH:/home/`logname`/ethereum_parallel_execution/go-ethereum/build/bin" >> ~/.bashrc
@@ -38,6 +37,8 @@ $ grunt   //java script 빌드.. 소스를 수정한 후 grunt를 해주면 실�
 $ cd $home
 $ git clone https://github.com/ethereum/go-ethereum
 $ cd go-ethereum
+$ make all
+혹은 geth만 빌드하고 싶으면
 $ make geth
 ```
 ## 이더리움 테스트 환경 구축

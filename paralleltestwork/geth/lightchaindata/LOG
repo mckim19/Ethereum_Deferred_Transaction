@@ -1,8 +1,0 @@
-=============== Aug 14, 2019 (UTC) ===============
-10:41:10.288748 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
-10:41:10.292921 db@open opening
-10:41:10.296351 version@stat F·[] S·0B[] Sc·[]
-10:41:10.298691 db@janitor F·2 G·0
-10:41:10.298704 db@open done T·5.765389ms
-10:41:10.329340 db@close closing
-10:41:10.329538 db@close done T·201.847µs

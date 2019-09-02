@@ -64,10 +64,14 @@ type StateDB interface {
 	AddPreimage(common.Hash, []byte)
 
 	ForEachStorage(common.Address, func(common.Hash, common.Hash) bool) error
-
-	GetChannel() chan Message
-	Do_mapping(address common.Address, Locknumber int64)(int64)
-	InitMapping()
+/*
+	OSDC parallel project. Hyojin Jeon.
+	Description.
+	
+*/
+	MutexThread(chan types.ChanMessage, bool, chan types.RecInfo)
+	GetChannel(bool) chan types.ChanMessage
+	SetChannel(chan types.ChanMessage, bool)
 }
 
 // CallContext provides a basic interface for the EVM calling conventions. The EVM

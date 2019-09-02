@@ -35,7 +35,6 @@ import (
 	"github.com/ethereum/go-ethereum/event"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/core/vm"
 )
 
 const (
@@ -92,6 +91,11 @@ type environment struct {
 	header   *types.Header
 	txs      []*types.Transaction
 	receipts []*types.Receipt
+	/*
+		OSDC parallel. Yoomee Ko.
+		Description.
+	*/
+	recInfo   types.RecInfo
 }
 
 // task contains all information for consensus engine sealing and result submitting.
@@ -123,7 +127,6 @@ type intervalAdjust struct {
 
 // worker is the main object which takes care of submitting new work to consensus engine
 // and gathering the sealing result.
-var Message vm.Message
 type worker struct {
 	config      *Config
 	chainConfig *params.ChainConfig
@@ -177,8 +180,6 @@ type worker struct {
 	skipSealHook func(*task) bool                   // Method to decide whether skipping the sealing.
 	fullTaskHook func()                             // Method to call before pushing the full sealing task.
 	resubmitHook func(time.Duration, time.Duration) // Method to call upon updating resubmitting interval.
-	LockRequestArray	[][]vm.Message
-	CurrentLockArray	[]vm.Message
 }
 
 func newWorker(config *Config, chainConfig *params.ChainConfig, engine consensus.Engine, eth Backend, mux *event.TypeMux, isLocalBlock func(*types.Block) bool) *worker {
@@ -410,12 +411,9 @@ func (w *worker) mainLoop() {
 	for {
 		select {
 		case req := <-w.newWorkCh:
-			  fmt.Println("newWorkCh")
-			go w.MainThread()
 			w.commitNewWork(req.interrupt, req.noempty, req.timestamp)
 
 		case ev := <-w.chainSideCh:
-			 fmt.Println("chainSideCh")
 			// Short circuit for duplicate side blocks
 			if _, exist := w.localUncles[ev.Block.Hash()]; exist {
 				continue
@@ -455,7 +453,6 @@ func (w *worker) mainLoop() {
 			}
 
 		case ev := <-w.txsCh:
-			 fmt.Println("hhhhjjjjjtxsCh")
 			// Apply transactions to the pending state if we're not mining.
 			//
 			// Note all transactions received may not be continuous with transactions
@@ -472,8 +469,25 @@ func (w *worker) mainLoop() {
 					txs[acc] = append(txs[acc], tx)
 				}
 				txset := types.NewTransactionsByPriceAndNonce(w.current.signer, txs)
-				go w.MainThread()
-				w.commitTransactions(txset, coinbase, nil)
+				/*
+					OSDC parallel project. Hyojin Jeon.
+					Description.
+					
+				*/
+				w.current.state.SetChannel(make(chan types.ChanMessage, 10),true)
+				go w.current.state.MutexThread(w.current.state.GetChannel(true), true, nil)
+				c := make(chan bool)
+				go w.commitTransactions(txset, coinbase, nil, c)
+				<-c
+				var nil_hash common.Hash
+				var nil_address common.Address
+				msg:=types.ChanMessage{
+					TxHash: nil_hash, ContractAddress: nil_address, LockName: 0, LockType:"TERMINATION", 
+					IsLockBusy: false, Channel: nil,
+				}
+    			w.current.state.GetChannel(true)<- msg
+
+				fmt.Println("After commitTransactions!")
 				w.updateSnapshot()
 			} else {
 				// If clique is running in dev mode(period is 0), disable
@@ -486,7 +500,6 @@ func (w *worker) mainLoop() {
 
 		// System stopped
 		case <-w.exitCh:
-			fmt.Println("exiCh")
 			return
 		case <-w.txsSub.Err():
 			return
@@ -716,120 +729,19 @@ func (w *worker) commitTransaction(tx *types.Transaction, coinbase common.Addres
 
 	return receipt.Logs, nil
 }
-
-func (w *worker) commitTransactions(txs *types.TransactionsByPriceAndNonce, coinbase common.Address, interrupt *int32) bool {
+//func (w *worker) commitTransactions(txs *types.TransactionsByPriceAndNonce, coinbase common.Address, interrupt *int32) {
+func (w *worker) commitTransactions(txs *types.TransactionsByPriceAndNonce, coinbase common.Address, interrupt *int32, c chan<- bool) {
+	/*
 	// Short circuit if current is nil
 	if w.current == nil {
 		return true
 	}
-
-	if w.current.gasPool == nil {
-		w.current.gasPool = new(core.GasPool).AddGas(w.current.header.GasLimit)
-	}
-
-	var coalescedLogs []*types.Log
-
-	for {
-		// In the following three cases, we will interrupt the execution of the transaction.
-		// (1) new head block event arrival, the interrupt signal is 1
-		// (2) worker start or restart, the interrupt signal is 1
-		// (3) worker recreate the mining block with any newly arrived transactions, the interrupt signal is 2.
-		// For the first two cases, the semi-finished work will be discarded.
-		// For the third case, the semi-finished work will be submitted to the consensus engine.
-		if interrupt != nil && atomic.LoadInt32(interrupt) != commitInterruptNone {
-			// Notify resubmit loop to increase resubmitting interval due to too frequent commits.
-			if atomic.LoadInt32(interrupt) == commitInterruptResubmit {
-				ratio := float64(w.current.header.GasLimit-w.current.gasPool.Gas()) / float64(w.current.header.GasLimit)
-				if ratio < 0.1 {
-					ratio = 0.1
-				}
-				w.resubmitAdjustCh <- &intervalAdjust{
-					ratio: ratio,
-					inc:   true,
-				}
-			}
-			return atomic.LoadInt32(interrupt) == commitInterruptNewHead
-		}
-		// If we don't have enough gas for any further transactions then we're done
-		if w.current.gasPool.Gas() < params.TxGas {
-			log.Trace("Not enough gas for further transactions", "have", w.current.gasPool, "want", params.TxGas)
-			break
-		}
-		// Retrieve the next transaction and abort if all done
-		tx := txs.Peek()
-		if tx == nil {
-			break
-		}
-		// Error may be ignored here. The error has already been checked
-		// during transaction acceptance is the transaction pool.
-		//
-		// We use the eip155 signer regardless of the current hf.
-		from, _ := types.Sender(w.current.signer, tx)
-		// Check whether the tx is replay protected. If we're not in the EIP155 hf
-		// phase, start ignoring the sender until we do.
-		if tx.Protected() && !w.chainConfig.IsEIP155(w.current.header.Number) {
-			log.Trace("Ignoring reply protected transaction", "hash", tx.Hash(), "eip155", w.chainConfig.EIP155Block)
-
-			txs.Pop()
-			continue
-		}
-		// Start executing the transaction
-		w.current.state.Prepare(tx.Hash(), common.Hash{}, w.current.tcount)
-
-		logs, err := w.commitTransaction(tx, coinbase)
-		switch err {
-		case core.ErrGasLimitReached:
-			// Pop the current out-of-gas transaction without shifting in the next from the account
-			log.Trace("Gas limit exceeded for current block", "sender", from)
-			txs.Pop()
-
-		case core.ErrNonceTooLow:
-			// New head notification data race between the transaction pool and miner, shift
-			log.Trace("Skipping transaction with low nonce", "sender", from, "nonce", tx.Nonce())
-			txs.Shift()
-
-		case core.ErrNonceTooHigh:
-			// Reorg notification data race between the transaction pool and miner, skip account =
-			log.Trace("Skipping account with hight nonce", "sender", from, "nonce", tx.Nonce())
-			txs.Pop()
-
-		case nil:
-			// Everything ok, collect the logs and shift in the next transaction from the same account
-			coalescedLogs = append(coalescedLogs, logs...)
-			w.current.tcount++
-			txs.Shift()
-
-		default:
-			// Strange error, discard the transaction and get the next in line (note, the
-			// nonce-too-high clause will prevent us from executing in vain).
-			log.Debug("Transaction failed, account skipped", "hash", tx.Hash(), "err", err)
-			txs.Shift()
-		}
-	}
-
-	if !w.isRunning() && len(coalescedLogs) > 0 {
-		// We don't push the pendingLogsEvent while we are mining. The reason is that
-		// when we are mining, the worker will regenerate a mining block every 3 seconds.
-		// In order to avoid pushing the repeated pendingLog, we disable the pending log pushing.
-
-		// make a copy, the state caches the logs and these logs get "upgraded" from pending to mined
-		// logs by filling in the block hash when the block was mined by the local miner. This can
-		// cause a race condition if a log was "upgraded" before the PendingLogsEvent is processed.
-		cpy := make([]*types.Log, len(coalescedLogs))
-		for i, l := range coalescedLogs {
-			cpy[i] = new(types.Log)
-			*cpy[i] = *l
-		}
-		go w.mux.Post(core.PendingLogsEvent{Logs: cpy})
-	}
-	// Notify resubmit loop to decrease resubmitting interval if current interval is larger
-	// than the user-specified one.
-	if interrupt != nil {
-		w.resubmitAdjustCh <- &intervalAdjust{inc: false}
-	}
-	return false
-}
-func (w *worker) commitTransactions_goloop(txs *types.TransactionsByPriceAndNonce, coinbase common.Address, interrupt *int32, c chan<- bool) {
+	*/
+	/*
+		OSDC parallel project. Yoomee Ko.
+		Description.
+	
+	*/
 	// Short circuit if current is nil
 	if w.current == nil {
 		//return true
@@ -842,7 +754,6 @@ func (w *worker) commitTransactions_goloop(txs *types.TransactionsByPriceAndNonc
 
 	var coalescedLogs []*types.Log
 
-	log.Info("<Yoomee> hello this is commitTransactions_goloop.. I'm going to start for loop")
 	for {
 		// In the following three cases, we will interrupt the execution of the transaction.
 		// (1) new head block event arrival, the interrupt signal is 1
@@ -862,7 +773,13 @@ func (w *worker) commitTransactions_goloop(txs *types.TransactionsByPriceAndNonc
 					inc:   true,
 				}
 			}
+			/*
+				OSDC parallel project. Yoomee Ko.
+				Description.
+		
+			*/
 			//return atomic.LoadInt32(interrupt) == commitInterruptNewHead
+
 			c <- (atomic.LoadInt32(interrupt) == commitInterruptNewHead)
 
 		}
@@ -942,63 +859,15 @@ func (w *worker) commitTransactions_goloop(txs *types.TransactionsByPriceAndNonc
 	if interrupt != nil {
 		w.resubmitAdjustCh <- &intervalAdjust{inc: false}
 	}
+	/*
+		OSDC parallel project. Yoomee Ko.
+		Description.
+	*/
 	//return false
 	log.Info("this go loop is returning false!!")
 	c <-false
 }
-func (w *worker) MainThread(){
-	com_channel:= w.current.state.GetChannel()
-	fmt.Println("start finishg get channel")
-         for{
-		fmt.Println("hhhhhhhhhhhjjjjjjjjjjjj - CurrentLockArray, :",w.CurrentLockArray, "/ LockRequestARray: ",w.LockRequestArray)
-		msg:=<-com_channel
-		if(msg.LockType =="LOCK") {
-			fmt.Println("hhhhhhhhhhhjjjjjjjjjj MainThread: get LOCK message!!",len(w.LockRequestArray))
-			if(len(w.LockRequestArray)==0){
-			//row:=[]vm.Message{}
-				w.LockRequestArray=append(w.LockRequestArray,[]vm.Message{})
-				w.CurrentLockArray=append(w.CurrentLockArray, vm.Message{})
-			}
-			if( int(msg.LockName) >= len(w.LockRequestArray)){
-				//row:=[]vm.Message{}
-				for int(msg.LockName)>=len(w.LockRequestArray){
-					w.LockRequestArray=append(w.LockRequestArray,[]vm.Message{})
-					w.CurrentLockArray=append(w.CurrentLockArray,vm.Message{})
-				}
-			}
-			fmt.Println("hhhhhhhhhhhjjjjjjjjjjjj - CurrentLockArray, :",w.CurrentLockArray, "/ LockRequestARray: ",w.LockRequestArray)
-			fmt.Println("hhhhhhhhhhjjjjjjjhjjjjj- msg.LockName,: ",msg.LockName)  
 
-			w.LockRequestArray[msg.LockName]=append(w.LockRequestArray[msg.LockName],msg)
-			fmt.Println("hhhhhhhhhhhjjjjjjjjjjjj MainThread: put message to array!!")
-		}else if (msg.LockType=="UNLOCK"){
-			if( w.CurrentLockArray[msg.LockName]!=vm.Message{}){
-				w.CurrentLockArray[msg.LockName]=vm.Message{}
-			//	com_resChannel:=w.current.state.GetResChannel()
-				com_resChannel:=msg.Channel
-				msg.LockType="LOCK_OK"
-				com_resChannel<-msg
-				fmt.Println("hhhhhhhhhhhjjjjjjjjjjj MainThread: send UNLOCK response message")
-			}
-		 }
-		fmt.Println("jhhhhhhhhhhjjjjjjjj LockRequestArray: ", w.LockRequestArray, "CurrentLockarray:", w.CurrentLockArray)
-		fmt.Println(len(w.LockRequestArray)>0,  len(w.CurrentLockArray)==0)
-
-		//doing locking 
-		for  row_num:=0;row_num<len(w.LockRequestArray);row_num++{
-			if(len(w.LockRequestArray[row_num])>0 && w.CurrentLockArray[row_num]==vm.Message{} ){
-				msg:=w.LockRequestArray[row_num][0]
-				w.CurrentLockArray[msg.LockName]= w.LockRequestArray[msg.LockName][0]
-				w.LockRequestArray[msg.LockName]=append(w.LockRequestArray[msg.LockName][1:])
-				ch_resChannel:=msg.Channel
-				msg.LockType="UNLOCK_OK"
-				ch_resChannel<-msg
-				fmt.Println("hhhhhhhhjjjjjjjj MainThread: send LOCK response message")
-			}
-		}
-
-         }
-}
 // commitNewWork generates several new sealing tasks based on the parent block.
 func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) {
 	w.mu.RLock()
@@ -1111,7 +980,15 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 			localTxs[account] = txs
 		}
 	}
+/*
+	OSDC parallel project. Yoomee Ko.
+	Description.
+	
+*/
 	//log.Info("[YOOMEE] The number of CPU number: ", runtime.GOMAXPROCS(0))
+	resChannel := make(chan types.RecInfo)
+	go w.current.state.MutexThread(w.current.state.GetChannel(false), false, resChannel)
+
 	c := make(chan bool, 4)
 	local_flag := false
 	remote_flag := false
@@ -1132,13 +1009,8 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 		}
 		txs1 := types.NewTransactionsByPriceAndNonce(w.current.signer, localTxs1)
 		txs2 := types.NewTransactionsByPriceAndNonce(w.current.signer, localTxs2)
-		fmt.Println("hhhhhhhhhhhhhhhhhhhhjjjjjjjjjjjj goloop:tx1 ", txs1)
-		fmt.Println("hhhhhhhhhhhhhhhhhhhhjjjjjjjjjjjj goloop:tx2 ", txs2)
-
-		go w.commitTransactions_goloop(txs1, w.coinbase, interrupt, c)
-		log.Info("<Yoomee> localTxs: w.commitTransactions_goloop(txs1, w.coinbase, interrupt, c)")
-		go w.commitTransactions_goloop(txs2, w.coinbase, interrupt, c)
-		log.Info("<Yoomee> localTxs: w.commitTransactions_goloop(txs2, w.coinbase, interrupt, c)")
+		go w.commitTransactions(txs1, w.coinbase, interrupt, c)
+		go w.commitTransactions(txs2, w.coinbase, interrupt, c)
 	}
 	if len(remoteTxs) > 0 {
 		remote_flag = true
@@ -1155,36 +1027,37 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 		}
 		txs1 := types.NewTransactionsByPriceAndNonce(w.current.signer, remoteTxs1)
 		txs2 := types.NewTransactionsByPriceAndNonce(w.current.signer, remoteTxs2)
-		go w.commitTransactions_goloop(txs1, w.coinbase, interrupt, c)
-		log.Info("<Yoomee> remotTxs: w.commitTransactions_goloop(txs1, w.coinbase, interrupt, c)")
-		go w.commitTransactions_goloop(txs2, w.coinbase, interrupt, c)
-		log.Info("<Yoomee> remotTxs: w.commitTransactions_goloop(txs2, w.coinbase, interrupt, c)")
+		go w.commitTransactions(txs1, w.coinbase, interrupt, c)
+		go w.commitTransactions(txs2, w.coinbase, interrupt, c)
 	}
-	if local_flag && remote_flag == true {
-		for i := 0; i<4; i++ {
-			select {
-			case ret := <-c:
-				if ret == true{
-					return
-				}
-			}
-		}
-	}
-	if local_flag && remote_flag == false {
+	true_flag := false
+	if local_flag == true {
 		for i := 0; i<2; i++ {
-			select {
-			case ret := <-c:
-				if ret == true{
-					return
-				}
+			if <-c == true{
+				true_flag = true
 			}
 		}
-
 	}
-	log.Info("<Yoomee> loop is ended!")
-	go w.current.state.InitMapping()
+	if remote_flag == true {
+		for i := 0; i<2; i++ {
+			if <-c == true{
+				true_flag = true
+			}
+		}
+	}
+	var nil_hash common.Hash
+	var nil_address common.Address
+	msg:=types.ChanMessage{
+		TxHash: nil_hash, ContractAddress: nil_address, LockName: 0, 
+		LockType:"TERMINATION", IsLockBusy: false, Channel: nil,
+	}
+    w.current.state.GetChannel(false)<- msg
+    w.current.recInfo = <-resChannel
 
-	
+	if true_flag == true {
+		return
+	}
+
 	/*
 	//5. ORIGINAL METHOD!!
 	if len(localTxs) > 0 {
@@ -1213,7 +1086,10 @@ func (w *worker) commit(uncles []*types.Header, interval func(), update bool, st
 		*receipts[i] = *l
 	}
 	s := w.current.state.Copy()
+	//recInfo := w.current.recInfo
+	//block, err := w.engine.FinalizeAndAssemble(w.chain, w.current.header, s, w.current.txs, uncles, w.current.receipts, w.current.recInfo)
 	block, err := w.engine.FinalizeAndAssemble(w.chain, w.current.header, s, w.current.txs, uncles, w.current.receipts)
+
 	if err != nil {
 		return err
 	}
@@ -1222,6 +1098,7 @@ func (w *worker) commit(uncles []*types.Header, interval func(), update bool, st
 			interval()
 		}
 		select {
+		//case w.taskCh <- &task{receipts: receipts, state: s, recInfo: recInfo, block: block, createdAt: time.Now()}:
 		case w.taskCh <- &task{receipts: receipts, state: s, block: block, createdAt: time.Now()}:
 			w.unconfirmed.Shift(block.NumberU64() - 1)
 

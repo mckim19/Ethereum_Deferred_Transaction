@@ -1104,6 +1104,11 @@ func newFrontierInstructionSet() [256]operation {
 			valid:      true,
 			writes:     true,
 		},
+/*
+	OSDC parallel project. Yoomee Ko.
+	Description.
+	
+*/
 		LOCK: {
 			execute:	opLock,
 			//dynamicGas:	gasLock

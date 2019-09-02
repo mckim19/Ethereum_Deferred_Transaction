@@ -88,6 +88,13 @@ type Context struct {
 	BlockNumber *big.Int       // Provides information for NUMBER
 	Time        *big.Int       // Provides information for TIME
 	Difficulty  *big.Int       // Provides information for DIFFICULTY
+
+	/*
+		OSDC parallel. Yoomee Ko.
+	*/
+	// OSDC information
+	YMTxHash		common.Hash
+	IsDoCall	bool
 }
 
 // EVM is the Ethereum Virtual Machine base object and provides
@@ -174,6 +181,7 @@ func (evm *EVM) Interpreter() Interpreter {
 	return evm.interpreter
 }
 
+
 // Call executes the contract associated with the addr with the given input as
 // parameters. It also handles any necessary value transfer required and takes
 // the necessary steps to create accounts and reverses the state in case of an
@@ -228,6 +236,8 @@ func (evm *EVM) Call(caller ContractRef, addr common.Address, input []byte, gas 
 			evm.vmConfig.Tracer.CaptureEnd(ret, gas-contract.Gas, time.Since(start), err)
 		}()
 	}
+
+	// to returns the recipient of the message.
 	ret, err = run(evm, contract, input, false)
 
 	// When an error was returned by the EVM or when setting the creation code
