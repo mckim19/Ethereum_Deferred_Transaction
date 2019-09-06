@@ -23,7 +23,7 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
-	"fmt"
+	//"fmt"
 
 	mapset "github.com/deckarep/golang-set"
 	"github.com/ethereum/go-ethereum/common"
@@ -95,7 +95,7 @@ type environment struct {
 		OSDC parallel. Yoomee Ko.
 		Description.
 	*/
-	recInfo   types.RecInfo
+	recInfo   state.RecInfo
 }
 
 // task contains all information for consensus engine sealing and result submitting.
@@ -474,20 +474,11 @@ func (w *worker) mainLoop() {
 					Description.
 					
 				*/
-				w.current.state.SetChannel(make(chan types.ChanMessage, 10),true)
-				go w.current.state.MutexThread(w.current.state.GetChannel(true), true, nil)
+				w.current.state.StartMutexThread(2, nil)
 				c := make(chan bool)
 				go w.commitTransactions(txset, coinbase, nil, c)
 				<-c
-				var nil_hash common.Hash
-				var nil_address common.Address
-				msg:=types.ChanMessage{
-					TxHash: nil_hash, ContractAddress: nil_address, LockName: 0, LockType:"TERMINATION", 
-					IsLockBusy: false, Channel: nil,
-				}
-    			w.current.state.GetChannel(true)<- msg
-
-				fmt.Println("After commitTransactions!")
+				w.current.state.TerminateMutexThread(2)
 				w.updateSnapshot()
 			} else {
 				// If clique is running in dev mode(period is 0), disable
@@ -986,8 +977,8 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 	
 */
 	//log.Info("[YOOMEE] The number of CPU number: ", runtime.GOMAXPROCS(0))
-	resChannel := make(chan types.RecInfo)
-	go w.current.state.MutexThread(w.current.state.GetChannel(false), false, resChannel)
+	resChannel := make(chan state.RecInfo)
+	w.current.state.StartMutexThread(1, resChannel)
 
 	c := make(chan bool, 4)
 	local_flag := false
@@ -1045,13 +1036,7 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 			}
 		}
 	}
-	var nil_hash common.Hash
-	var nil_address common.Address
-	msg:=types.ChanMessage{
-		TxHash: nil_hash, ContractAddress: nil_address, LockName: 0, 
-		LockType:"TERMINATION", IsLockBusy: false, Channel: nil,
-	}
-    w.current.state.GetChannel(false)<- msg
+	w.current.state.TerminateMutexThread(1)
     w.current.recInfo = <-resChannel
 
 	if true_flag == true {

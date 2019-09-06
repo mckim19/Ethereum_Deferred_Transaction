@@ -25,7 +25,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/core/types"
 )
 
 var (
@@ -217,22 +216,15 @@ func (st *StateTransition) TransitionDb() (ret []byte, usedGas uint64, failed bo
 			Description.
 		*/
 		if evm.Context.IsDoCall == true {
-			evm.StateDB.SetChannel(make(chan types.ChanMessage, 10), true)
-			go evm.StateDB.MutexThread(evm.StateDB.GetChannel(true), true, nil)
+			evm.StateDB.StartMutexThread(3, nil)
 		}
-		
+
 		ret, st.gas, vmerr = evm.Call(sender, st.to(), st.data, st.gas, st.value)
-		
+
 		if evm.Context.IsDoCall == true {
-			var nil_hash common.Hash
-			var nil_address common.Address
-			ch_msg:=types.ChanMessage{
-				TxHash: nil_hash, ContractAddress: nil_address, LockName: 0, 
-				LockType:"TERMINATION", IsLockBusy: false, Channel: nil,
-			}
-    		evm.StateDB.GetChannel(true)<- ch_msg	
+			evm.StateDB.TerminateMutexThread(3)
 		}
- 	
+
 	}
 	if vmerr != nil {
 		log.Debug("VM returned with error", "err", vmerr)

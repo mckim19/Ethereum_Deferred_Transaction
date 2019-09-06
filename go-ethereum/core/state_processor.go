@@ -70,8 +70,7 @@ func (p *StateProcessor) Process(block *types.Block, statedb *state.StateDB, cfg
 		Description
 	*/
 	// Iterate over and process the individual transactions
-	statedb.SetChannel(make(chan types.ChanMessage, 10), true)
-	go statedb.MutexThread(statedb.GetChannel(true), true, nil)
+	statedb.StartMutexThread(0, nil)
 	for i, tx := range block.Transactions() {
 		statedb.Prepare(tx.Hash(), block.Hash(), i)
 		receipt, _, err := ApplyTransaction(p.config, p.bc, nil, gp, statedb, header, tx, usedGas, cfg)
@@ -81,13 +80,7 @@ func (p *StateProcessor) Process(block *types.Block, statedb *state.StateDB, cfg
 		receipts = append(receipts, receipt)
 		allLogs = append(allLogs, receipt.Logs...)
 	}
-	var nil_hash common.Hash
-	var nil_address common.Address
-	msg:=types.ChanMessage{
-		TxHash: nil_hash, ContractAddress: nil_address, LockName: 0, LockType:"TERMINATION", 
-		IsLockBusy: false, Channel: nil,
-	}
-    statedb.GetChannel(true)<- msg
+	statedb.TerminateMutexThread(0)
 	// Finalize the block, applying any consensus engine specific extras (e.g. block rewards)
 	p.engine.Finalize(p.bc, header, statedb, block.Transactions(), block.Uncles())
 

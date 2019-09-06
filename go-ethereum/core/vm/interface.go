@@ -21,6 +21,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/core/state"
 )
 
 // StateDB is an EVM database for full state querying.
@@ -69,9 +70,11 @@ type StateDB interface {
 	Description.
 	
 */
-	MutexThread(chan types.ChanMessage, bool, chan types.RecInfo)
-	GetChannel(bool) chan types.ChanMessage
-	SetChannel(chan types.ChanMessage, bool)
+	MutexThread(chan state.ChanMessage, bool, chan state.RecInfo)
+	GetChannel(bool) chan state.ChanMessage
+	SetChannel(chan state.ChanMessage, bool)
+	StartMutexThread(int, chan state.RecInfo)
+	TerminateMutexThread(int)
 }
 
 // CallContext provides a basic interface for the EVM calling conventions. The EVM
