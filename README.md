@@ -116,7 +116,7 @@ $ eth.getTransaction("트랜잭션 주소")
 $ eth.getTransactionReceipt("트랜잭션 주소") //배포한 contract의 주소를 보기 위해 주로 사용
 $ eth.getCode("컨트랙트 주소") //배포한 contract의 바이트코드를 확인하기 위해 주로 사용
 ```
-### 6. geth를 통한 Contract 생성방법
+### 6. geth를 통한 Contract 생성방법 (TODO: 편의를 위해 javascript(+nodejs)로 변경함, update 필요)
 ```
 remix를 사용하여 contract를 deploy하면 deploy 할 때마다 라이브러리 contract도 계속 새로 생성되는 단점이 존재한다. 
 mutex 컨트랙트가 난무하는 것을 방지하기 위해 geth에서 contract을 deploy하는 것을 선택하였다.
@@ -132,7 +132,7 @@ $ var bytecode = '0x608060405234801561001057600080fd5b5061048f806100206000396000
 $ var deploy = {from:eth.coinbase, data:bytecode, gas: 2000000}
 $ var contract_instance = contract.new("DISQUALIFIED!", deploy)
 ```
-### 7. contract 함수 호출
+### 7. contract 함수 호출 (TODO: 편의를 위해 javascript(+nodejs)로 변경함, update 필요)
 #### A. contract 객체 생성
 contract 함수를 호출하기 위해서는 contract의 abi와 컨트랙트 주소가 필요하다.
 여기서는 vote 컨트랙트를 사용하였다. abi와 address는 6번을 통해 알아내야 한다.
@@ -177,99 +177,25 @@ $ git add *
 $ git commit -m “Ethereum 추가”
 $ git push
 ```
-### 2.	다른 사람의 git 설치 및 clone 방법
-#### A.	Git 설치 및 초기 설정
-```
-$ sudo apt-get install git
-$ git config --global user.name "John Doe"
-$ git config --global user.email johndoe@example.com
-```
-#### B.	Gitlab 시 ssh로 접근하는 것이 편하므로 내 가상머신(컴퓨터)에서 ssh 키 생성 후 gitlab에 등록해줌
-```
-참고 - https://dejavuqa.tistory.com/139
-```
-```
-$ ssh-keygen -t rsa -C "GitLab" -b 4096
-```
-#### C.	git repository를 ssh 버전으로 git clone
-```
-$ git clone git@gitlab.com:yoomeeko/ethereum_parallel_execution.git
-```
-### 3.	git 수정 후 commit 및 push 방법
+### 2. git 명령어
+#### A.	git 수정 후 commit 및 push 방법
 ```
 $ git add *
 $ git commit -m “added ~~”
 $ git push
 ```
-### 4.	git 최신버전 가져오기
+#### B.	git 최신버전 가져오기
 ```
 $ git pull
 ```
-## 스마트 컨트랙트
-### 1. mutex 라이브러리
+
+## solc 소스코드 컴파일
 ```
-pragma solidity ^0.5.4;
-library mutex {
-    struct mutex_v
-    {
-        uint L;
-    }
-    function lock(mutex_v storage a) public {
-        while(a.L == 0){}
-        a.L=1;
-    }
-    function unlock(mutex_v storage a) public {
-        a.L=0;
-    }
-}
-```
-### 2. voting_v1.sol
-```
-참조 사이트1 - 라이브러리 사용법: https://solidity-kr.readthedocs.io/ko/latest/contracts.html?highlight=library#libraries
-참조 사이트2 - 라이브러리 링크 방법: https://medium.com/coinmonks/all-you-should-know-about-libraries-in-solidity-dd8bc953eae7
-참조 사이트3 - geth console에서 contract 생성방법: https://medium.com/mercuryprotocol/dev-highlights-of-this-week-cb33e58c745f
---> npm install -g solc가 필요함
-참조 사이트4 - remix 라이브러리 생성법: https://ethereum.stackexchange.com/questions/12299/how-does-solidity-online-compiler-link-libraries
-```
-```
-pragma solidity ^0.5.4;
-//We believe voters are innocent.
-import {mutex} from "./mutex.sol";
-contract C {
-    using mutex for *;
-    uint constant POPULATION_NUM=5;
-    uint[3] candidate;
-    uint v;
-    bool final_flag;
-    mutex.mutex_v x;
-    mutex.mutex_v y;
-    mutex.mutex_v z;
-    
-    function vote(uint candidate_num) public returns (bool)
-    {
-        /* x,y,z does not have to store sequence! */
-        /* only v have to store sequence! */
-        mutex.lock(x);
-        if (v >= POPULATION_NUM)
-        {
-            mutex.unlock(x);
-            return false;
-        }
-        v++;
-        mutex.unlock(x);
-        
-        mutex.lock(y);
-        if(v == POPULATION_NUM)
-            final_flag = true;
-        mutex.unlock(y);
-        
-        mutex.lock(z);
-        candidate[candidate_num]+=1;
-        mutex.unlock(z);
-        //local_op(candidate[candidate],plus,1);       
-        return true;
-    }
-}
+$ cd ethereum_parallel_execution/solidity
+$ ./scripts/install_deps.sh
+$ mkdir build
+$ cd build
+$ cmake .. && make
 ```
 
 ## Block explorer
