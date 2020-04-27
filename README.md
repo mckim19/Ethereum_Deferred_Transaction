@@ -2,27 +2,37 @@
 
 이더리움의 실행 부분을 병렬로 처리하는 것이 목적입니다.
 
-환경
-
-    18.04.02 LTS live-server
+operating system: 18.04.02 LTS live-server
+golang: >=1.10
     
-## 이더리움 빌드방법
+## geth, solidity 설치 -> github을 clone한 기본폴더에서 시작함을 전제
 
 ### 1. Go 설치
-#### A.	https://github.com/golang/go/wiki/Ubuntu
+golang 설치. golang version은 1.10 이상이다.
 ```
 $ sudo add-apt-repository ppa:longsleep/golang-backports
 $ sudo apt-get update
 $ sudo apt-get install golang-go
 ```
-#### B.	편의를 위해 환경설정을 등록
-
+편의를 위해 환경설정을 등록.
 ```
 $ cd $home
 $ echo "PATH=\$PATH:/home/`logname`/ethereum_parallel_execution/go-ethereum/build/bin" >> ~/.bashrc
 $ source .bashrc
 ```
-## solidity 라이브러리 컴파일
+### 2. github clone
+```
+$ git clone <github address>
+```
+### 3. geth 컴파일
+```
+$ cd go-ethereum
+$ make all
+혹은 geth만 빌드하고 싶으면
+$ make geth
+```
+### 4. solidity 라이브러리 컴파일
+solc 컴파일러를 컨트랙트 코드가 위치한 폴더에 두어 해당 폴더에서 컴파일하도록 함. 환경변수 등록하여 사용하여도 무방
 ```
 $ cd ethereum_parallel_execution/solidity
 $ ./scripts/install_deps.sh
@@ -32,6 +42,7 @@ $ cd build
 $ cmake .. && make
 $ cp solc/solc ../../../sol_file
 ```
+
 ## 이더리움 테스트 환경 구축
 단순히 병렬 처리가 가능한지를 보기 위한 것이므로 no-discover 옵션으로 public network를 구축해서 사용한다. Network Id는 940625로 사용한다.
 ```
