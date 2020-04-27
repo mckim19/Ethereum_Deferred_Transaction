@@ -22,24 +22,15 @@ $ cd $home
 $ echo "PATH=\$PATH:/home/`logname`/ethereum_parallel_execution/go-ethereum/build/bin" >> ~/.bashrc
 $ source .bashrc
 ```
-### 2.	Ethereum Network Stats 설치
-Eth-netstats는 이더리움 네트워크 상태를 추적하기 위한 인터페이스로 인터페이스는 웹으로 실행되며, 이더리움 노드와 통신하기 위하여 웹소켓을 사용한다. 따라서 노드에서 eth-netstats에 등록하기 위하여 서로 약속된 WS_SECRET이라는 환경변수를 이용한다. 만약 가상머신을 사용하고 있다면 포트 포워딩을 해줘야 한다. 가상머신 네트워크 어댑터에서 내부 3000번 포트와 연결해주는 외부 port를 설정해준다. 만약 어떻게 하는지 모르면 인터넷을 검색하거나 다른 사람에게 물어봐라.
+## solidity 라이브러리 컴파일
 ```
-$ cd $home
-$ sudo apt install npm node-grunt-cli
-$ git clone https://github.com/cubedro/eth-netstats
-$ cd ~/eth-netstats
-$ npm install
-$ grunt   //java script 빌드.. 소스를 수정한 후 grunt를 해주면 실시간 반영됨
-```
-### 3.	이더리움 소스코드 다운로드 및 초기 컴파일 진행
-```
-$ cd $home
-$ git clone https://github.com/ethereum/go-ethereum
-$ cd go-ethereum
-$ make all
-혹은 geth만 빌드하고 싶으면
-$ make geth
+$ cd ethereum_parallel_execution/solidity
+$ ./scripts/install_deps.sh
+$ sudo apt remove --purge libz3-dev
+$ mkdir build
+$ cd build
+$ cmake .. && make
+$ cp solc/solc ../../../sol_file
 ```
 ## 이더리움 테스트 환경 구축
 단순히 병렬 처리가 가능한지를 보기 위한 것이므로 no-discover 옵션으로 public network를 구축해서 사용한다. Network Id는 940625로 사용한다.
@@ -189,15 +180,7 @@ $ git push
 $ git pull
 ```
 
-## solc 라이브러리 컴파일
-```
-$ cd ethereum_parallel_execution/solidity
-$ ./scripts/install_deps.sh
-$ sudo apt remove --purge libz3-dev
-$ mkdir build
-$ cd build
-$ cmake .. && make
-```
+
 
 ## Block explorer
    block explorer는 블록정보, 블록 안에 담겨 있는 트랜잭션 정보, account 정보를 ui로 예쁘게 볼 수 있는 툴을 말한다. 
