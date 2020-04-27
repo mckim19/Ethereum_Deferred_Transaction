@@ -189,10 +189,11 @@ $ git push
 $ git pull
 ```
 
-## solc 소스코드 컴파일
+## solc 라이브러리 컴파일
 ```
 $ cd ethereum_parallel_execution/solidity
 $ ./scripts/install_deps.sh
+$ sudo apt remove --purge libz3-dev
 $ mkdir build
 $ cd build
 $ cmake .. && make
