@@ -2,8 +2,7 @@
 
 이더리움의 실행 부분을 병렬로 처리하는 것이 목적입니다.
 
-operating system: 18.04.02 LTS live-server
-golang: >=1.10
+operating system: 18.04.02 LTS live-server, golang: >=1.10
     
 ## 1. geth, solidity 설치 -> github을 clone한 기본폴더에서 시작함을 전제
 
