@@ -1,0 +1,108 @@
+[cli::processInput]m_compiler->compile()
+[CompilerStack::compile]compile()
+-------------[CompilerStack::parse]parse()------------
+------------[CompilerStack::analyze()]-------------
+[SyntaxChecker::checkSyntax]
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is lock
+		Identifier&ASTConstVisitor accept
+			name is a
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is unlock
+		Identifier&ASTConstVisitor accept
+			name is a
+[DocStringAnalyser::analyseDocStrings]
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is lock
+		Identifier&ASTConstVisitor accept
+			name is a
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is unlock
+		Identifier&ASTConstVisitor accept
+			name is a
+		FunctionCall&ASTVisitor accept
+		Identifier&ASTVisitor accept
+		Identifier&ASTVisitor accept
+		FunctionCall&ASTVisitor accept
+		Identifier&ASTVisitor accept
+		Identifier&ASTVisitor accept
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is lock
+		Identifier&ASTConstVisitor accept
+			name is a
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is unlock
+		Identifier&ASTConstVisitor accept
+			name is a
+[TypeChecker::checkTypeRequirements]
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is lock
+		Identifier&ASTConstVisitor accept
+			name is a
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is unlock
+		Identifier&ASTConstVisitor accept
+			name is a
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is lock
+		Identifier&ASTConstVisitor accept
+			name is a
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is unlock
+		Identifier&ASTConstVisitor accept
+			name is a
+		FunctionCall&ASTConstVisitor accept
+ControlFlowBuilder::visit
+		Identifier&ASTConstVisitor accept
+			name is lock
+		Identifier&ASTConstVisitor accept
+			name is a
+		FunctionCall&ASTConstVisitor accept
+ControlFlowBuilder::visit
+		Identifier&ASTConstVisitor accept
+			name is unlock
+		Identifier&ASTConstVisitor accept
+			name is a
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is lock
+		Identifier&ASTConstVisitor accept
+			name is a
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is unlock
+		Identifier&ASTConstVisitor accept
+			name is a
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is lock
+		Identifier&ASTConstVisitor accept
+			name is a
+		FunctionCall&ASTConstVisitor accept
+		Identifier&ASTConstVisitor accept
+			name is unlock
+		Identifier&ASTConstVisitor accept
+			name is a
+	parseAndAnalyze succeed
+		FunctionCall&ASTConstVisitor accept
+[ExpressionCompiler::visit]
+		Identifier&ASTConstVisitor accept
+			name is a
+		FunctionCall&ASTConstVisitor accept
+[ExpressionCompiler::visit]
+		Identifier&ASTConstVisitor accept
+			name is a
+
+======= add_lock.sol:TicketSeller =======
+Binary: 
+608060405260008055600060015534801561001957600080fd5b5060d7806100286000396000f3fe6080604052348015600f57600080fd5b506004361060325760003560e01c80634f2be91f14603757806357de26a414603f575b600080fd5b603d605b565b005b60456073565b6040518082815260200191505060405180910390f35b600dc260016000808282540192505081905550600dc2565b6000805490509056fea265627a7a72315820a8763c085c1c0ff90a5633325eaffde350c6fb4885b1667e01f3b1c245d4330064736f6c637828302e352e31312d646576656c6f702e323032302e342e32382b636f6d6d69742e62646562396535320058

@@ -19,6 +19,7 @@ package vm
 import (
 	"errors"
 	"math/big"
+	"fmt"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
@@ -892,18 +893,18 @@ func opSuicide(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memo
 	
 */
 func opLock(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
-	//fmt.Println("<opLock> IsDoCall=",interpreter.evm.IsDoCall)
+	fmt.Println("<opLock> IsDoCall=",interpreter.evm.IsDoCall)
 	ch_com := interpreter.evm.StateDB.GetChannel(interpreter.evm.IsDoCall)
 	param:= stack.pop().Int64()
-    msg:=state.ChanMessage{
-    	TxHash: interpreter.evm.Context.YMTxHash, ContractAddress: contract.Address(), 
-    	LockName: param, LockType:"LOCK", IsLockBusy: false, Channel: make(chan state.ChanMessage, 10),
-    }
-    ch_com <- msg 
-    //fmt.Println("opLock: send request!! ")
+	msg:=state.ChanMessage{
+		TxHash: interpreter.evm.Context.YMTxHash, ContractAddress: contract.Address(),
+		LockName: param, LockType:"LOCK", IsLockBusy: false, Channel: make(chan state.ChanMessage, 10),
+	}
+	ch_com <- msg
+	fmt.Println("opLock: send request!! ")
 
 	<-msg.Channel
-	
+
 	return nil, nil
 }
 /*
@@ -912,15 +913,15 @@ func opLock(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory 
 
 */
 func opUnlock(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
-	//fmt.Println("<opUnlock> IsDoCall=",interpreter.evm.IsDoCall)
+	fmt.Println("<opUnlock> IsDoCall=",interpreter.evm.IsDoCall)
 	ch_com:=interpreter.evm.StateDB.GetChannel(interpreter.evm.IsDoCall)
 	param:= stack.pop().Int64()
 	msg:=state.ChanMessage{
-		TxHash:interpreter.evm.Context.YMTxHash, ContractAddress: contract.Address(), 
+		TxHash:interpreter.evm.Context.YMTxHash, ContractAddress: contract.Address(),
 		LockName: param, LockType:"UNLOCK", IsLockBusy: false, Channel: make(chan state.ChanMessage,10),
 	}
 	ch_com<-msg
-	//fmt.Println("opUNLOCK: send request!!")
+	fmt.Println("opUNLOCK: send request!!")
 
 	<-msg.Channel
 

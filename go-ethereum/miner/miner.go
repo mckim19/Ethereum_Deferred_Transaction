@@ -70,6 +70,8 @@ type Miner struct {
 func New(eth Backend, config *Config, chainConfig *params.ChainConfig, mux *event.TypeMux, engine consensus.Engine, isLocalBlock func(block *types.Block) bool) *Miner {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	log.Info("Currently running CPU number= ",runtime.GOMAXPROCS(0))
+
+	fmt.Println("hello!");
 	miner := &Miner{
 		eth:      eth,
 		mux:      mux,
@@ -125,7 +127,6 @@ func (self *Miner) update() {
 func (self *Miner) Start(coinbase common.Address) {
 	atomic.StoreInt32(&self.shouldStart, 1)
 	self.SetEtherbase(coinbase)
-
 	if atomic.LoadInt32(&self.canStart) == 0 {
 		log.Info("Network syncing, will start miner afterwards")
 		return

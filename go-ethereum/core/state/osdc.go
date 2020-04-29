@@ -17,8 +17,10 @@
 package state
 
 import (
-	//"fmt"
+	"fmt"
 	"github.com/ethereum/go-ethereum/common"
+	"net"
+	"time"
 )
 /*
 	OSDC parallel project. Hyojin Jeon.
@@ -113,6 +115,29 @@ func (self *StateDB) MutexThread(com_channel chan ChanMessage, isDoCall bool, re
 			LockName: msg.LockName,
 		}
 		if(msg.LockType =="LOCK") {
+			// Networking
+			conn, err := net.Dial("tcp", ":8000")
+			if nil != err {
+			   fmt.Println(err)
+			}
+			   // sending msg to server
+			   var s string
+			   s = "hello"
+			   conn.Write([]byte(s))
+			   time.Sleep(time.Duration(1)*time.Second)
+			 
+			   // receiving msg from server
+			   data := make([]byte, 4096)
+			   n, err := conn.Read(data)
+			   if err != nil {
+				 fmt.Println(err)
+				 return
+			   }
+		 
+		 
+			   fmt.Println("Server send : " + string(data[:n]))
+
+
 			recording_info[key] = append(recording_info[key], msg.TxHash)
 			msg.LockType="OK"
 			msg.IsLockBusy = true
@@ -123,6 +148,8 @@ func (self *StateDB) MutexThread(com_channel chan ChanMessage, isDoCall bool, re
 				LockRequestArray[key] = append(LockRequestArray[key], msg)
 			}
 		}else if (msg.LockType=="UNLOCK"){
+			// Networking
+
 			if(CurrentLockArray[key].TxHash == msg.TxHash){ //it must be a same transaction who have been locked
 				msg.LockType="OK"
 				msg.Channel <- msg
