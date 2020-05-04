@@ -995,6 +995,8 @@ public:
 		ObjectCreation, ///< array creation using new
 		Assert, ///< assert()
 		Require, ///< require()
+		Lock, ///< lock()
+		Unlock, ///< unlock()
 		ABIEncode,
 		ABIEncodePacked,
 		ABIEncodeWithSelector,

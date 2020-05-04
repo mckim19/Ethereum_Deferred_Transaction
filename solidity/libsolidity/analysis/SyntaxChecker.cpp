@@ -41,6 +41,7 @@ using namespace dev::solidity;
 
 bool SyntaxChecker::checkSyntax(ASTNode const& _astRoot)
 {
+	cout << "[SyntaxChecker::checkSyntax]\n";
 	_astRoot.accept(*this);
 	return Error::containsOnlyWarnings(m_errorReporter.errors());
 }

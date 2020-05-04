@@ -333,6 +333,10 @@ u256 EVMInstructionInterpreter::eval(
 	case Instruction::SELFDESTRUCT:
 		logTrace(_instruction, arg);
 		throw ExplicitlyTerminated();
+	case Instruction::LOCK:
+	case Instruction::UNLOCK:
+		logTrace(_instruction, arg);
+		throw ExplicitlyTerminated();
 	case Instruction::POP:
 		break;
 	// --------------- invalid in strict assembly ---------------

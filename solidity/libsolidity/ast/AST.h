@@ -39,6 +39,8 @@
 #include <string>
 #include <vector>
 
+#include <iostream>
+
 namespace yul
 {
 // Forward-declaration to <yul/AsmData.h>

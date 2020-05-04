@@ -41,6 +41,7 @@ GasMeter::GasConsumption& GasMeter::GasConsumption::operator+=(GasConsumption co
 
 GasMeter::GasConsumption GasMeter::estimateMax(AssemblyItem const& _item, bool _includeExternalCosts)
 {
+	cout << "[GasMeter::GasConsumption]\n";
 	GasConsumption gas;
 	switch (_item.type())
 	{

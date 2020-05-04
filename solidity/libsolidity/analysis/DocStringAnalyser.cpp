@@ -34,6 +34,7 @@ using namespace dev::solidity;
 
 bool DocStringAnalyser::analyseDocStrings(SourceUnit const& _sourceUnit)
 {
+	cout << "[DocStringAnalyser::analyseDocStrings]\n";
 	m_errorOccured = false;
 	_sourceUnit.accept(*this);
 

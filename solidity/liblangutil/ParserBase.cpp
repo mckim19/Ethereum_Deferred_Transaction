@@ -76,6 +76,7 @@ string ParserBase::tokenName(Token _token)
 
 void ParserBase::expectToken(Token _value, bool _advance)
 {
+	cout <<"\t[ParserBase::expectToken]\n";
 	Token tok = m_scanner->currentToken();
 	if (tok != _value)
 	{

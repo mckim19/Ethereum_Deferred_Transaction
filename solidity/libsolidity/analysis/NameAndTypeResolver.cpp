@@ -302,7 +302,6 @@ bool NameAndTypeResolver::resolveNamesAndTypesInternal(ASTNode& _node, bool _res
 			if (!resolveNamesAndTypes(*node, false))
 				success = false;
 		}
-
 		if (!success)
 			return false;
 

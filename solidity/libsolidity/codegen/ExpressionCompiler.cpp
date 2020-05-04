@@ -478,6 +478,7 @@ bool ExpressionCompiler::visit(BinaryOperation const& _binaryOperation)
 
 bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 {
+	cout << "[ExpressionCompiler::visit]\n";
 	CompilerContext::LocationSetter locationSetter(m_context, _functionCall);
 	if (_functionCall.annotation().kind == FunctionCallKind::TypeConversion)
 	{
@@ -544,6 +545,7 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 			// Only delegatecall and internal functions can be bound, this might be lifted later.
 			solAssert(function.kind() == FunctionType::Kind::DelegateCall || function.kind() == FunctionType::Kind::Internal, "");
 		switch (function.kind())
+
 		{
 		case FunctionType::Kind::Internal:
 		{
@@ -708,6 +710,16 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 			arguments.front()->accept(*this);
 			utils().convertType(*arguments.front()->annotation().type, *function.parameterTypes().front(), true);
 			m_context << Instruction::SELFDESTRUCT;
+			break;
+		case FunctionType::Kind::Lock:
+			arguments.front()->accept(*this);
+			utils().convertType(*arguments.front()->annotation().type, *function.parameterTypes().front(), false);
+			m_context << Instruction::LOCK;
+			break;
+		case FunctionType::Kind::Unlock:
+			arguments.front()->accept(*this);
+			utils().convertType(*arguments.front()->annotation().type, *function.parameterTypes().front(), false);
+			m_context << Instruction::UNLOCK;
 			break;
 		case FunctionType::Kind::Revert:
 		{

@@ -96,8 +96,10 @@ void ReferencesResolver::endVisit(VariableDeclarationStatement const& _varDeclSt
 bool ReferencesResolver::visit(Identifier const& _identifier)
 {
 	auto declarations = m_resolver.nameFromCurrentScope(_identifier.name());
+	//cout << "\tidentifier.name(): "<<_identifier.name()<<"\n";
 	if (declarations.empty())
 	{
+		//cout << "\tdeclarations.empty()\n";
 		string suggestions = m_resolver.similarNameSuggestions(_identifier.name());
 		string errorMessage = "Undeclared identifier.";
 		if (!suggestions.empty())
