@@ -32,12 +32,10 @@ import (
 	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/ethereum/go-ethereum/trie"
 )
-
 type revision struct {
 	id           int
 	journalIndex int
 }
-
 var (
 	// emptyRoot is the known root hash of an empty trie.
 	emptyRoot = common.HexToHash("56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421")
@@ -102,6 +100,9 @@ type StateDB struct {
 	StorageHashes  time.Duration
 	StorageUpdates time.Duration
 	StorageCommits time.Duration
+
+	ch_com			chan ChanMessage
+	ch_com2			chan ChanMessage
 }
 
 // Create a new state from a given trie.
@@ -118,6 +119,8 @@ func New(root common.Hash, db Database) (*StateDB, error) {
 		logs:              make(map[common.Hash][]*types.Log),
 		preimages:         make(map[common.Hash][]byte),
 		journal:           newJournal(),
+		ch_com:			   make(chan ChanMessage, 10),
+		ch_com2:		   make(chan ChanMessage, 10),
 	}, nil
 }
 

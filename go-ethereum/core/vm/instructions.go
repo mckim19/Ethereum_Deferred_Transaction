@@ -1,4 +1,4 @@
-
+// Copyright 2015 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -23,6 +23,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/core/state"
 	"github.com/ethereum/go-ethereum/params"
 	"golang.org/x/crypto/sha3"
 )
@@ -881,6 +882,48 @@ func opSuicide(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memo
 	interpreter.evm.StateDB.AddBalance(common.BigToAddress(stack.pop()), balance)
 
 	interpreter.evm.StateDB.Suicide(contract.Address())
+	return nil, nil
+}
+
+/*
+	OSDC parallel project. Hyojin Jeon.
+	Description.
+
+	
+*/
+func opLock(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
+	//fmt.Println("<opLock> IsDoCall=",interpreter.evm.IsDoCall)
+	ch_com := interpreter.evm.StateDB.GetChannel(interpreter.evm.IsDoCall)
+	param:= stack.pop().Int64()
+    msg:=state.ChanMessage{
+    	TxHash: interpreter.evm.Context.YMTxHash, ContractAddress: contract.Address(), 
+    	LockName: param, LockType:"LOCK", IsLockBusy: false, Channel: make(chan state.ChanMessage, 10),
+    }
+    ch_com <- msg 
+    //fmt.Println("opLock: send request!! ")
+
+	<-msg.Channel
+	
+	return nil, nil
+}
+/*
+	OSDC parallel project. Hyojin Jeon.
+	Description.
+
+*/
+func opUnlock(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
+	//fmt.Println("<opUnlock> IsDoCall=",interpreter.evm.IsDoCall)
+	ch_com:=interpreter.evm.StateDB.GetChannel(interpreter.evm.IsDoCall)
+	param:= stack.pop().Int64()
+	msg:=state.ChanMessage{
+		TxHash:interpreter.evm.Context.YMTxHash, ContractAddress: contract.Address(), 
+		LockName: param, LockType:"UNLOCK", IsLockBusy: false, Channel: make(chan state.ChanMessage,10),
+	}
+	ch_com<-msg
+	//fmt.Println("opUNLOCK: send request!!")
+
+	<-msg.Channel
+
 	return nil, nil
 }
 

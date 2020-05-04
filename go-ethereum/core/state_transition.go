@@ -210,7 +210,21 @@ func (st *StateTransition) TransitionDb() (ret []byte, usedGas uint64, failed bo
 	} else {
 		// Increment the nonce for the next transaction
 		st.state.SetNonce(msg.From(), st.state.GetNonce(sender.Address())+1)
+
+		/*
+			OSDC Parallel. Yoomee Ko.
+			Description.
+		*/
+		if evm.Context.IsDoCall == true {
+			evm.StateDB.StartMutexThread(3, nil)
+		}
+
 		ret, st.gas, vmerr = evm.Call(sender, st.to(), st.data, st.gas, st.value)
+
+		if evm.Context.IsDoCall == true {
+			evm.StateDB.TerminateMutexThread(3)
+		}
+
 	}
 	if vmerr != nil {
 		log.Debug("VM returned with error", "err", vmerr)

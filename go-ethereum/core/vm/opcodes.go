@@ -203,6 +203,16 @@ const (
 	SWAP
 )
 
+/*
+	OSDC parallel project. Yoomee Ko.
+	Description.
+	
+*/
+// lock, unlock
+const (
+	LOCK OpCode = 0xc1 + iota
+	UNLOCK
+      )
 // 0xf0 range - closures.
 const (
 	CREATE OpCode = 0xf0 + iota
@@ -366,6 +376,10 @@ var opCodeToString = map[OpCode]string{
 	LOG2:   "LOG2",
 	LOG3:   "LOG3",
 	LOG4:   "LOG4",
+
+	//0xc0 range.
+	LOCK:		"LOCK",
+	UNLOCK:		"UNLOCK",
 
 	// 0xf0 range.
 	CREATE:       "CREATE",
@@ -532,6 +546,8 @@ var stringToOp = map[string]OpCode{
 	"CALLCODE":       CALLCODE,
 	"REVERT":         REVERT,
 	"SELFDESTRUCT":   SELFDESTRUCT,
+	"LOCK":			  LOCK,
+	"UNLOCK":		  UNLOCK,
 }
 
 // StringToOp finds the opcode whose name is stored in `str`.
