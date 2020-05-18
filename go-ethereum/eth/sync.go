@@ -88,7 +88,7 @@ func (pm *ProtocolManager) txsyncLoop() {
 		// Send the pack in the background.
 		s.p.Log().Trace("Sending batch of transactions", "count", len(pack.txs), "bytes", size)
 		sending = true
-		go func() { done <- pack.p.SendTransactions(pack.txs) }()
+		go func() { done <- pack.p.txsyncLoop(pack.txs) }()
 	}
 
 	// pick chooses the next pending sync.

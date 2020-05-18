@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-   conn, err := net.Dial("tcp", ":8000")
+   conn, err := net.Dial("tcp", "166.104.144.107:8000")
    if nil != err {
       log.Println(err)
    }

@@ -206,13 +206,15 @@ const (
 /*
 	OSDC parallel project. Yoomee Ko.
 	Description.
-	
+
 */
 // lock, unlock
 const (
 	LOCK OpCode = 0xc1 + iota
 	UNLOCK
-      )
+	EPC
+)
+
 // 0xf0 range - closures.
 const (
 	CREATE OpCode = 0xf0 + iota
@@ -378,8 +380,9 @@ var opCodeToString = map[OpCode]string{
 	LOG4:   "LOG4",
 
 	//0xc0 range.
-	LOCK:		"LOCK",
-	UNLOCK:		"UNLOCK",
+	LOCK:   "LOCK",
+	UNLOCK: "UNLOCK",
+	EPC:    "EPC",
 
 	// 0xf0 range.
 	CREATE:       "CREATE",
@@ -546,8 +549,9 @@ var stringToOp = map[string]OpCode{
 	"CALLCODE":       CALLCODE,
 	"REVERT":         REVERT,
 	"SELFDESTRUCT":   SELFDESTRUCT,
-	"LOCK":			  LOCK,
-	"UNLOCK":		  UNLOCK,
+	"LOCK":           LOCK,
+	"UNLOCK":         UNLOCK,
+	"EPC":            EPC,
 }
 
 // StringToOp finds the opcode whose name is stored in `str`.

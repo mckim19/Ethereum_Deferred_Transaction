@@ -997,6 +997,7 @@ public:
 		Require, ///< require()
 		Lock, ///< lock()
 		Unlock, ///< unlock()
+		EPC, ///< epc()
 		ABIEncode,
 		ABIEncodePacked,
 		ABIEncodeWithSelector,
