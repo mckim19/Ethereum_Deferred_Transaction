@@ -7,6 +7,8 @@ contract Viewfunction{
         lock(2);
         a+=2;
         unlock(2);
+        a+=2;
+        epc(1);
         return a;
     }
 }

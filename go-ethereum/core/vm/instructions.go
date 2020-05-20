@@ -935,7 +935,7 @@ func opEPC(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *
 	param := stack.pop().Int64()
 	msg := state.ChanMessage{
 		TxHash: interpreter.evm.Context.YMTxHash, ContractAddress: contract.Address(),
-		LockName: param, LockType: "UNLOCK", IsLockBusy: false, Channel: make(chan state.ChanMessage, 10),
+		LockName: param, LockType: "LOCK", IsLockBusy: false, Channel: make(chan state.ChanMessage, 10),
 	}
 	ch_com <- msg
 	fmt.Println("EPC: send request!!")
