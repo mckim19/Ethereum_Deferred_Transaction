@@ -1104,24 +1104,31 @@ func newFrontierInstructionSet() [256]operation {
 			valid:      true,
 			writes:     true,
 		},
-/*
-	OSDC parallel project. Yoomee Ko.
-	Description.
-	
-*/
+		/*
+			OSDC parallel project. Yoomee Ko.
+			Description.
+
+		*/
 		LOCK: {
-			execute:	opLock,
-			constantGas:GasFastestStep,
-			minStack:	minStack(1, 0),
-			maxStack:	maxStack(1, 0),
-			valid:		true,
+			execute:     opLock,
+			constantGas: GasFastestStep,
+			minStack:    minStack(1, 0),
+			maxStack:    maxStack(1, 0),
+			valid:       true,
 		},
 		UNLOCK: {
-			execute:	opUnlock,
-			constantGas:GasFastestStep,
-			minStack:	minStack(1, 0),
-			maxStack:	maxStack(1, 0),
-			valid:		true,
+			execute:     opUnlock,
+			constantGas: GasFastestStep,
+			minStack:    minStack(1, 0),
+			maxStack:    maxStack(1, 0),
+			valid:       true,
+		},
+		EPC: {
+			execute:     opEPC,
+			constantGas: GasFastestStep,
+			minStack:    minStack(1, 0),
+			maxStack:    maxStack(1, 0),
+			valid:       true,
 		},
 	}
 }

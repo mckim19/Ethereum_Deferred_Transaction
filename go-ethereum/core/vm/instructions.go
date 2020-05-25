@@ -18,13 +18,13 @@ package vm
 
 import (
 	"errors"
-	"math/big"
 	"fmt"
+	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/state"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/params"
 	"golang.org/x/crypto/sha3"
 )
@@ -890,15 +890,15 @@ func opSuicide(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memo
 	OSDC parallel project. Hyojin Jeon.
 	Description.
 
-	
+
 */
 func opLock(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
-	fmt.Println("<opLock> IsDoCall=",interpreter.evm.IsDoCall)
+	fmt.Println("<opLock> IsDoCall=", interpreter.evm.IsDoCall)
 	ch_com := interpreter.evm.StateDB.GetChannel(interpreter.evm.IsDoCall)
-	param:= stack.pop().Int64()
-	msg:=state.ChanMessage{
+	param := stack.pop().Int64()
+	msg := state.ChanMessage{
 		TxHash: interpreter.evm.Context.YMTxHash, ContractAddress: contract.Address(),
-		LockName: param, LockType:"LOCK", IsLockBusy: false, Channel: make(chan state.ChanMessage, 10),
+		LockName: param, LockType: "LOCK", IsLockBusy: false, Channel: make(chan state.ChanMessage, 10),
 	}
 	ch_com <- msg
 	fmt.Println("opLock: send request!! ")
@@ -907,21 +907,38 @@ func opLock(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory 
 
 	return nil, nil
 }
+
 /*
 	OSDC parallel project. Hyojin Jeon.
 	Description.
 
 */
 func opUnlock(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
-	fmt.Println("<opUnlock> IsDoCall=",interpreter.evm.IsDoCall)
-	ch_com:=interpreter.evm.StateDB.GetChannel(interpreter.evm.IsDoCall)
-	param:= stack.pop().Int64()
-	msg:=state.ChanMessage{
-		TxHash:interpreter.evm.Context.YMTxHash, ContractAddress: contract.Address(),
-		LockName: param, LockType:"UNLOCK", IsLockBusy: false, Channel: make(chan state.ChanMessage,10),
+	fmt.Println("<opUnlock> IsDoCall=", interpreter.evm.IsDoCall)
+	ch_com := interpreter.evm.StateDB.GetChannel(interpreter.evm.IsDoCall)
+	param := stack.pop().Int64()
+	msg := state.ChanMessage{
+		TxHash: interpreter.evm.Context.YMTxHash, ContractAddress: contract.Address(),
+		LockName: param, LockType: "UNLOCK", IsLockBusy: false, Channel: make(chan state.ChanMessage, 10),
 	}
-	ch_com<-msg
+	ch_com <- msg
 	fmt.Println("opUNLOCK: send request!!")
+
+	<-msg.Channel
+
+	return nil, nil
+}
+
+func opEPC(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
+	fmt.Println("<opLock> IsDoCall=", interpreter.evm.IsDoCall)
+	ch_com := interpreter.evm.StateDB.GetChannel(interpreter.evm.IsDoCall)
+	param := stack.pop().Int64()
+	msg := state.ChanMessage{
+		TxHash: interpreter.evm.Context.YMTxHash, ContractAddress: contract.Address(),
+		LockName: param, LockType: "EPC", IsLockBusy: false, Channel: make(chan state.ChanMessage, 10),
+	}
+	ch_com <- msg
+	fmt.Println("EPC: send request!! ")
 
 	<-msg.Channel
 

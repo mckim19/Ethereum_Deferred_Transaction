@@ -335,8 +335,10 @@ u256 EVMInstructionInterpreter::eval(
 		throw ExplicitlyTerminated();
 	case Instruction::LOCK:
 	case Instruction::UNLOCK:
+	case Instruction::EPC:
 		logTrace(_instruction, arg);
 		throw ExplicitlyTerminated();
+	
 	case Instruction::POP:
 		break;
 	// --------------- invalid in strict assembly ---------------

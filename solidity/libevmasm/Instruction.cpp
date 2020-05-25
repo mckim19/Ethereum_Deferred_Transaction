@@ -173,7 +173,8 @@ std::map<std::string, Instruction> const dev::eth::c_instructions =
 	{ "INVALID", Instruction::INVALID },
 	{ "SELFDESTRUCT", Instruction::SELFDESTRUCT },
 	{ "LOCK", Instruction::LOCK },
-	{ "UNLOCK", Instruction::UNLOCK }
+	{ "UNLOCK", Instruction::UNLOCK },
+	{ "EPC", Instruction::EPC }
 };
 
 static std::map<Instruction, InstructionInfo> const c_instructionInfo =
@@ -319,7 +320,8 @@ static std::map<Instruction, InstructionInfo> const c_instructionInfo =
 	{ Instruction::INVALID,		{ "INVALID",		0, 0, 0, true, Tier::Zero } },
 	{ Instruction::SELFDESTRUCT,	{ "SELFDESTRUCT",		0, 1, 0, true, Tier::Special } },
 	{ Instruction::LOCK,	{ "LOCK",		0, 1, 0, true, Tier::Special } },
-	{ Instruction::UNLOCK,	{ "UNLOCK",		0, 1, 0, true, Tier::Special } }
+	{ Instruction::UNLOCK,	{ "UNLOCK",		0, 1, 0, true, Tier::Special } },
+	{ Instruction::EPC,	{ "EPC",		0, 1, 0, true, Tier::Special } }
 };
 
 void dev::eth::eachInstruction(
