@@ -33,13 +33,19 @@ $ make geth
 ### D. solidity 라이브러리 컴파일
 solc 컴파일러를 컨트랙트 코드가 위치한 폴더에 두어 해당 폴더에서 컴파일하도록 함. 환경변수 등록하여 사용하여도 무방
 ```
-$ cd ethereum_parallel_execution/solidity
+$ cd Ethereum_Deferred_Transaction/solidity_0.4.24
 $ ./scripts/install_deps.sh
 $ sudo apt remove --purge libz3-dev
 $ mkdir build
 $ cd build
 $ cmake .. && make
 $ cp solc/solc ../../../sol_file
+```
+만약 solidity를 직접 다운받아 컴파일을 하고 싶으면 다음과 같이 wget을 통해 소스코드를 다운받아서 함.
+git clone을 통해서 다운받는 것은 공식적으로 지양됨.
+```
+$ wget https://github.com/ethereum/solidity/releases/download/v0.4.24/solidity_0.4.24.tar.gz
+$ tar -zxvf solidity_0.4.24.tar.gz
 ```
 
 ## 2. 이더리움 테스트 환경 구축
