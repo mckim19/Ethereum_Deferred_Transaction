@@ -39,7 +39,7 @@ $ sudo apt remove --purge libz3-dev
 $ mkdir build
 $ cd build
 $ cmake .. && make
-$ cp solc/solc ../../../sol_file
+$ cp solc/solc ../../sol_file
 ```
 
 ## 2. 이더리움 테스트 환경 구축
