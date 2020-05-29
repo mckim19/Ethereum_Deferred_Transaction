@@ -72,6 +72,7 @@ type StateDB interface {
 */
 	MutexThread(chan state.ChanMessage, bool, chan state.RecInfo)
 	GetChannel(bool) chan state.ChanMessage
+	GetTHash() common.Hash
 	SetChannel(chan state.ChanMessage, bool)
 	StartMutexThread(int, chan state.RecInfo)
 	TerminateMutexThread(int)

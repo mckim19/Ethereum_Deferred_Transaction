@@ -163,7 +163,6 @@ func (in *EVMInterpreter) Run(contract *Contract, input []byte, readOnly bool) (
 
 	// Reclaim the stack as an int pool when the execution stops
 	defer func() { in.intPool.put(stack.data...) }()
-
 	if in.cfg.Debug {
 		defer func() {
 			if err != nil {

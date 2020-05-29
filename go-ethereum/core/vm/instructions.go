@@ -19,6 +19,7 @@ package vm
 import (
 	"errors"
 	"math/big"
+	"fmt"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
@@ -886,45 +887,38 @@ func opSuicide(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memo
 }
 
 /*
-	OSDC parallel project. Hyojin Jeon.
-	Description.
-
-	
+	osdc deferred project.
+	imlementation of epc(external procedure call).
+	it sends message to the proxy server, then proxy server
+	multicasts the message to the p2p network.
 */
-func opLock(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
-	//fmt.Println("<opLock> IsDoCall=",interpreter.evm.IsDoCall)
+func opEpcWrite(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
+	fmt.Println("<opEpcWrite> IsDoCall=",interpreter.evm.IsDoCall)
 	ch_com := interpreter.evm.StateDB.GetChannel(interpreter.evm.IsDoCall)
 	param:= stack.pop().Int64()
-    msg:=state.ChanMessage{
-    	TxHash: interpreter.evm.Context.YMTxHash, ContractAddress: contract.Address(), 
-    	LockName: param, LockType:"LOCK", IsLockBusy: false, Channel: make(chan state.ChanMessage, 10),
-    }
-    ch_com <- msg 
-    //fmt.Println("opLock: send request!! ")
+	
+	msg:=state.ChanMessage{
+		TxHash: interpreter.evm.StateDB.GetTHash(), ContractAddress: contract.Address(),
+		LockName: param, LockType:"LOCK", IsLockBusy: false, Channel: make(chan state.ChanMessage, 10),
+	}
+	ch_com <- msg
+	fmt.Println("opEpcWrite: send LOCK!! ")
 
 	<-msg.Channel
-	
-	return nil, nil
-}
-/*
-	OSDC parallel project. Hyojin Jeon.
-	Description.
-
-*/
-func opUnlock(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
-	//fmt.Println("<opUnlock> IsDoCall=",interpreter.evm.IsDoCall)
-	ch_com:=interpreter.evm.StateDB.GetChannel(interpreter.evm.IsDoCall)
-	param:= stack.pop().Int64()
-	msg:=state.ChanMessage{
-		TxHash:interpreter.evm.Context.YMTxHash, ContractAddress: contract.Address(), 
+	msg=state.ChanMessage{
+		TxHash: interpreter.evm.StateDB.GetTHash(), ContractAddress: contract.Address(),
 		LockName: param, LockType:"UNLOCK", IsLockBusy: false, Channel: make(chan state.ChanMessage,10),
 	}
 	ch_com<-msg
-	//fmt.Println("opUNLOCK: send request!!")
-
+	fmt.Println("opEpcWrite: send UNLOCK!! ")
 	<-msg.Channel
 
 	return nil, nil
+}
+func opEpcRead(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
+	fmt.Println("<opEpcRead> IsDoCall=",interpreter.evm.IsDoCall)
+	stack.push(interpreter.intPool.get().SetBytes(contract.Address().Bytes()))
+	return nil, nil	
 }
 
 // following functions are used by the instruction jump  table

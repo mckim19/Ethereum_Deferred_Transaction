@@ -1109,21 +1109,19 @@ func newFrontierInstructionSet() [256]operation {
 	Description.
 	
 */
-		LOCK: {
-			execute:	opLock,
-			//dynamicGas:	gasLock
-			constantGas:GasFastestStep,
+		EPCWRITE: {
+			execute:	opEpcWrite,
+			constantGas:	GasFastestStep,
 			minStack:	minStack(1, 0),
 			maxStack:	maxStack(1, 0),
 			valid:		true,
 		},
-		UNLOCK: {
-			execute:	opUnlock,
-			constantGas:GasFastestStep,
-			//dynamicGas:	gasUnlock,
-			minStack:	minStack(1, 0),
-			maxStack:	maxStack(1, 0),
+		EPCREAD: {
+			execute:	opEpcRead,
+			constantGas:	GasFastestStep,
+			minStack:	minStack(0, 1),
+			maxStack:	maxStack(0, 1),
 			valid:		true,
-		},
+		},		
 	}
 }

@@ -23,7 +23,6 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
-	//"fmt"
 
 	mapset "github.com/deckarep/golang-set"
 	"github.com/ethereum/go-ethereum/common"
@@ -91,11 +90,6 @@ type environment struct {
 	header   *types.Header
 	txs      []*types.Transaction
 	receipts []*types.Receipt
-	/*
-		OSDC parallel. Yoomee Ko.
-		Description.
-	*/
-	recInfo   state.RecInfo
 }
 
 // task contains all information for consensus engine sealing and result submitting.
@@ -469,16 +463,7 @@ func (w *worker) mainLoop() {
 					txs[acc] = append(txs[acc], tx)
 				}
 				txset := types.NewTransactionsByPriceAndNonce(w.current.signer, txs)
-				/*
-					OSDC parallel project. Hyojin Jeon.
-					Description.
-					
-				*/
-				w.current.state.StartMutexThread(2, nil)
-				c := make(chan bool)
-				go w.commitTransactions(txset, coinbase, nil, c)
-				<-c
-				w.current.state.TerminateMutexThread(2)
+				w.commitTransactions(txset, coinbase, nil)
 				w.updateSnapshot()
 			} else {
 				// If clique is running in dev mode(period is 0), disable
@@ -720,23 +705,10 @@ func (w *worker) commitTransaction(tx *types.Transaction, coinbase common.Addres
 
 	return receipt.Logs, nil
 }
-//func (w *worker) commitTransactions(txs *types.TransactionsByPriceAndNonce, coinbase common.Address, interrupt *int32) {
-func (w *worker) commitTransactions(txs *types.TransactionsByPriceAndNonce, coinbase common.Address, interrupt *int32, c chan<- bool) {
-	/*
+func (w *worker) commitTransactions(txs *types.TransactionsByPriceAndNonce, coinbase common.Address, interrupt *int32) bool {
 	// Short circuit if current is nil
 	if w.current == nil {
 		return true
-	}
-	*/
-	/*
-		OSDC parallel project. Yoomee Ko.
-		Description.
-	
-	*/
-	// Short circuit if current is nil
-	if w.current == nil {
-		//return true
-		c <- true
 	}
 
 	if w.current.gasPool == nil {
@@ -764,15 +736,7 @@ func (w *worker) commitTransactions(txs *types.TransactionsByPriceAndNonce, coin
 					inc:   true,
 				}
 			}
-			/*
-				OSDC parallel project. Yoomee Ko.
-				Description.
-		
-			*/
-			//return atomic.LoadInt32(interrupt) == commitInterruptNewHead
-
-			c <- (atomic.LoadInt32(interrupt) == commitInterruptNewHead)
-
+			return atomic.LoadInt32(interrupt) == commitInterruptNewHead
 		}
 		// If we don't have enough gas for any further transactions then we're done
 		if w.current.gasPool.Gas() < params.TxGas {
@@ -793,6 +757,7 @@ func (w *worker) commitTransactions(txs *types.TransactionsByPriceAndNonce, coin
 		// phase, start ignoring the sender until we do.
 		if tx.Protected() && !w.chainConfig.IsEIP155(w.current.header.Number) {
 			log.Trace("Ignoring reply protected transaction", "hash", tx.Hash(), "eip155", w.chainConfig.EIP155Block)
+
 			txs.Pop()
 			continue
 		}
@@ -850,15 +815,9 @@ func (w *worker) commitTransactions(txs *types.TransactionsByPriceAndNonce, coin
 	if interrupt != nil {
 		w.resubmitAdjustCh <- &intervalAdjust{inc: false}
 	}
-	/*
-		OSDC parallel project. Yoomee Ko.
-		Description.
-	*/
-	//return false
-	log.Info("this go loop is returning false!!")
-	c <-false
+	return false
 }
-
+		
 // commitNewWork generates several new sealing tasks based on the parent block.
 func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) {
 	w.mu.RLock()
@@ -971,80 +930,6 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 			localTxs[account] = txs
 		}
 	}
-/*
-	OSDC parallel project. Yoomee Ko.
-	Description.
-	
-*/
-	//log.Info("[YOOMEE] The number of CPU number: ", runtime.GOMAXPROCS(0))
-	resChannel := make(chan state.RecInfo)
-	w.current.state.StartMutexThread(1, resChannel)
-
-	c := make(chan bool, 4)
-	local_flag := false
-	remote_flag := false
-	log.Info("channel is made!")
-	//1. NEW METHOD - divided by address!
-	if len(localTxs) > 0 {
-		local_flag = true
-		i := 0
-		localTxs1 := make(map[common.Address]types.Transactions)
-		localTxs2 := make(map[common.Address]types.Transactions)
-		for k, v := range localTxs {
-			if(i<=len(localTxs)/2-1){
-				localTxs1[k] = v
-			} else {
-				localTxs2[k] = v
-			}
-			i++
-		}
-		txs1 := types.NewTransactionsByPriceAndNonce(w.current.signer, localTxs1)
-		txs2 := types.NewTransactionsByPriceAndNonce(w.current.signer, localTxs2)
-		go w.commitTransactions(txs1, w.coinbase, interrupt, c)
-		go w.commitTransactions(txs2, w.coinbase, interrupt, c)
-	}
-	if len(remoteTxs) > 0 {
-		remote_flag = true
-		i := 0
-		remoteTxs1 := make(map[common.Address]types.Transactions)
-		remoteTxs2 := make(map[common.Address]types.Transactions)
-		for k, v := range remoteTxs {
-			if(i<=len(remoteTxs)/2-1){
-				remoteTxs1[k] = v
-			} else {
-				remoteTxs2[k] = v
-			}
-			i++
-		}
-		txs1 := types.NewTransactionsByPriceAndNonce(w.current.signer, remoteTxs1)
-		txs2 := types.NewTransactionsByPriceAndNonce(w.current.signer, remoteTxs2)
-		go w.commitTransactions(txs1, w.coinbase, interrupt, c)
-		go w.commitTransactions(txs2, w.coinbase, interrupt, c)
-	}
-	true_flag := false
-	if local_flag == true {
-		for i := 0; i<2; i++ {
-			if <-c == true{
-				true_flag = true
-			}
-		}
-	}
-	if remote_flag == true {
-		for i := 0; i<2; i++ {
-			if <-c == true{
-				true_flag = true
-			}
-		}
-	}
-	w.current.state.TerminateMutexThread(1)
-    w.current.recInfo = <-resChannel
-
-	if true_flag == true {
-		return
-	}
-
-	/*
-	//5. ORIGINAL METHOD!!
 	if len(localTxs) > 0 {
 		txs := types.NewTransactionsByPriceAndNonce(w.current.signer, localTxs)
 		if w.commitTransactions(txs, w.coinbase, interrupt) {
@@ -1057,7 +942,6 @@ func (w *worker) commitNewWork(interrupt *int32, noempty bool, timestamp int64) 
 			return
 		}
 	}
-	*/
 	w.commit(uncles, w.fullTaskHook, true, tstart)
 }
 
@@ -1071,8 +955,6 @@ func (w *worker) commit(uncles []*types.Header, interval func(), update bool, st
 		*receipts[i] = *l
 	}
 	s := w.current.state.Copy()
-	//recInfo := w.current.recInfo
-	//block, err := w.engine.FinalizeAndAssemble(w.chain, w.current.header, s, w.current.txs, uncles, w.current.receipts, w.current.recInfo)
 	block, err := w.engine.FinalizeAndAssemble(w.chain, w.current.header, s, w.current.txs, uncles, w.current.receipts)
 
 	if err != nil {
@@ -1083,7 +965,6 @@ func (w *worker) commit(uncles []*types.Header, interval func(), update bool, st
 			interval()
 		}
 		select {
-		//case w.taskCh <- &task{receipts: receipts, state: s, recInfo: recInfo, block: block, createdAt: time.Now()}:
 		case w.taskCh <- &task{receipts: receipts, state: s, block: block, createdAt: time.Now()}:
 			w.unconfirmed.Shift(block.NumberU64() - 1)
 

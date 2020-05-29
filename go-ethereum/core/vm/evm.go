@@ -93,7 +93,6 @@ type Context struct {
 		OSDC parallel. Yoomee Ko.
 	*/
 	// OSDC information
-	YMTxHash		common.Hash
 	IsDoCall	bool
 }
 
@@ -180,7 +179,6 @@ func (evm *EVM) Cancel() {
 func (evm *EVM) Interpreter() Interpreter {
 	return evm.interpreter
 }
-
 
 // Call executes the contract associated with the addr with the given input as
 // parameters. It also handles any necessary value transfer required and takes
