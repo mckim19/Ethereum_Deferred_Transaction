@@ -683,6 +683,14 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 			utils().convertType(*arguments.front()->annotation().type, *function.parameterTypes().front(), true);
 			m_context << Instruction::SELFDESTRUCT;
 			break;
+		case FunctionType::Kind::EpcWrite:
+			arguments.front()->accept(*this);
+			utils().convertType(*arguments.front()->annotation().type, *function.parameterTypes().front(), true);
+			m_context << Instruction::EPCWRITE;
+			break;
+		case FunctionType::Kind::EpcRead:
+			m_context << Instruction::EPCREAD;
+			break;
 		case FunctionType::Kind::Revert:
 		{
 			if (!arguments.empty())

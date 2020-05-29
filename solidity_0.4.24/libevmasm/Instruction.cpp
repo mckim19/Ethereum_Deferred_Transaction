@@ -167,6 +167,8 @@ const std::map<std::string, Instruction> dev::solidity::c_instructions =
 	{ "DELEGATECALL", Instruction::DELEGATECALL },
 	{ "CREATE2", Instruction::CREATE2 },
 	{ "REVERT", Instruction::REVERT },
+	{ "EPCWRITE", Instruction::EPCWRITE },
+	{ "EPCREAD", Instruction::EPCREAD },
 	{ "INVALID", Instruction::INVALID },
 	{ "SELFDESTRUCT", Instruction::SELFDESTRUCT }
 };
@@ -310,6 +312,8 @@ static const std::map<Instruction, InstructionInfo> c_instructionInfo =
 	{ Instruction::STATICCALL,	{ "STATICCALL",		0, 6, 1, true, Tier::Special } },
 	{ Instruction::CREATE2,		{ "CREATE2",		0, 4, 1, true, Tier::Special } },
 	{ Instruction::REVERT,		{ "REVERT",		0, 2, 0, true, Tier::Zero } },
+	{ Instruction::EPCWRITE,	{ "EPCWRITE",		0, 1, 0, true, Tier::Zero } },
+	{ Instruction::EPCREAD,		{ "EPCREAD",		0, 0, 1, true, Tier::Zero } },
 	{ Instruction::INVALID,		{ "INVALID",		0, 0, 0, true, Tier::Zero } },
 	{ Instruction::SELFDESTRUCT,	{ "SELFDESTRUCT",		0, 1, 0, true, Tier::Special } }
 };

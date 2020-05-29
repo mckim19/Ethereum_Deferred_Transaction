@@ -2499,6 +2499,8 @@ string FunctionType::richIdentifier() const
 	case Kind::ObjectCreation: id += "objectcreation"; break;
 	case Kind::Assert: id += "assert"; break;
 	case Kind::Require: id += "require"; break;
+	case Kind::EpcWrite: id += "write"; break;
+	case Kind::EpcRead: id += "read"; break;
 	case Kind::ABIEncode: id += "abiencode"; break;
 	case Kind::ABIEncodePacked: id += "abiencodepacked"; break;
 	case Kind::ABIEncodeWithSelector: id += "abiencodewithselector"; break;
