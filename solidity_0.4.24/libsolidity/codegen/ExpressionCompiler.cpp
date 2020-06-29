@@ -683,13 +683,27 @@ bool ExpressionCompiler::visit(FunctionCall const& _functionCall)
 			utils().convertType(*arguments.front()->annotation().type, *function.parameterTypes().front(), true);
 			m_context << Instruction::SELFDESTRUCT;
 			break;
-		case FunctionType::Kind::EpcWrite:
+		case FunctionType::Kind::EpcInit:
+			arguments[2]->accept(*this);
+			utils().convertType(*arguments[2]->annotation().type, *function.parameterTypes()[2], true);
+			arguments[1]->accept(*this);
+			utils().convertType(*arguments[1]->annotation().type, *function.parameterTypes()[1], true);
+			arguments[0]->accept(*this);
+			utils().convertType(*arguments[0]->annotation().type, *function.parameterTypes()[0], true);
+			m_context << Instruction::EPCINIT;
+			break;
+		case FunctionType::Kind::EpcExit:
+			m_context << Instruction::EPCEXIT;
+			break;
+		case FunctionType::Kind::EpcSend:
 			arguments.front()->accept(*this);
 			utils().convertType(*arguments.front()->annotation().type, *function.parameterTypes().front(), true);
-			m_context << Instruction::EPCWRITE;
+			m_context << Instruction::EPCSEND;
 			break;
-		case FunctionType::Kind::EpcRead:
-			m_context << Instruction::EPCREAD;
+		case FunctionType::Kind::EpcRecv:
+			arguments.front()->accept(*this);
+			utils().convertType(*arguments.front()->annotation().type, *function.parameterTypes().front(), true);
+			m_context << Instruction::EPCRECV;
 			break;
 		case FunctionType::Kind::Revert:
 		{

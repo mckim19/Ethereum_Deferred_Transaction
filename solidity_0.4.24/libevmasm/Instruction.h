@@ -187,8 +187,10 @@ enum class Instruction: uint8_t
 	PUTLOCAL,           ///< pop top of stack to local variable -- not part of Instructions.cpp
 	GETLOCAL,           ///< push local variable to top of stack -- not part of Instructions.cpp
 
-	EPCWRITE = 0xc1,	///< external procedure call -> write data to p2p network
-	EPCREAD,		///< external procedure call -> read data from p2p network
+	EPCINIT = 0xc1,		///< external procedure call -> init p2p network
+	EPCEXIT,			///< external procedure call -> exit p2p network
+	EPCSEND,			///< external procedure call -> send data
+	EPCRECV,			///< external procedure call -> recv data
 
 	CREATE = 0xf0,		///< create a new account with associated code
 	CALL,				///< message-call into an account

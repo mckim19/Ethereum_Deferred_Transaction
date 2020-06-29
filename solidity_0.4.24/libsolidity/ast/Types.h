@@ -917,13 +917,16 @@ public:
 		ObjectCreation, ///< array creation using new
 		Assert, ///< assert()
 		Require, ///< require()
-		EpcWrite, ///< write()
-		EpcRead, ///< read()
 		ABIEncode,
 		ABIEncodePacked,
 		ABIEncodeWithSelector,
 		ABIEncodeWithSignature,
-		GasLeft ///< gasleft()
+		GasLeft, ///< gasleft()
+		
+		EpcInit, ///< init()
+		EpcExit, ///< exit()
+		EpcSend, ///< send()
+		EpcRecv	 ///< recv()
 	};
 
 	virtual Category category() const override { return Category::Function; }

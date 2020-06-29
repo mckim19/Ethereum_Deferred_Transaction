@@ -53,8 +53,6 @@ m_magicVariables(vector<shared_ptr<MagicVariableDeclaration const>>{
 	make_shared<MagicVariableDeclaration>("now", make_shared<IntegerType>(256)),
 	make_shared<MagicVariableDeclaration>("require", make_shared<FunctionType>(strings{"bool"}, strings{}, FunctionType::Kind::Require, false, StateMutability::Pure)),
 	make_shared<MagicVariableDeclaration>("require", make_shared<FunctionType>(strings{"bool", "string memory"}, strings{}, FunctionType::Kind::Require, false, StateMutability::Pure)),
-	make_shared<MagicVariableDeclaration>("write", make_shared<FunctionType>(strings{"bytes32"}, strings{}, FunctionType::Kind::EpcWrite, false, StateMutability::Pure)),
-	make_shared<MagicVariableDeclaration>("read", make_shared<FunctionType>(strings{}, strings{"bytes32"}, FunctionType::Kind::EpcRead, false, StateMutability::Pure)),
 	make_shared<MagicVariableDeclaration>("revert", make_shared<FunctionType>(strings(), strings(), FunctionType::Kind::Revert, false, StateMutability::Pure)),
 	make_shared<MagicVariableDeclaration>("revert", make_shared<FunctionType>(strings{"string memory"}, strings(), FunctionType::Kind::Revert, false, StateMutability::Pure)),
 	make_shared<MagicVariableDeclaration>("ripemd160", make_shared<FunctionType>(strings(), strings{"bytes20"}, FunctionType::Kind::RIPEMD160, true, StateMutability::Pure)),
@@ -62,7 +60,12 @@ m_magicVariables(vector<shared_ptr<MagicVariableDeclaration const>>{
 	make_shared<MagicVariableDeclaration>("sha256", make_shared<FunctionType>(strings(), strings{"bytes32"}, FunctionType::Kind::SHA256, true, StateMutability::Pure)),
 	make_shared<MagicVariableDeclaration>("sha3", make_shared<FunctionType>(strings(), strings{"bytes32"}, FunctionType::Kind::SHA3, true, StateMutability::Pure)),
 	make_shared<MagicVariableDeclaration>("suicide", make_shared<FunctionType>(strings{"address"}, strings{}, FunctionType::Kind::Selfdestruct)),
-	make_shared<MagicVariableDeclaration>("tx", make_shared<MagicType>(MagicType::Kind::Transaction))
+	make_shared<MagicVariableDeclaration>("tx", make_shared<MagicType>(MagicType::Kind::Transaction)),
+	
+	make_shared<MagicVariableDeclaration>("init", make_shared<FunctionType>(strings{"uint64", "uint64", "uint64"}, strings{}, FunctionType::Kind::EpcInit, false, StateMutability::Pure)),
+	make_shared<MagicVariableDeclaration>("exit", make_shared<FunctionType>(strings{}, strings{}, FunctionType::Kind::EpcExit, false, StateMutability::Pure)),
+	make_shared<MagicVariableDeclaration>("send", make_shared<FunctionType>(strings{"bytes memory"}, strings{}, FunctionType::Kind::EpcSend, false, StateMutability::Pure)),
+	make_shared<MagicVariableDeclaration>("recv", make_shared<FunctionType>(strings{"bytes memory"}, strings{}, FunctionType::Kind::EpcRecv, false, StateMutability::Pure))
 })
 {
 }

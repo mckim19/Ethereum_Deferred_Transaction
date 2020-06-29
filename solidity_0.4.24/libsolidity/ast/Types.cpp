@@ -2499,12 +2499,16 @@ string FunctionType::richIdentifier() const
 	case Kind::ObjectCreation: id += "objectcreation"; break;
 	case Kind::Assert: id += "assert"; break;
 	case Kind::Require: id += "require"; break;
-	case Kind::EpcWrite: id += "write"; break;
-	case Kind::EpcRead: id += "read"; break;
 	case Kind::ABIEncode: id += "abiencode"; break;
 	case Kind::ABIEncodePacked: id += "abiencodepacked"; break;
 	case Kind::ABIEncodeWithSelector: id += "abiencodewithselector"; break;
 	case Kind::ABIEncodeWithSignature: id += "abiencodewithsignature"; break;
+	
+	case Kind::EpcInit: id += "init"; break;
+	case Kind::EpcExit: id += "exit"; break;
+	case Kind::EpcSend: id += "send"; break;
+	case Kind::EpcRecv: id += "recv"; break;
+
 	default: solAssert(false, "Unknown function location."); break;
 	}
 	id += "_" + stateMutabilityToString(m_stateMutability);
