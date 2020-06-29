@@ -1,5 +1,7 @@
-go-ethereum_backup/
-paralleltestwork/
-npm-debug.log
-solidity_practice/
-eth-netstats/
+paralleltestwork/geth*
+paralleltestwork/history
+paralleltestwork/keystore/
+paralleltestwork?/geth*
+paralleltestwork?/history
+paralleltestwork?/keystore/
+sol_file/solc
