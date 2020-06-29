@@ -19,12 +19,12 @@ package vm
 import (
 	"errors"
 	"math/big"
+	"encoding/binary"
 	"fmt"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/core/state"
 	"github.com/ethereum/go-ethereum/params"
 	"golang.org/x/crypto/sha3"
 )
@@ -892,36 +892,38 @@ func opSuicide(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memo
 	it sends message to the proxy server, then proxy server
 	multicasts the message to the p2p network.
 */
-func opEpcWrite(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
-	fmt.Println("<opEpcWrite> IsDoCall=",interpreter.evm.IsDoCall)
-	ch_com := interpreter.evm.StateDB.GetChannel(interpreter.evm.IsDoCall)
-	param:= stack.pop().Int64()
-	
-	msg:=state.ChanMessage{
-		TxHash: interpreter.evm.StateDB.GetTHash(), ContractAddress: contract.Address(),
-		LockName: param, LockType:"LOCK", IsLockBusy: false, Channel: make(chan state.ChanMessage, 10),
-	}
-	ch_com <- msg
-	fmt.Println("opEpcWrite: send LOCK!! ")
-
-	<-msg.Channel
-	msg=state.ChanMessage{
-		TxHash: interpreter.evm.StateDB.GetTHash(), ContractAddress: contract.Address(),
-		LockName: param, LockType:"UNLOCK", IsLockBusy: false, Channel: make(chan state.ChanMessage,10),
-	}
-	ch_com<-msg
-	fmt.Println("opEpcWrite: send UNLOCK!! ")
-	<-msg.Channel
-
+func opEpcInit(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error){
+	port, peerNum, totalPeerNum := stack.pop(), stack.pop(), stack.pop()
+	interpreter.evm.StateDB.InitNode(int(port.Int64()), int(peerNum.Int64()), int(totalPeerNum.Int64()))
 	return nil, nil
 }
-func opEpcRead(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {
-	fmt.Println("<opEpcRead> IsDoCall=",interpreter.evm.IsDoCall)
-	stack.push(interpreter.intPool.get().SetBytes(contract.Address().Bytes()))
-	return nil, nil	
+func opEpcExit(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error){
+	interpreter.evm.StateDB.ExitNode()
+	return nil, nil
 }
+func opEpcSend(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error){
+	s_offset := stack.pop()
+	size := memory.Get(s_offset.Int64()+int64(24), int64(8))
+	d := memory.Get(s_offset.Int64(), int64(32))
+	d = append(d, memory.Get(s_offset.Int64()+int64(32), int64(binary.BigEndian.Uint64(size)))...)
+	fmt.Println("[opEpcSend] send data --> ", string(d))
 
-// following functions are used by the instruction jump  table
+	interpreter.evm.StateDB.SendMsg(d)
+	return nil, nil
+}
+func opEpcRecv(pc *uint64, interpreter *EVMInterpreter, contract *Contract, memory *Memory, stack *Stack) ([]byte, error){
+	readData := interpreter.evm.StateDB.RecvMsg()
+	fmt.Println("[opEpcRecv] recv data --> ", string(readData))
+
+	s_offset := stack.pop()
+	a_data := make([]byte, 8)
+	binary.BigEndian.PutUint64(a_data, uint64(len(readData)))
+
+	memory.Set(s_offset.Uint64()+uint64(24), uint64(8), a_data)
+	memory.Set(s_offset.Uint64()+uint64(32), uint64(len(readData)), readData)
+	
+	return nil, nil
+}
 
 // make log instruction function
 func makeLog(size int) executionFunc {

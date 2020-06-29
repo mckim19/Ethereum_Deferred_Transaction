@@ -210,9 +210,11 @@ const (
 */
 // 0xc0 range - epc.
 const (
-	EPCWRITE OpCode = 0xc1 + iota
-	EPCREAD	OpCode = 0xc2
-      )
+	EPCINIT OpCode = 0xc1 + iota
+	EPCEXIT
+	EPCSEND
+	EPCRECV
+)
 // 0xf0 range - closures.
 const (
 	CREATE OpCode = 0xf0 + iota
@@ -378,8 +380,10 @@ var opCodeToString = map[OpCode]string{
 	LOG4:   "LOG4",
 
 	// 0xc0 range.
-	EPCWRITE:	"EPCWRITE",
-	EPCREAD:	"EPCREAD",
+	EPCINIT:	"EPCINIT",
+	EPCEXIT:	"EPCEXIT",
+	EPCSEND:	"EPCSEND",
+	EPCRECV:	"EPCRECV",
 
 	// 0xf0 range.
 	CREATE:       "CREATE",
@@ -546,8 +550,10 @@ var stringToOp = map[string]OpCode{
 	"CALLCODE":       CALLCODE,
 	"REVERT":         REVERT,
 	"SELFDESTRUCT":   SELFDESTRUCT,
-	"EPCWRITE":       EPCWRITE,
-	"EPCREAD":        EPCREAD,
+	"EPCINIT":        EPCINIT,
+	"EPCEXIT":        EPCEXIT,
+	"EPCSEND":        EPCSEND,
+	"EPCRECV":        EPCRECV,
 }
 
 // StringToOp finds the opcode whose name is stored in `str`.

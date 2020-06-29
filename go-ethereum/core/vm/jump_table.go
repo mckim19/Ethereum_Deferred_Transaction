@@ -1104,23 +1104,32 @@ func newFrontierInstructionSet() [256]operation {
 			valid:      true,
 			writes:     true,
 		},
-/*
-	OSDC parallel project. Yoomee Ko.
-	Description.
-	
-*/
-		EPCWRITE: {
-			execute:	opEpcWrite,
-			constantGas:	GasFastestStep,
+		EPCINIT: {
+			execute:	opEpcInit,
+			constantGas:GasFastestStep,
+			minStack:	minStack(3, 0),
+			maxStack:	maxStack(3, 0),
+			valid:		true,
+		},
+		EPCEXIT: {
+			execute:	opEpcExit,
+			constantGas:GasFastestStep,
+			minStack:	minStack(0, 0),
+			maxStack:	maxStack(0, 0),
+			valid:		true,
+		},
+		EPCSEND: {
+			execute:	opEpcSend,
+			constantGas:GasFastestStep,
 			minStack:	minStack(1, 0),
 			maxStack:	maxStack(1, 0),
 			valid:		true,
 		},
-		EPCREAD: {
-			execute:	opEpcRead,
-			constantGas:	GasFastestStep,
-			minStack:	minStack(0, 1),
-			maxStack:	maxStack(0, 1),
+		EPCRECV: {
+			execute:	opEpcRecv,
+			constantGas:GasFastestStep,
+			minStack:	minStack(1, 0),
+			maxStack:	maxStack(1, 0),
 			valid:		true,
 		},		
 	}
